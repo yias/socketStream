@@ -4,7 +4,8 @@
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/**",
-                "C:\\Users\\Jason\\Documents\\cpp_ws\\json_cpp\\rapidjson\\include"
+                "${CPP_DEPENDENCIES}\\rapidjson\\include",
+                "${CPP_DEPENDENCIES}\\boost"
             ],
             "defines": [
                 "_DEBUG",

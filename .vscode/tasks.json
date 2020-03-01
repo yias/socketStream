@@ -8,6 +8,8 @@
             "label": "cl.exe build active file",
             "command": "cl.exe",
             "args": [
+                "-I", "${env:CPP_DEPENDENCIES}\\rapidjson\\include",
+                "-I", "${env:CPP_DEPENDENCIES}\\boost",
                 "/Zi",
                 "/EHsc",
                 "/Fe:",
