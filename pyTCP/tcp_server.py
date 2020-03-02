@@ -4,7 +4,7 @@
 	maintaner: Iason Batzianoulis
 	email: iasonbatz@gmail.com
 	description: 
-	This scripts creates a TCP/IP server for listening to inputs from a space navigator
+	This scripts creates a TCP/IP server for listening to inputs from a client
 """
 
 
