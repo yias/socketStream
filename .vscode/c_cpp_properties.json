@@ -5,7 +5,8 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "${CPP_DEPENDENCIES}\\rapidjson\\include",
-                "${CPP_DEPENDENCIES}\\boost"
+                "${workspaceFolder}\\include",
+                "${workspaceFolder}\\source"
             ],
             "defines": [
                 "_DEBUG",

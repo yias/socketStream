@@ -3,18 +3,25 @@
     // for the documentation about the tasks.json format
     "version": "2.0.0",
     "tasks": [
+        // {
+        //     "label": "echo",
+        //     "type": "shell",
+        //     "command": "echo ${workspaceFolder}"
+        // },
         {
             "type": "shell",
             "label": "cl.exe build active file",
             "command": "cl.exe",
             "args": [
                 "-I", "${env:CPP_DEPENDENCIES}\\rapidjson\\include",
-                "-I", "${env:CPP_DEPENDENCIES}\\boost",
+                "-I", "${workspaceFolder}\\include",
+                "-I", "${workspaceFolder}\\source",
                 "/Zi",
                 "/EHsc",
                 "/Fe:",
-                "${fileDirname}\\build\\${fileBasenameNoExtension}.exe",
-                "${file}"
+                "${workspaceFolder}\\build\\testSocket.exe",
+                "${workspaceFolder}\\source\\source.cpp",
+                "${workspaceFolder}\\source\\socketStream.cpp"
             ],
             "problemMatcher": [
                 "$msCompile"
