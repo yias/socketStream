@@ -2,7 +2,7 @@
 #include "socketStream.h"
 
 
-socketStream::socketStream(){
+socketStream::socketStream(void){
 
     ConnectSocket = INVALID_SOCKET;
 
@@ -55,7 +55,7 @@ socketStream::socketStream(char* svrIPAddress){
 
     memset(&hints, 0, sizeof hints);
 
-    hints.ai_family = AF_UNSPEC;
+    hints.ai_family = AF_INET;
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_protocol = IPPROTO_TCP;
 

@@ -31,7 +31,7 @@
 
 #define DEFAULT_BUFLEN 512
 #define DEFAULT_PORT "10352"
-#define DEFAULT_HOST_IP "192.168.1.104"
+#define DEFAULT_HOST_IP "localhost"
 
 
 class socketStream{
@@ -73,7 +73,7 @@ class socketStream{
 
 public:
 
-    socketStream();                                                         // empty constructor, setting the default values
+    socketStream(void);                                                         // empty constructor, setting the default values
 
     socketStream(char* scrIPAdress);                                        // constructor with setting the server IP address
 
@@ -94,8 +94,8 @@ public:
     int getMSGString();                                                     // get the message contents as strins
 
     
-    int updateMSG(std::string field, char *value);                   // update the specific field of the message
-    int updateMSG(std::string field, int *value, int arraylength);                   // update the specific field of the message
+    int updateMSG(std::string field, char *value);                          // update the specific field of the message
+    int updateMSG(std::string field, int *value, int arraylength);          // update the specific field of the message
 
     int sendMSg();                                                          // send message to the server
 

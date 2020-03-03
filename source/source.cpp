@@ -4,11 +4,13 @@
 
 int main(int argc, char **argv){
 
-    char *srvIP = "128.178.145.67";
+    char *srvIP = "localhost";//"128.178.145.67";
 
-    int srvPort = 1443;
+    // int srvPort = 1443;
 
-    socketStream socketHdlr(srvIP, srvPort);
+    // socketStream socketHdlr(srvIP, srvPort);
+
+    socketStream socketHdlr(srvIP);
 
     std::vector <std::string> test_rjson;
 
@@ -41,7 +43,22 @@ int main(int argc, char **argv){
     socketHdlr.getMSGString();
     socketHdlr.printMSGcontents();
 
-    
+    if(socketHdlr.initialize_sockeStream()<0){
+        std::cerr << "unable to initialize socket" << std::endl;
+        return -1;
+    }
+
+    if(socketHdlr.make_connection()<0){
+        std::cerr << "unable to connect to " << srvIP << std::endl;
+        return -1;
+    }
+
+    if(socketHdlr.sendMSg()<0){
+        std::cerr << "unable to send message " << std::endl;
+        return -1;
+    }
+
+    socketHdlr.closeCommunication();
 
 
 
