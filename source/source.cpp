@@ -39,7 +39,7 @@ int main(int argc, char **argv){
     socketHdlr.printMSGcontents();
 
     sfield="year";
-    int t_value[] = {1,4,50};
+    double t_value[] = {1.5,4.67,50.095,14.99,12};
 
     socketHdlr.updateMSG(sfield, t_value, sizeof(t_value)/sizeof(t_value[0]));
     socketHdlr.printMSGcontentsTypes();

@@ -95,8 +95,14 @@ public:
     int getMSGString();                                                     // get the message contents as strins
 
     
-    int updateMSG(std::string field, char *value);                          // update the specific field of the message
-    int updateMSG(std::string field, int *value, int arraylength);          // update the specific field of the message
+    int updateMSG(std::string field, char *value);                                  // update the specific field of the message (for strings)
+    int updateMSG(std::string field, int *value, int arraylength);                  // update the specific field of the message (for array of integers)
+    int updateMSG(std::string field, double *value, int arraylength);               // update the specific field of the message (for array of doubles)
+    int updateMSG(std::string field, std::vector <int> value);                      // update the specific field of the message (for vector of integers)
+    int updateMSG(std::string field, std::vector <double> value);                   // update the specific field of the message (for vector of doubles)
+    int updateMSG(std::string field, std::vector <std::vector <int>> value);        // update the specific field of the message (for 2D matrix of integers)
+    int updateMSG(std::string field, std::vector <std::vector <double>> value);     // update the specific field of the message (for 2D matrix of doubles)
+
 
     int sendMSg();                                                          // send message to the server
 

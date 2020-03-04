@@ -272,6 +272,81 @@ int socketStream::updateMSG(std::string field, int *value, int arraylength){
 }
 
 
+int socketStream::updateMSG(std::string field, double *value, int arraylength){
+
+
+    if(msgInitilized){
+        if(dDoc.HasMember(field.c_str())){
+            rapidjson::Value t_a(rapidjson::kArrayType);
+            rapidjson::Document::AllocatorType& allocator = dDoc.GetAllocator();
+            for(int j= 0; j<arraylength; j++){
+                t_a.PushBack(value[j],allocator);
+            }
+            if(!dDoc[field.c_str()].IsArray()){
+                dDoc[field.c_str()].SetArray();
+            }
+            dDoc[field.c_str()]=t_a;
+        }else{
+            std::cerr << "[socketStream] Not valid field name" << std::endl;
+        }
+    }else{
+        std::cerr << "[socketStream] The message struct is NOT initialized" << std::endl;
+        return -1;
+    }
+
+    return 0;
+}
+
+
+int socketStream::updateMSG(std::string field, std::vector <int> value){
+
+    if(msgInitilized){
+        if(dDoc.HasMember(field.c_str())){
+            rapidjson::Value t_a(rapidjson::kArrayType);
+            rapidjson::Document::AllocatorType& allocator = dDoc.GetAllocator();
+            for(int j= 0; j<(int)value.size(); j++){
+                t_a.PushBack(value[j],allocator);
+            }
+            if(!dDoc[field.c_str()].IsArray()){
+                dDoc[field.c_str()].SetArray();
+            }
+            dDoc[field.c_str()]=t_a;
+        }else{
+            std::cerr << "[socketStream] Not valid field name" << std::endl;
+        }
+    }else{
+        std::cerr << "[socketStream] The message struct is NOT initialized" << std::endl;
+        return -1;
+    }
+
+    return 0;
+}
+
+int socketStream::updateMSG(std::string field, std::vector <double> value){
+
+    if(msgInitilized){
+        if(dDoc.HasMember(field.c_str())){
+            rapidjson::Value t_a(rapidjson::kArrayType);
+            rapidjson::Document::AllocatorType& allocator = dDoc.GetAllocator();
+            for(int j= 0; j<(int)value.size(); j++){
+                t_a.PushBack(value[j],allocator);
+            }
+            if(!dDoc[field.c_str()].IsArray()){
+                dDoc[field.c_str()].SetArray();
+            }
+            dDoc[field.c_str()]=t_a;
+        }else{
+            std::cerr << "[socketStream] Not valid field name" << std::endl;
+        }
+    }else{
+        std::cerr << "[socketStream] The message struct is NOT initialized" << std::endl;
+        return -1;
+    }
+
+    return 0;
+}
+
+
 int socketStream::printMSGcontents(){
 
     if(msgInitilized){
