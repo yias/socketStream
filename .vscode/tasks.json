@@ -16,7 +16,6 @@
                 "-I", "${env:CPP_DEPENDENCIES}\\rapidjson\\include",
                 "-I", "${workspaceFolder}\\include",
                 "-I", "${workspaceFolder}\\source",
-                // "-I", "${CPP_DEPENDENCIES}\\openssl\\include",
                 "/Zi",
                 "/EHsc",
                 "/Fe:",
