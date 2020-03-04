@@ -5,6 +5,7 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "${CPP_DEPENDENCIES}\\rapidjson\\include",
+                // "${CPP_DEPENDENCIES}\\openssl\\include",
                 "${workspaceFolder}\\include",
                 "${workspaceFolder}\\source"
             ],

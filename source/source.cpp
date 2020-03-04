@@ -32,7 +32,7 @@ int main(int argc, char **argv){
     char *svalue = {"Iason"};
 
     socketHdlr.updateMSG(sfield, svalue);
-    socketHdlr.getMSGString();
+    socketHdlr.printMSGString();
     socketHdlr.printMSGcontents();
 
     sfield="year";
@@ -53,7 +53,7 @@ int main(int argc, char **argv){
     socketHdlr.updateMSG(sfield, t_value);
     // socketHdlr.updateMSG(sfield, t_value, sizeof(t_value)/sizeof(t_value[0]));
     socketHdlr.printMSGcontentsTypes();
-    socketHdlr.getMSGString();
+    socketHdlr.printMSGString();
     socketHdlr.printMSGcontents();
 
     if(socketHdlr.initialize_sockeStream()<0){

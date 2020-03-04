@@ -515,7 +515,7 @@ int socketStream::printMSGcontentsTypes(){
     return 0;
 }
 
-int socketStream::getMSGString(){
+int socketStream::printMSGString(){
 
     // print the message as a string
 
@@ -542,8 +542,28 @@ int socketStream::sendMSg(){
 
         msg2send = str_buffer.GetString();
 
+        // const char *tt=msg2send.c_str();
+
+        // md5(tt);
+
+
         msg2send.insert(0,msg_idf);
         msg2send += endMSG;
+
+        // std::cout << " r" << md5("test") << std::endl;;
+
+        
+
+        // tmp_md5.hexdigest();
+
+        // std::string hex_msg = tmp_md5.hexdigest();
+        //  msg2send.c_str();
+
+        // unsigned char *tmp_md5() 
+
+        // md5_context *tmp_md5;
+
+        // md5_starts(tmp_md5);
 
         // std::cout << "message to be sent: " << msg2send << std::endl;
 

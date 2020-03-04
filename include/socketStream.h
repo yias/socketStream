@@ -7,6 +7,9 @@
 #ifndef SOCKETSTREAM_H
 #define SOCKETSTREAM_H
 
+
+#include "md5.h"
+
 #define WIN32_LEAN_AND_MEAN
 
 #include <iostream>
@@ -25,10 +28,12 @@
 #pragma comment (lib, "Mswsock.lib")
 #pragma comment (lib, "AdvApi32.lib")
 
-
+// include rapidjson for message structure
 #include "rapidjson/document.h"
 #include "rapidjson/writer.h"
 #include "rapidjson/stringbuffer.h"
+
+
 
 #define DEFAULT_BUFLEN 512
 #define DEFAULT_PORT 10352
@@ -94,7 +99,7 @@ public:
 
     int printMSGcontentsTypes();                                            // print everything that is contained in the message
 
-    int getMSGString();                                                     // get the message contents as strins
+    int printMSGString();                                                     // get the message contents as strins
 
     
     int updateMSG(std::string field, char *value);                                  // update the specific field of the message (for strings)
