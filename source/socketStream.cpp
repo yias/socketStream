@@ -18,7 +18,7 @@ socketStream::socketStream(void){
 
     Host_IP = DEFAULT_HOST_IP;
 
-    Host_Port = (unsigned int)DEFAULT_PORT;
+    Host_Port = DEFAULT_PORT;
 
     memset(&hints, 0, sizeof hints);
 
@@ -51,7 +51,7 @@ socketStream::socketStream(char* svrIPAddress){
 
     Host_IP = svrIPAddress;
 
-    Host_Port = (unsigned int)DEFAULT_PORT;
+    Host_Port = DEFAULT_PORT;
 
     memset(&hints, 0, sizeof hints);
 
@@ -107,8 +107,11 @@ int socketStream::initialize_sockeStream(){
         return iResult;
     }
 
+    std::ostringstream i2s;
+    i2s << Host_Port;
+
     // Resolve the server address and port
-    iResult = getaddrinfo(Host_IP, DEFAULT_PORT, &hints, &result);
+    iResult = getaddrinfo(Host_IP, i2s.str().c_str(), &hints, &result);
     if ( iResult != 0 ) {
         std::cerr << "[socketStream] getaddrinfo failed with error: " << iResult << std::endl;;
         WSACleanup();
@@ -134,8 +137,11 @@ int socketStream::initialize_sockeStream(char* svrIPAddress, int srvPosrt){
         return iResult;
     }
 
+    std::ostringstream i2s;
+    i2s << Host_Port;
+
     // Resolve the server address and port
-    iResult = getaddrinfo(Host_IP, DEFAULT_PORT, &hints, &result);
+    iResult = getaddrinfo(Host_IP, i2s.str().c_str(), &hints, &result);
     if ( iResult != 0 ) {
         std::cerr << "getaddrinfo failed with error: " << iResult << std::endl;;
         WSACleanup();
@@ -147,6 +153,8 @@ int socketStream::initialize_sockeStream(char* svrIPAddress, int srvPosrt){
 }
 
 int socketStream::make_connection(){
+
+    std::cout << "[socketStream] Attempting to connect to server with address " << Host_IP << " in the port " << Host_Port << std::endl;
 
     // Attempt to connect to an address until one succeeds
     for(ptr=result; ptr != NULL ;ptr=ptr->ai_next) {
@@ -296,7 +304,7 @@ int socketStream::printMSGcontents(){
                     for(rapidjson::SizeType j =0 ; j<itr->value.Size()-1; j++){
                         std::cout << itr->value[j].GetDouble() << ", ";
                     }
-                    std::cout << itr->value[itr->value.Size()-1].GetInt()<< "]" << std::endl;    
+                    std::cout << itr->value[itr->value.Size()-1].GetDouble()<< "]" << std::endl;    
                 }
                 break; 
             case 5:
@@ -334,7 +342,7 @@ int socketStream::printMSGcontentsTypes(){
 
     if(msgInitilized){
         static const char* kTypeNames[] = { "Null", "False", "True", "Object", "Array", "String", "Number" };
-        std::cout<< "message contens types:" << std::endl;
+        std::cout<< "[socketStream] Message contens types:" << std::endl;
         for (rapidjson::Value::ConstMemberIterator itr = dDoc.MemberBegin(); itr != dDoc.MemberEnd(); ++itr)
             std::cout << itr->name.GetString() << ": [" << kTypeNames[itr->value.GetType()] << "]" << std::endl;
     }else{
@@ -375,13 +383,13 @@ int socketStream::sendMSg(){
         msg2send.insert(0,msg_idf);
         msg2send += endMSG;
 
-        std::cout << "message to be sent: " << msg2send << std::endl;
+        // std::cout << "message to be sent: " << msg2send << std::endl;
 
         if(isComActive){
             // if the communication is active, send message
             iResult = send( ConnectSocket, msg2send.c_str(), (int)msg2send.size(), 0 );
             if (iResult == SOCKET_ERROR) {
-                std::cerr << "[socketStream] send failed with error: " << WSAGetLastError() << std::endl;
+                std::cerr << "[socketStream] Send message failed with error: " << WSAGetLastError() << std::endl;
                 closesocket(ConnectSocket);
                 WSACleanup();
                 return -1;
@@ -401,11 +409,11 @@ int socketStream::sendMSg(){
 
 int socketStream::closeCommunication(){
 
-    std::cout<<"[socketStream] sending end-connection ..."<<std::endl;
+    std::cout<<"[socketStream] Ending connection ..."<<std::endl;
 
     iResult = send( ConnectSocket, ec_id, (int)strlen(ec_id), 0 );
     if (iResult == SOCKET_ERROR) {
-        std::cerr << "[socketStream] send failed with error: " << WSAGetLastError() << std::endl;
+        std::cerr << "[socketStream] Send failed with error: " << WSAGetLastError() << std::endl;
         closesocket(ConnectSocket);
         WSACleanup();
         return -1;
@@ -413,7 +421,7 @@ int socketStream::closeCommunication(){
 
     iResult = shutdown(ConnectSocket, SD_SEND);
     if (iResult == SOCKET_ERROR) {
-        std::cerr << "[socketStream] shutdown failed with error: " << WSAGetLastError() << std::endl;
+        std::cerr << "[socketStream] Shutdown failed with error: " << WSAGetLastError() << std::endl;
         closesocket(ConnectSocket);
         WSACleanup();
         return -2;
@@ -431,8 +439,9 @@ int socketStream::closeCommunication(){
 socketStream::~socketStream(){
     if(isComActive){
         if(closeCommunication()<0){
-            std::cerr << "[socketStream] the socket is NOT successully terminated. The port might still be occupied." << std::endl;
+            std::cerr << "[socketStream] The socket is NOT successully terminated. The port might still be occupied." << std::endl;
             }
         isComActive = false;
     }
+    std::cout << "[socketStrem] Connection terminated" << std::endl;
 }

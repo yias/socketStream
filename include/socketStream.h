@@ -12,6 +12,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <sstream>
 
 // include library for socket programming
 #include <winsock2.h>
@@ -30,7 +31,7 @@
 #include "rapidjson/stringbuffer.h"
 
 #define DEFAULT_BUFLEN 512
-#define DEFAULT_PORT "10352"
+#define DEFAULT_PORT 10352
 #define DEFAULT_HOST_IP "localhost"
 
 

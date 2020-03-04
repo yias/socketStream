@@ -156,7 +156,7 @@ def main(args):
 					msg_data=json.loads(full_msg[:-4])
 					print(msg_data)
 					print('name: %s' %(msg_data.get("name")))
-					print('age: %s' %(msg_data.get("age")))
+					print('year: %s' %(msg_data.get("year")))
 
 				# 	if msg_validity:
 				# 		# if the message is valid, retrieve the data and load them into a json object

@@ -6,9 +6,11 @@ int main(int argc, char **argv){
 
     char *srvIP = "localhost";//"128.178.145.67";
 
-    // int srvPort = 1443;
-
-    // socketStream socketHdlr(srvIP, srvPort);
+    if(argc!=2){
+        std::cout << "No server IP suplied. Continue with localhost" << std::endl;
+    }else{
+        srvIP=argv[1];
+    }
 
     socketStream socketHdlr(srvIP);
 
@@ -18,7 +20,10 @@ int main(int argc, char **argv){
     test_rjson.push_back("age");
     test_rjson.push_back("year");
 
-    int tt0=socketHdlr.initialize_msgStruct(test_rjson);
+    if(socketHdlr.initialize_msgStruct(test_rjson)<0){
+        std::cerr << "Unable to inizialize message structure" << std::endl;
+        return -1;
+    }
 
     socketHdlr.printMSGcontentsTypes();
     socketHdlr.getMSGString();
@@ -26,7 +31,6 @@ int main(int argc, char **argv){
     std::cout<<"modifying msg"<<std::endl;
 
     std::string sfield("name");
-    // std::string svalue("Iason");
     char *svalue = {"Iason"};
 
     socketHdlr.updateMSG(sfield, svalue);
@@ -36,7 +40,6 @@ int main(int argc, char **argv){
 
     sfield="year";
     int t_value[] = {1,4,50};
-    // std::cout << "the size of value is: " << sizeof(t_value)/sizeof(t_value[0]) <<"\n";
 
     socketHdlr.updateMSG(sfield, t_value, sizeof(t_value)/sizeof(t_value[0]));
     socketHdlr.printMSGcontentsTypes();
@@ -44,12 +47,12 @@ int main(int argc, char **argv){
     socketHdlr.printMSGcontents();
 
     if(socketHdlr.initialize_sockeStream()<0){
-        std::cerr << "unable to initialize socket" << std::endl;
+        std::cerr << "Unable to initialize socket" << std::endl;
         return -1;
     }
 
     if(socketHdlr.make_connection()<0){
-        std::cerr << "unable to connect to " << srvIP << std::endl;
+        std::cerr << "Unable to connect to " << srvIP << std::endl;
         return -1;
     }
 
