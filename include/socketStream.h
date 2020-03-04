@@ -72,9 +72,11 @@ class socketStream{
 
     bool msgInitilized;                                                     // a flag to check if the message is initialized
 
+    int printArray(rapidjson::Value::ConstMemberIterator itr);
+
 public:
 
-    socketStream(void);                                                         // empty constructor, setting the default values
+    socketStream(void);                                                     // empty constructor, setting the default values
 
     socketStream(char* scrIPAdress);                                        // constructor with setting the server IP address
 

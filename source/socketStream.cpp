@@ -246,6 +246,7 @@ int socketStream::updateMSG(std::string field, char *value){
     return 0;
 }
 
+
 int socketStream::updateMSG(std::string field, int *value, int arraylength){
 
 
@@ -322,6 +323,7 @@ int socketStream::updateMSG(std::string field, std::vector <int> value){
     return 0;
 }
 
+
 int socketStream::updateMSG(std::string field, std::vector <double> value){
 
     if(msgInitilized){
@@ -346,6 +348,90 @@ int socketStream::updateMSG(std::string field, std::vector <double> value){
     return 0;
 }
 
+
+int socketStream::updateMSG(std::string field, std::vector <std::vector <int> > value){
+
+    if(msgInitilized){
+        if(dDoc.HasMember(field.c_str())){
+            rapidjson::Value t_a(rapidjson::kArrayType);
+            rapidjson::Document::AllocatorType& allocator = dDoc.GetAllocator();
+            t_a.Reserve(value.size(),allocator);
+            for(int j= 0; j<(int)value.size(); j++){
+                rapidjson::Value t_b(rapidjson::kArrayType);
+                t_b.Reserve(value[j].size(),allocator);
+                for(int k=0; k<(int)value[j].size(); k++){
+                    t_b.PushBack(value[j][k], allocator);
+                }
+                t_a.PushBack(t_b,allocator);
+            }
+            if(!dDoc[field.c_str()].IsArray()){
+                dDoc[field.c_str()].SetArray();
+            }
+            dDoc[field.c_str()]=t_a;
+        }else{
+            std::cerr << "[socketStream] Not valid field name" << std::endl;
+        }
+    }else{
+        std::cerr << "[socketStream] The message struct is NOT initialized" << std::endl;
+        return -1;
+    }
+
+    return 0;
+}
+
+
+int socketStream::updateMSG(std::string field, std::vector <std::vector <double> > value){
+
+    if(msgInitilized){
+        if(dDoc.HasMember(field.c_str())){
+            rapidjson::Value t_a(rapidjson::kArrayType);
+            rapidjson::Document::AllocatorType& allocator = dDoc.GetAllocator();
+            t_a.Reserve(value.size(),allocator);
+            for(int j= 0; j<(int)value.size(); j++){
+                rapidjson::Value t_b(rapidjson::kArrayType);
+                t_b.Reserve(value[j].size(),allocator);
+                for(int k=0; k<(int)value[j].size(); k++){
+                    t_b.PushBack(value[j][k], allocator);
+                }
+                t_a.PushBack(t_b,allocator);
+            }
+            if(!dDoc[field.c_str()].IsArray()){
+                dDoc[field.c_str()].SetArray();
+            }
+            dDoc[field.c_str()]=t_a;
+        }else{
+            std::cerr << "[socketStream] Not valid field name" << std::endl;
+        }
+    }else{
+        std::cerr << "[socketStream] The message struct is NOT initialized" << std::endl;
+        return -1;
+    }
+
+    return 0;
+}
+
+int socketStream::printArray(rapidjson::Value::ConstMemberIterator itr){
+
+    
+    std::cout << itr->name.GetString() << " = [";
+    for(rapidjson::SizeType j =0 ; j<itr->value.Size(); j++){
+        if(itr->value.IsArray()){
+            std::cout << "[";
+            for(rapidjson::SizeType k =0 ; k<itr->value[j].Size()-1; k++){
+                std::cout << itr->value[j][k].GetDouble() << ", ";
+            }
+             std::cout << itr->value[j][itr->value[j].Size()-1].GetDouble() << "]";
+            if(j!=itr->value.Size()-1){
+               std::cout << std::endl; 
+            }
+        }else{
+            std::cout << itr->value[j].GetDouble() << ", ";
+        }
+    }
+    std::cout << "]" << std::endl; 
+
+    return 0;
+}
 
 int socketStream::printMSGcontents(){
 
@@ -375,11 +461,12 @@ int socketStream::printMSGcontents(){
                 break;
             case 4:
                 {
-                    std::cout << itr->name.GetString() << " 2= [";
-                    for(rapidjson::SizeType j =0 ; j<itr->value.Size()-1; j++){
-                        std::cout << itr->value[j].GetDouble() << ", ";
-                    }
-                    std::cout << itr->value[itr->value.Size()-1].GetDouble()<< "]" << std::endl;    
+                    printArray(itr);
+                    // std::cout << itr->name.GetString() << " = [";
+                    // for(rapidjson::SizeType j =0 ; j<itr->value.Size()-1; j++){
+                    //     std::cout << itr->value[j].GetDouble() << ", ";
+                    // }
+                    // std::cout << itr->value[itr->value.Size()-1].GetDouble()<< "]" << std::endl;    
                 }
                 break; 
             case 5:

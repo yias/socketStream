@@ -158,8 +158,8 @@ def main(args):
 					print('name: %s' %(msg_data.get("name")))
 					print('year: %s' %(msg_data.get("year")))
 					yy=msg_data.get("year")
-					print(yy[0], yy[3])
-					print(yy[0]+yy[3])
+					print(yy[0][1], yy[1])
+					# print(yy[0]+yy[3])
 
 				# 	if msg_validity:
 				# 		# if the message is valid, retrieve the data and load them into a json object

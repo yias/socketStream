@@ -25,8 +25,6 @@ int main(int argc, char **argv){
         return -1;
     }
 
-    socketHdlr.printMSGcontentsTypes();
-    socketHdlr.getMSGString();
 
     std::cout<<"modifying msg"<<std::endl;
 
@@ -34,14 +32,26 @@ int main(int argc, char **argv){
     char *svalue = {"Iason"};
 
     socketHdlr.updateMSG(sfield, svalue);
-    socketHdlr.printMSGcontentsTypes();
     socketHdlr.getMSGString();
     socketHdlr.printMSGcontents();
 
     sfield="year";
-    double t_value[] = {1.5,4.67,50.095,14.99,12};
+    double t_value1[] = {1.5,4.67,50.095,14.99,12};
+    double t_value2[] = {3.2,15.4,1502.898,12,5.4};
+    std::vector< std::vector<double> > t_value(2);
+    t_value[0]=std::vector<double>(t_value1, t_value1 +(sizeof(t_value1)/sizeof(t_value1[0])));
+    t_value[1]=std::vector<double>(t_value2, t_value2 +(sizeof(t_value2)/sizeof(t_value2[0])));
 
-    socketHdlr.updateMSG(sfield, t_value, sizeof(t_value)/sizeof(t_value[0]));
+    std::cout << "t_value:" << std::endl;
+    for(int i=0; i<(int)t_value.size(); i++){
+        for(int j=0; j<(int)t_value[i].size(); j++){
+            std::cout << t_value[i][j] <<", ";
+        }
+        std::cout << std::endl;
+    }
+
+    socketHdlr.updateMSG(sfield, t_value);
+    // socketHdlr.updateMSG(sfield, t_value, sizeof(t_value)/sizeof(t_value[0]));
     socketHdlr.printMSGcontentsTypes();
     socketHdlr.getMSGString();
     socketHdlr.printMSGcontents();
