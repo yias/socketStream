@@ -29,9 +29,9 @@ def calc_checksum(s):
     return '%2X' % (-(sum(ord(c) for c in s) % 256) & 0xFF)
 
 def msgExtractor(msg, hdrSize, endMsgID):
-    msgSize=int(msg[:hdrSize].decode('utf-8'))
-    tmp_msg=msg[hdrSize:hdrSize+msgSize-sys.getsizeof('')]
-    hashcode=msg[hdrSize+msgSize-sys.getsizeof(''):-len(endMsgID)]
+    msgSize=int(msg[:hdrSize])
+    tmp_msg=msg[hdrSize:hdrSize+msgSize]
+    hashcode=msg[hdrSize+msgSize:-len(endMsgID)]
     hc_check=hashlib.md5()
     hc_check.update(tmp_msg)
     if hc_check.hexdigest()==hashcode:
@@ -152,6 +152,7 @@ def main(args):
 							break
 
 				# extract message
+					print(full_msg)
 					msg_validity, tr_msg = msgExtractor(full_msg,HEADERSIZE,endMSG)
 					# msg_data=json.loads(full_msg[:-4])
 					msg_data=json.loads(tr_msg)
