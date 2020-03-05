@@ -56,50 +56,54 @@ class socketStream{
 
     int recvbuflen = DEFAULT_BUFLEN;
 
-    char *Host_IP;                                                          // the IP of the server
+    char *Host_IP;                                                                  // the IP of the server
 
-    unsigned int Host_Port;                                                 // the port to be used
+    unsigned int Host_Port;                                                         // the port to be used
 
-    unsigned int msg_buffer;                                                // the message buffer
+    unsigned int msg_buffer;                                                        // the message buffer
 
-    bool isComActive;                                                       // a flag for checking if the communication with the server is active
+    bool isComActive;                                                               // a flag for checking if the communication with the server is active
 
-    rapidjson::Document dDoc;                                               // a json object to store the data to a specific structure
+    rapidjson::Document dDoc;                                                       // a json object to store the data to a specific structure
 
-    rapidjson::StringBuffer str_buffer;                                     // buffer for stringify the json object
+    rapidjson::StringBuffer str_buffer;                                             // buffer for stringify the json object
     
     // variables used in the communication protocol
-    char *msg_idf;                                                          // the new message identifier  
-    char *endMSG;                                                           // the end-of-message identifier
-    char *ec_id;                                                            // the end-of-connection identifier
+    char *msg_idf;                                                                  // the new message identifier  
+    char *endMSG;                                                                   // the end-of-message identifier
+    char *ec_id;                                                                    // the end-of-connection identifier
+    unsigned int headerSize;                                                        // the header of the message containing the number of bytes to be streamed
 
-    std::string msg2send;                                                   // the message to be sent
+    std::string msgHeader;
+    std::string msg2send;                                                           // the message to be sent
 
-    bool msgInitilized;                                                     // a flag to check if the message is initialized
+    bool msgInitilized;                                                             // a flag to check if the message is initialized
 
-    int printArray(rapidjson::Value::ConstMemberIterator itr);
+    bool useHashKey;                                                                // a flag indicating if a md5 checksum will be included in the message or not
+
+    int printArray(rapidjson::Value::ConstMemberIterator itr);                      // printing an array from iterator
 
 public:
 
-    socketStream(void);                                                     // empty constructor, setting the default values
+    socketStream(void);                                                             // empty constructor, setting the default values
 
-    socketStream(char* scrIPAdress);                                        // constructor with setting the server IP address
+    socketStream(char* scrIPAdress);                                                // constructor with setting the server IP address
 
-    socketStream(char* svrIPAddress, int srvPosrt);                         // constructor with setting the server IP address and port
+    socketStream(char* svrIPAddress, int srvPosrt);                                 // constructor with setting the server IP address and port
 
-    int initialize_sockeStream();                                           // initialize the socketStream object
+    int initialize_sockeStream();                                                   // initialize the socketStream object
 
-    int initialize_sockeStream(char* svrIPAddress, int srvPosrt);           // initialize the socketStream object re-setting the server IP address and port
+    int initialize_sockeStream(char* svrIPAddress, int srvPosrt);                   // initialize the socketStream object re-setting the server IP address and port
 
-    int make_connection();                                                  // connect with the server
+    int make_connection();                                                          // connect with the server
 
-    int initialize_msgStruct(std::vector<std::string> fields);              // setting the fields of the message 
+    int initialize_msgStruct(std::vector<std::string> fields);                      // setting the fields of the message 
 
-    int printMSGcontents();                                                 // print the contents of the message
+    int printMSGcontents();                                                         // print the contents of the message
 
-    int printMSGcontentsTypes();                                            // print everything that is contained in the message
+    int printMSGcontentsTypes();                                                    // print everything that is contained in the message
 
-    int printMSGString();                                                     // get the message contents as strins
+    int printMSGString();                                                           // get the message contents as strins
 
     
     int updateMSG(std::string field, char *value);                                  // update the specific field of the message (for strings)
@@ -110,12 +114,15 @@ public:
     int updateMSG(std::string field, std::vector <std::vector <int>> value);        // update the specific field of the message (for 2D matrix of integers)
     int updateMSG(std::string field, std::vector <std::vector <double>> value);     // update the specific field of the message (for 2D matrix of doubles)
 
+    int sendMSg();                                                                  // send message to the server
 
-    int sendMSg();                                                          // send message to the server
+    int closeCommunication();                                                       // close the communication with the server
 
-    int closeCommunication();                                               // close the communication with the server
+    int setHashKey(bool hKey);                                                      // setting the value of useHashKey
 
-    ~socketStream(void);                                                    // destructor
+    int setHeaderSize(unsigned int hSize);                                                   // setting the header size
+
+    ~socketStream(void);                                                            // destructor
 
     
 };

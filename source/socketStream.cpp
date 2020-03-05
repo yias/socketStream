@@ -16,6 +16,10 @@ socketStream::socketStream(void){
 
     ec_id = "\ne@c";
 
+    headerSize=8;
+
+    msgHeader = std::string(headerSize, ' ');
+
     Host_IP = DEFAULT_HOST_IP;
 
     Host_Port = DEFAULT_PORT;
@@ -29,6 +33,8 @@ socketStream::socketStream(void){
     isComActive = false;
 
     msgInitilized = false;
+
+    useHashKey = true;
 
     std::cout << "[socketStream] Starting socketStream with default parameters" << std::endl;
     std::cout << "[socketStream] IP address: " << Host_IP << ", Port: " << Host_Port << std::endl;
@@ -49,6 +55,10 @@ socketStream::socketStream(char* svrIPAddress){
 
     ec_id = "\ne@c";
 
+    headerSize = 8;
+
+    msgHeader = std::string(headerSize, ' ');
+
     Host_IP = svrIPAddress;
 
     Host_Port = DEFAULT_PORT;
@@ -62,6 +72,8 @@ socketStream::socketStream(char* svrIPAddress){
     isComActive = false;
 
     msgInitilized = false;
+
+    useHashKey = true;
 
     std::cout << "[socketStream] Starting up socketStream on server address " << Host_IP << " and default port " << Host_Port << std::endl;
 }
@@ -81,6 +93,10 @@ socketStream::socketStream(char* svrIPAddress, int srvPosrt){
 
     ec_id = "\ne@c";
 
+    headerSize=8;
+
+    msgHeader = std::string(headerSize, ' ');
+
     Host_IP = svrIPAddress;
 
     Host_Port = (unsigned int)srvPosrt;
@@ -94,6 +110,8 @@ socketStream::socketStream(char* svrIPAddress, int srvPosrt){
     isComActive = false;
 
     msgInitilized = false;
+
+    useHashKey = true;
 
     std::cout << "[socketStream] Starting socketStream on server address " << Host_IP << " and port " << Host_Port << std::endl;
 }
@@ -542,34 +560,23 @@ int socketStream::sendMSg(){
 
         msg2send = str_buffer.GetString();
 
-        // const char *tt=msg2send.c_str();
+        std::ostringstream i2s;
+        i2s << msg2send.length();
 
-        // md5(tt);
+        msgHeader.replace(msgHeader.begin(),msgHeader.end()+i2s.str().length()-msgHeader.length(),i2s.str());
 
+        if(useHashKey){
+            std::string md5_key = md5(msg2send.c_str());
+            msg2send += md5_key;
+        }
 
         msg2send.insert(0,msg_idf);
         msg2send += endMSG;
-
-        // std::cout << " r" << md5("test") << std::endl;;
-
-        
-
-        // tmp_md5.hexdigest();
-
-        // std::string hex_msg = tmp_md5.hexdigest();
-        //  msg2send.c_str();
-
-        // unsigned char *tmp_md5() 
-
-        // md5_context *tmp_md5;
-
-        // md5_starts(tmp_md5);
-
-        // std::cout << "message to be sent: " << msg2send << std::endl;
+        std::string final_msg = msg_idf + msgHeader + msg2send + endMSG;
 
         if(isComActive){
             // if the communication is active, send message
-            iResult = send( ConnectSocket, msg2send.c_str(), (int)msg2send.size(), 0 );
+            iResult = send( ConnectSocket, final_msg.c_str(), (int)final_msg.size(), 0 );
             if (iResult == SOCKET_ERROR) {
                 std::cerr << "[socketStream] Send message failed with error: " << WSAGetLastError() << std::endl;
                 closesocket(ConnectSocket);
@@ -615,6 +622,17 @@ int socketStream::closeCommunication(){
     closesocket(ConnectSocket);
     WSACleanup(); 
 
+    return 0;
+}
+
+int socketStream::setHashKey(bool hKey){
+    useHashKey=hKey;
+    return 0;
+}
+
+int socketStream::setHeaderSize(unsigned int hSize){
+    headerSize=hSize;
+    msgHeader = std::string(headerSize, ' ');
     return 0;
 }
 

@@ -1,6 +1,7 @@
 
 
 #include "socketStream.h"
+#include <algorithm>
 
 int main(int argc, char **argv){
 
@@ -24,9 +25,6 @@ int main(int argc, char **argv){
         std::cerr << "Unable to inizialize message structure" << std::endl;
         return -1;
     }
-
-
-    std::cout<<"modifying msg"<<std::endl;
 
     std::string sfield("name");
     char *svalue = {"Iason"};
@@ -55,6 +53,23 @@ int main(int argc, char **argv){
     socketHdlr.printMSGcontentsTypes();
     socketHdlr.printMSGString();
     socketHdlr.printMSGcontents();
+     
+    int tty=8;
+    std::string st (tty,' ');
+    std::cout << st << "tstst" << std::endl;
+
+    std::ostringstream i2s;
+    i2s << tty;
+
+    std::string ttx(i2s.str());
+
+    // st.insert(st.begin(),st.begin()+(int)ttx.length(),ttx.c_str());
+    st.replace(st.begin(),st.end()+i2s.str().length()-st.length(),i2s.str());
+
+    // std::fill(st.begin(),st.begin()+ttx.length(),ttx);
+    std::cout << st << "tstst" << std::endl;
+    std::cout << st.length() << std::endl;
+
 
     if(socketHdlr.initialize_sockeStream()<0){
         std::cerr << "Unable to initialize socket" << std::endl;

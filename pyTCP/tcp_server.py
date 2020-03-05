@@ -152,8 +152,9 @@ def main(args):
 							break
 
 				# extract message
-				# 	msg_validity, tr_msg = msgExtractor(full_msg,HEADERSIZE,endMSG)
-					msg_data=json.loads(full_msg[:-4])
+					msg_validity, tr_msg = msgExtractor(full_msg,HEADERSIZE,endMSG)
+					# msg_data=json.loads(full_msg[:-4])
+					msg_data=json.loads(tr_msg)
 					print(msg_data)
 					print('name: %s' %(msg_data.get("name")))
 					print('year: %s' %(msg_data.get("year")))

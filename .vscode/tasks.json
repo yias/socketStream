@@ -21,7 +21,8 @@
                 "/Fe:",
                 "${workspaceFolder}\\build\\testSocket.exe",
                 "${workspaceFolder}\\source\\source.cpp",
-                "${workspaceFolder}\\source\\socketStream.cpp"
+                "${workspaceFolder}\\source\\socketStream.cpp",
+                "${workspaceFolder}\\source\\md5.cpp"
             ],
             "problemMatcher": [
                 "$msCompile"
