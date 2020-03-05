@@ -29,15 +29,18 @@ def calc_checksum(s):
     return '%2X' % (-(sum(ord(c) for c in s) % 256) & 0xFF)
 
 def msgExtractor(msg, hdrSize, endMsgID):
-    msgSize=int(msg[:hdrSize])
-    tmp_msg=msg[hdrSize:hdrSize+msgSize]
-    hashcode=msg[hdrSize+msgSize:-len(endMsgID)]
-    hc_check=hashlib.md5()
-    hc_check.update(tmp_msg)
-    if hc_check.hexdigest()==hashcode:
-        return True, tmp_msg
-    else:
-        return False, ''
+	msgSize=int(msg[:hdrSize])
+	tmp_msg=msg[hdrSize+1:hdrSize+msgSize+1]
+	if(msg[hdrSize+1]==1):
+		hashcode=msg[hdrSize+msgSize:-len(endMsgID)]
+		hc_check=hashlib.md5()
+		hc_check.update(tmp_msg)
+		if hc_check.hexdigest()==hashcode:
+			return True, tmp_msg
+		else:
+			return False, ''
+	else:
+		return True, tmp_msg
 
 
 def randomString(strlength=10):
@@ -149,24 +152,14 @@ def main(args):
 						if full_msg[-4:]==endMSG:
 							break
 
-				# extract message
-					print(full_msg)
+					# extract message
 					msg_validity, tr_msg = msgExtractor(full_msg,HEADERSIZE,endMSG)
-					msg_data=json.loads(tr_msg)
-					print(msg_data)
-					print('name: %s' %(msg_data.get("name")))
-					print('year: %s' %(msg_data.get("year")))
-					yy=msg_data.get("year")
-					print(yy[0][1], yy[1])
-					# print(yy[0]+yy[3])
-
-				# 	if msg_validity:
-				# 		# if the message is valid, retrieve the data and load them into a json object
-				# 		msg_data=json.loads(tr_msg.decode('utf-8'))
-
-				# 		print('translation: %s' %(msg_data.get("translation")))
-				# 		print('rotation: %s' %(msg_data.get("rotation")))
-				# 		print('button: %s' %(msg_data.get("button")))
+					if msg_validity:
+						msg_data=json.loads(tr_msg)
+						print('name: %s' %(msg_data.get("name")))
+						print('year: %s' %(msg_data.get("year")))
+						yy=msg_data.get("year")
+						print(yy[0][1], yy[1])
 
 				if  data.decode('utf-8')==ec_id:
 					# if end-of-communication identifier received, terminate the connection
