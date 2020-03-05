@@ -556,6 +556,10 @@ int socketStream::sendMSg(){
 
     if(msgInitilized){
 
+        str_buffer.Clear();
+        final_msg.clear();
+        msg2send.clear();
+
         rapidjson::Writer<rapidjson::StringBuffer> writer(str_buffer);
 
         dDoc.Accept(writer);
@@ -566,15 +570,15 @@ int socketStream::sendMSg(){
         i2s << msg2send.length();
 
         msgHeader.replace(msgHeader.begin(),msgHeader.end()+i2s.str().length()-msgHeader.length(),i2s.str());
-        msgHeader += std::to_string(int(useHashKey));
+        // msgHeader += std::to_string(int(useHashKey));
 
         if(useHashKey){
             std::string md5_key = md5(msg2send.c_str());
             msg2send += md5_key;
         }
 
-        std::string final_msg = msg_idf + msgHeader + msg2send + endMSG;
-        std::cout << final_msg << std::endl;
+        final_msg = msg_idf + msgHeader + std::to_string(int(useHashKey)) + msg2send + endMSG;
+        // std::cout << "the final_msg: " << final_msg << std::endl;
 
         if(isComActive){
             // if the communication is active, send message
@@ -595,6 +599,7 @@ int socketStream::sendMSg(){
         return -3;
     }
 
+    // final_msg.clear();
     return 0;
 }
 
@@ -636,6 +641,10 @@ int socketStream::setHeaderSize(unsigned int hSize){
     headerSize=hSize;
     msgHeader = std::string(headerSize, ' ');
     return 0;
+}
+
+std::string socketStream::getFullmsg(){
+    return final_msg;
 }
 
 socketStream::~socketStream(){

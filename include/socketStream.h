@@ -74,8 +74,9 @@ class socketStream{
     char *ec_id;                                                                    // the end-of-connection identifier
     unsigned int headerSize;                                                        // the header of the message containing the number of bytes to be streamed
 
-    std::string msgHeader;
+    std::string msgHeader;                                                          // the header of the message containing the size of the data
     std::string msg2send;                                                           // the message to be sent
+    std::string final_msg;                                                          // the message including the header and the message identifications 
 
     bool msgInitilized;                                                             // a flag to check if the message is initialized
 
@@ -120,7 +121,9 @@ public:
 
     int setHashKey(bool hKey);                                                      // setting the value of useHashKey
 
-    int setHeaderSize(unsigned int hSize);                                                   // setting the header size
+    int setHeaderSize(unsigned int hSize);                                          // setting the header size
+
+    std::string getFullmsg();                                                       // returning the full message as a string
 
     ~socketStream(void);                                                            // destructor
 
