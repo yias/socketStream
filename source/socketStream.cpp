@@ -570,8 +570,8 @@ int socketStream::sendMSg(){
             msg2send += md5_key;
         }
 
-        msg2send.insert(0,msg_idf);
-        msg2send += endMSG;
+        // msg2send.insert(0,msg_idf);
+        // msg2send += endMSG;
         std::string final_msg = msg_idf + msgHeader + msg2send + endMSG;
 
         if(isComActive){
