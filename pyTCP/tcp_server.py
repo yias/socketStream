@@ -139,10 +139,8 @@ def main(args):
 			# retrieve the message identifier. once it is received, compose the message
 				data=connection.recv(BUFFER_SIZE)
 				# print(data)
-				# time.sleep(3)
 
 				if data.decode('utf-8')==msg_idf:
-					# print('understood')
 					# receive bytes until the full message is received
 					full_msg=''
 					while (True):
@@ -154,7 +152,6 @@ def main(args):
 				# extract message
 					print(full_msg)
 					msg_validity, tr_msg = msgExtractor(full_msg,HEADERSIZE,endMSG)
-					# msg_data=json.loads(full_msg[:-4])
 					msg_data=json.loads(tr_msg)
 					print(msg_data)
 					print('name: %s' %(msg_data.get("name")))

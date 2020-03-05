@@ -203,6 +203,8 @@ int socketStream::make_connection(){
         return -2;
     }
 
+    std::cout << "[socketStream] Connected to server " << Host_IP << " in port " << Host_Port << std::endl;
+
     isComActive = true;
 
     return 0;
@@ -564,15 +566,15 @@ int socketStream::sendMSg(){
         i2s << msg2send.length();
 
         msgHeader.replace(msgHeader.begin(),msgHeader.end()+i2s.str().length()-msgHeader.length(),i2s.str());
+        msgHeader += std::to_string(int(useHashKey));
 
         if(useHashKey){
             std::string md5_key = md5(msg2send.c_str());
             msg2send += md5_key;
         }
 
-        // msg2send.insert(0,msg_idf);
-        // msg2send += endMSG;
         std::string final_msg = msg_idf + msgHeader + msg2send + endMSG;
+        std::cout << final_msg << std::endl;
 
         if(isComActive){
             // if the communication is active, send message
@@ -643,5 +645,5 @@ socketStream::~socketStream(){
             }
         isComActive = false;
     }
-    std::cout << "[socketStrem] Connection terminated" << std::endl;
+    std::cout << "[socketStream] Connection terminated" << std::endl;
 }
