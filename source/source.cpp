@@ -57,6 +57,9 @@ int main(int argc, char **argv){
 
     std::cout << "the sent message: " << socketHdlr.getFullmsg() << std::endl;
 
+    t_value[0][1]=45.4;
+    t_value[1][2]=1111.456;
+    socketHdlr.updateMSG(sfield, t_value);
     if(socketHdlr.sendMSg()<0){
         std::cerr << "unable to send message " << std::endl;
         return -1;
@@ -64,8 +67,19 @@ int main(int argc, char **argv){
 
     std::cout << "the sent message: " << socketHdlr.getFullmsg() << std::endl;
 
-    socketHdlr.closeCommunication();
+    t_value[0][1]=12.6874;
+    t_value[1][2]=222.5609;
+    socketHdlr.updateMSG(sfield, t_value);
+    socketHdlr.setHashKey(false);
+    if(socketHdlr.sendMSg()<0){
+        std::cerr << "unable to send message " << std::endl;
+        return -1;
+    }
 
+    std::cout << "the sent message: " << socketHdlr.getFullmsg() << std::endl;
+
+
+    socketHdlr.closeCommunication();
 
 
     return 0;
