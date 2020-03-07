@@ -40,6 +40,15 @@
         "xtr1common": "cpp",
         "xutility": "cpp",
         "sstream": "cpp",
-        "algorithm": "cpp"
-    }
+        "algorithm": "cpp",
+        "array": "cpp",
+        "deque": "cpp",
+        "forward_list": "cpp",
+        "list": "cpp",
+        "regex": "cpp",
+        "valarray": "cpp",
+        "xhash": "cpp",
+        "xtree": "cpp"
+    },
+    "C_Cpp.errorSquiggles": "Disabled"
 }

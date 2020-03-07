@@ -157,9 +157,9 @@ def main(args):
 					if msg_validity:
 						msg_data=json.loads(tr_msg)
 						print('name: %s' %(msg_data.get("name")))
-						print('year: %s' %(msg_data.get("year")))
-						yy=msg_data.get("year")
-						print(yy[0][1], yy[1])
+						print('data: %s' %(msg_data.get("data")))
+						# yy=msg_data.get("year")
+						# print(yy[0][1], yy[1])
 
 				if  data.decode('utf-8')==ec_id:
 					# if end-of-communication identifier received, terminate the connection

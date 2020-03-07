@@ -33,8 +33,6 @@
 #include "rapidjson/writer.h"
 #include "rapidjson/stringbuffer.h"
 
-
-
 #define DEFAULT_BUFLEN 512
 #define DEFAULT_PORT 10352
 #define DEFAULT_HOST_IP "localhost"
