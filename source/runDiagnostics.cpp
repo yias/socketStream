@@ -124,7 +124,7 @@ int main(int argc, char **argv){
     nb_channels = 23;
 
     std::cout << "2) updating the message with a 2D matrix of shape (" << samples_window << "x" << nb_channels << "):" << std::endl;
-    wfile << "2) updating the message with a 2D matrix of shape (" << samples_window << "x" << nb_channels << "):\n";
+    wfile << "2) updating the message with a 2D matrix of shape (" << samples_window << "x" << nb_channels << "):" << std::endl;
 
     cTimings(samples_window, nb_channels, sfield, socketHdlr, wfile);
 
