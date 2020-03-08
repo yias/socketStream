@@ -5,3 +5,4 @@ build/
 
 # ignore all the *.obj files
 *.obj
+# *.txt
