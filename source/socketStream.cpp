@@ -600,7 +600,7 @@ int socketStream::sendMSg(){
     }
 
     // final_msg.clear();
-    return 0;
+    return iResult;
 }
 
 int socketStream::closeCommunication(){

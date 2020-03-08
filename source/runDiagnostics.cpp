@@ -11,8 +11,28 @@ std::vector< std::vector<double> > txt2matrix(std::string filename);
 // function to create a matrix of random doubles of shape nxm
 std::vector< std::vector<double> > random2Dmatrix(unsigned int rows, unsigned int column);
 
+// function to run the diagnostics
+int cTimings(int samples_window, int nb_channels, std::string sfield, socketStream& socketHdlr, std::ofstream& wfile); 
+
 
 int main(int argc, char **argv){
+
+    #ifdef _WIN32
+        if(CreateDirectory("logfiles",NULL) || ERROR_ALREADY_EXISTS == GetLastError()){
+            std::cout << "A folder logfiles is created" << std::endl;
+        }
+    #endif
+
+    #ifdef linux
+        if(mkdir("logfiles")){
+            std::cout << "A folder logfiles is created" << std::endl;
+        }
+    #endif
+
+    // declase an ofstream object for writing to file
+    std::ofstream wfile;
+    wfile.open("logfiles\\logfile.txt");
+
 
     // define the variable that holds the server IP. In this case, the server would be a local server.
     char *srvIP = "localhost";
@@ -46,48 +66,18 @@ int main(int argc, char **argv){
     // define an object to hold the currect time and print the time taken for initialize the message (in ms)
     auto end = std::chrono::steady_clock::now();
     std::cout << "Message initialization: " << (double)(std::chrono::duration_cast<std::chrono::microseconds>(end-start).count())/1000.0 << " ms" << std::endl;
+    wfile << "Message initialization: " << (double)(std::chrono::duration_cast<std::chrono::microseconds>(end-start).count())/1000.0 << " ms\n";
 
     // define a which field will be updated and with which value
     std::string sfield("name");
     char *svalue = {"random_data"};
 
-    // measure the time it takes to update the field and print this time
+    // measure the time it takes to update the field and print this time and write it to the logfile
     start = std::chrono::steady_clock::now();
     socketHdlr.updateMSG(sfield, svalue);
     end = std::chrono::steady_clock::now();
-    std::cout << "Message update (filed names): " << (double)std::chrono::duration_cast<std::chrono::microseconds>(end-start).count()/1000.0 << " ms" << std::endl;
-
-    // declare a variable that holds the names of the files that contain the data
-    std::vector<std::string> fileNames;
-
-    // define the names of the files
-    fileNames.push_back("data\\data_example1.txt");
-    fileNames.push_back("data\\data_example2.txt");
-    fileNames.push_back("data\\data_example3.txt");
-    fileNames.push_back("data\\data_example4.txt");
-
-
-    //////////////     1st attempt to measure the time it takes to update a message with a 2D matrix of doubles and send it     //////////////
-    //////////////     number of rows: 100                                                                                      //////////////
-    //////////////     number of collumns: 16                                                                                   //////////////
-
-    // define the number of rows
-    int samples_window = 100;
-
-    // define the number of collumns
-    int nb_channels = 16;
-
-    // create a 2D matrix with the data from a file
-    std::vector< std::vector<double> > dataMatrix = txt2matrix(fileNames[0]);
-
-    std::cout << "1) updating the message with a 2D matrix of shape (" << samples_window << "x" << nb_channels << "):" << std::endl;
-    
-    // declare a variable to hold the computational times of each iteration
-    std::vector<double> timings;
-    double sumTime = 0;
-    
-    // define a counter for the number of interations
-    int counter = 0;
+    std::cout << "Message update (field names): " << (double)std::chrono::duration_cast<std::chrono::microseconds>(end-start).count()/1000.0 << " ms" << std::endl;
+    wfile << "Message update (field names): " << (double)(std::chrono::duration_cast<std::chrono::microseconds>(end-start).count())/1000.0 << " ms\n\n";
 
     // initialize the socket for streaming the data
     if(socketHdlr.initialize_sockeStream()<0){
@@ -101,166 +91,147 @@ int main(int argc, char **argv){
         return -1;
     }
 
+
+    //////////////     1st attempt to measure the time it takes to update a message with a 2D matrix of doubles and send it     //////////////
+    //////////////     number of rows: 100                                                                                      //////////////
+    //////////////     number of collumns: 16                                                                                   //////////////
+
+    // define the number of rows
+    int samples_window = 100;
+
+    // define the number of collumns
+    int nb_channels = 16;
+
     // define the field that will be updated
     sfield="data";
 
-    // declare a random matrix to contain the new values
-    std::vector< std::vector<double> > tmp_2Dmatrix;
+    std::cout << "1) updating the message with a 2D matrix of shape (" << samples_window << "x" << nb_channels << "):" << std::endl;
+    wfile << "1) updating the message with a 2D matrix of shape (" << samples_window << "x" << nb_channels << "):\n";
 
-    for (int i=0; i<30; i++){
+    // update and send the message 30 times
+    cTimings(samples_window, nb_channels, sfield, socketHdlr, wfile);
 
-        // update the random matrix
-        tmp_2Dmatrix = random2Dmatrix(samples_window, nb_channels);
-
-        // set the starting time of the computation
-        start = std::chrono::steady_clock::now();
-
-        // update the message
-        socketHdlr.updateMSG(sfield, tmp_2Dmatrix);
-
-        // send the message
-        if(socketHdlr.sendMSg()<0){
-            std::cerr << "unable to send message " << std::endl;
-            return -1;
-        }
-
-        // set the ending time of the computation
-        end = std::chrono::steady_clock::now();
-
-        // throw the computational time in the variable "timings" and print it in the terminal
-        timings.push_back((double)std::chrono::duration_cast<std::chrono::microseconds>(end-start).count()/1000.0);
-        std::cout << "trial " << i+1 << ": "<< timings[i] << " ms" << std::endl;
-    }
-
-    // find the average computational time and print it in the terminal
-    for(auto& n: timings){
-        sumTime +=n;
-    }
-    std::cout << "average time: " << sumTime/(double)timings.size() << std::endl;
-
-    // delete the contains of the variable (empty the vector)
-    timings.clear();
-
-    
-    
-    // repeat the proceedure 3 more time for different shapes of matrix:
+    // repeat the proceedure for different shapes of matrix:
 
     //////////////     2nd attempt to measure the time it takes to update a message with a 2D matrix of doubles and send it     //////////////
     //////////////     number of rows: 100                                                                                      //////////////
     //////////////     number of collumns: 23                                                                                   //////////////
 
-    dataMatrix = txt2matrix(fileNames[1]);
-    std::cout << "2) updating the message with a 2D matrix of shape (" << dataMatrix.size() << "x" << dataMatrix[0].size() << "):" << std::endl;
-    
-    
-    sumTime = 0;
-    counter = 0;
+    // define the number of rows
     samples_window = 100;
 
-    for(int i=0; i < (int)dataMatrix.size(); i+=samples_window){
-        std::vector<std::vector<double>> tmp_mat;
-        for(int j=i; j<i+samples_window; j++){
-            tmp_mat.push_back(std::vector<double>(dataMatrix[j].begin(), dataMatrix[j].end()));
-        }
-        // std::cout << "the shape of the matrix: (" << tmp_mat.size() << "," << tmp_mat[0].size() << ")" << std::endl;
-        
-        start = std::chrono::steady_clock::now();
-        socketHdlr.updateMSG(sfield, tmp_mat);
-        if(socketHdlr.sendMSg()<0){
-            std::cerr << "unable to send message " << std::endl;
-            return -1;
-        }
-        end = std::chrono::steady_clock::now();
-        timings.push_back((double)std::chrono::duration_cast<std::chrono::microseconds>(end-start).count()/1000.0);
-        std::cout << "trial " << counter+1 << ": "<< timings[counter] << " ms" << std::endl;
-        counter++;
-    }
+    // define the number of collumns
+    nb_channels = 23;
 
-    for(auto& n: timings){
-        sumTime +=n;
-    }
-    std::cout << "average time: " << sumTime/(double)timings.size() << std::endl;
+    std::cout << "2) updating the message with a 2D matrix of shape (" << samples_window << "x" << nb_channels << "):" << std::endl;
+    wfile << "2) updating the message with a 2D matrix of shape (" << samples_window << "x" << nb_channels << "):\n";
 
-    timings.clear();
+    cTimings(samples_window, nb_channels, sfield, socketHdlr, wfile);
 
 
     //////////////     3rd attempt to measure the time it takes to update a message with a 2D matrix of doubles and send it     //////////////
     //////////////     number of rows: 16                                                                                       //////////////
     //////////////     number of collumns: 100                                                                                  //////////////
 
-    dataMatrix = txt2matrix(fileNames[2]);
-    std::cout << "3) updating the message with a 2D matrix of shape (" << dataMatrix.size() << "x" << dataMatrix[0].size() << "):" << std::endl;
-    
-    sumTime = 0;
-    counter = 0;
-    samples_window = 100;
+    // define the number of rows
+    samples_window = 16;
 
-    for(int i=0; i < (int)dataMatrix[0].size(); i+=samples_window){
-        std::vector<std::vector<double>> tmp_mat;
-        for(int j=0; j < (int)dataMatrix.size(); j++){
-            tmp_mat.push_back(std::vector<double>(dataMatrix[j].begin()+i, dataMatrix[j].begin()+i+samples_window));
-        }
-        // std::cout << "the shape of the matrix: (" << tmp_mat.size() << "," << tmp_mat[0].size() << ")" << std::endl;
-        
-        start = std::chrono::steady_clock::now();
-        socketHdlr.updateMSG(sfield, tmp_mat);
-        if(socketHdlr.sendMSg()<0){
-            std::cerr << "unable to send message " << std::endl;
-            return -1;
-        }
-        end = std::chrono::steady_clock::now();
-        timings.push_back((double)std::chrono::duration_cast<std::chrono::microseconds>(end-start).count()/1000.0);
-        std::cout << "trial " << counter+1 << ": "<< timings[counter] << " ms" << std::endl;
-        counter++;
-    }
+    // define the number of collumns
+    nb_channels = 100;
 
-    for(auto& n: timings){
-        sumTime +=n;
-    }
-    std::cout << "average time: " << sumTime/(double)timings.size() << std::endl;
+    std::cout << "3) updating the message with a 2D matrix of shape (" << samples_window << "x" << nb_channels << "):" << std::endl;
+    wfile << "3) updating the message with a 2D matrix of shape (" << samples_window << "x" << nb_channels << "):\n";
 
-    timings.clear();
+    cTimings(samples_window, nb_channels, sfield, socketHdlr, wfile);
+
 
     //////////////     4th attempt to measure the time it takes to update a message with a 2D matrix of doubles and send it     //////////////
     //////////////     number of rows: 23                                                                                       //////////////
     //////////////     number of collumns: 100                                                                                  //////////////
 
+    // define the number of rows
+    samples_window = 23;
 
-    dataMatrix = txt2matrix(fileNames[3]);
-    std::cout << "4) updating the message with a 2D matrix of shape (" << dataMatrix.size() << "x" << dataMatrix[0].size() << "):" << std::endl;
-    
-    sumTime = 0;
-    counter = 0;
-    samples_window = 100;
+    // define the number of collumns
+    nb_channels = 100;
 
-    for(int i=0; i < (int)dataMatrix[0].size(); i+=samples_window){
-        std::vector<std::vector<double>> tmp_mat;
-        for(int j=0; j < (int)dataMatrix.size(); j++){
-            tmp_mat.push_back(std::vector<double>(dataMatrix[j].begin()+i, dataMatrix[j].begin()+i+samples_window));
-        }
-        // std::cout << "the shape of the matrix: (" << tmp_mat.size() << "," << tmp_mat[0].size() << ")" << std::endl;
-        
-        start = std::chrono::steady_clock::now();
-        socketHdlr.updateMSG(sfield, tmp_mat);
-        if(socketHdlr.sendMSg()<0){
-            std::cerr << "unable to send message " << std::endl;
-            return -1;
-        }
-        end = std::chrono::steady_clock::now();
-        timings.push_back((double)std::chrono::duration_cast<std::chrono::microseconds>(end-start).count()/1000.0);
-        std::cout << "trial " << counter+1 << ": "<< timings[counter] << " ms" << std::endl;
-        counter++;
-    }
+    std::cout << "4) updating the message with a 2D matrix of shape (" << samples_window << "x" << nb_channels << "):" << std::endl;
+    wfile << "4) updating the message with a 2D matrix of shape (" << samples_window << "x" << nb_channels << "):\n";
 
-    for(auto& n: timings){
-        sumTime +=n;
-    }
-    std::cout << "average time: " << sumTime/(double)timings.size() << std::endl;
+    cTimings(samples_window, nb_channels, sfield, socketHdlr, wfile);
 
-    timings.clear();
+    //////////////     5th attempt to measure the time it takes to update a message with a 2D matrix of doubles and send it     //////////////
+    //////////////     number of rows: 4                                                                                        //////////////
+    //////////////     number of collumns: 150                                                                                  //////////////
 
+    // define the number of rows
+    samples_window = 4;
+
+    // define the number of collumns
+    nb_channels = 150;
+
+    std::cout << "5) updating the message with a 2D matrix of shape (" << samples_window << "x" << nb_channels << "):" << std::endl;
+    wfile << "5) updating the message with a 2D matrix of shape (" << samples_window << "x" << nb_channels << "):\n";
+
+    cTimings(samples_window, nb_channels, sfield, socketHdlr, wfile);
+
+    //////////////     6th attempt to measure the time it takes to update a message with a 2D matrix of doubles and send it     //////////////
+    //////////////     number of rows: 4                                                                                        //////////////
+    //////////////     number of collumns: 150                                                                                  //////////////
+    //////////////     without sending checksum                                                                                 //////////////
+
+    // deactivate checksum
+    socketHdlr.setHashKey(false);
+
+    // define the number of rows
+    samples_window = 4;
+
+    // define the number of collumns
+    nb_channels = 150;
+
+    std::cout << "6) updating the message with a 2D matrix of shape (" << samples_window << "x" << nb_channels << ") and send without checksum:" << std::endl;
+    wfile << "6) updating the message with a 2D matrix of shape (" << samples_window << "x" << nb_channels << "):\n";
+
+    cTimings(samples_window, nb_channels, sfield, socketHdlr, wfile);
+
+    //////////////     7th attempt to measure the time it takes to update a message with a 2D matrix of doubles and send it     //////////////
+    //////////////     number of rows: 4                                                                                        //////////////
+    //////////////     number of collumns: 150                                                                                  //////////////
+    //////////////     without sending checksum                                                                                 //////////////
+
+    // define the number of rows
+    samples_window = 16;
+
+    // define the number of collumns
+    nb_channels = 100;
+
+    std::cout << "7) updating the message with a 2D matrix of shape (" << samples_window << "x" << nb_channels << ") and send without checksum:" << std::endl;
+    wfile << "7) updating the message with a 2D matrix of shape (" << samples_window << "x" << nb_channels << ") and send without checksum:\n";
+
+    cTimings(samples_window, nb_channels, sfield, socketHdlr, wfile);
+
+    //////////////     8th attempt to measure the time it takes to update a message with a 2D matrix of doubles and send it     //////////////
+    //////////////     number of rows: 4                                                                                        //////////////
+    //////////////     number of collumns: 150                                                                                  //////////////
+    //////////////     without sending checksum                                                                                 //////////////
+
+    // define the number of rows
+    samples_window = 16;
+
+    // define the number of collumns
+    nb_channels = 40;
+
+    std::cout << "8) updating the message with a 2D matrix of shape (" << samples_window << "x" << nb_channels << ") and send without checksum:" << std::endl;
+    wfile << "8) updating the message with a 2D matrix of shape (" << samples_window << "x" << nb_channels << ") and send without checksum:\n";
+
+    cTimings(samples_window, nb_channels, sfield, socketHdlr, wfile);
+
+   
     // close communication with the server
     socketHdlr.closeCommunication();
+
+    // close logfile
+    wfile.close();
 
     return 0;
 }
@@ -309,8 +280,109 @@ std::vector< std::vector<double> > random2Dmatrix(unsigned int rows, unsigned in
         }
     }
     
-    std::cout << "the shape of the matrix: (" << dmatrix.size() << "," << dmatrix[0].size() << ")" << std::endl;
+    // std::cout << "the shape of the matrix: (" << dmatrix.size() << "," << dmatrix[0].size() << ")" << std::endl;
     
     return dmatrix;
 
+}
+
+int cTimings(int samples_window, int nb_channels, std::string sfield, socketStream& socketHdlr, std::ofstream& wfile){
+
+
+    // declare a variable to hold the computational times of each iteration
+    std::vector<double> timings;
+    double sumTime = 0;
+
+    // declare a variable to hold the computational times of updating the field of a message
+    std::vector<double> updateTimings;
+    double sumUpdate = 0;
+
+    // declare a variable to hold the computational times of sending the message
+    std::vector<double> sendTimings;
+    double sumSending = 0;
+
+    // define an object to hold the current time
+    auto start = std::chrono::steady_clock::now();
+    auto end = std::chrono::steady_clock::now();
+
+    int bytesSent = 0 ;
+    // declare a random matrix to contain the new values
+    std::vector< std::vector<double> > tmp_2Dmatrix;
+
+    for (int i=0; i<30; i++){
+
+        std::cout << "trial " << i+1 << "\n--------" << std::endl;
+        wfile << "trial " << i+1 << "\n--------\n";
+
+        // update the random matrix
+        tmp_2Dmatrix = random2Dmatrix(samples_window, nb_channels);
+
+        // set the starting time of the computation
+        start = std::chrono::steady_clock::now();
+
+        // update the message
+        socketHdlr.updateMSG(sfield, tmp_2Dmatrix);
+        
+        // set the ending time of the computation
+        end = std::chrono::steady_clock::now();
+
+        // throw the computational time for updating the message in the variable "updateTimings" and print it in the terminal
+        updateTimings.push_back((double)std::chrono::duration_cast<std::chrono::microseconds>(end-start).count()/1000.0);
+        std::cout << "update time: "<< updateTimings[i] << " ms" << std::endl;
+        wfile << "update time: "<< updateTimings[i] << " ms\n";
+
+        // set the starting time of the computation
+        start = std::chrono::steady_clock::now();
+
+        // send the message
+        bytesSent=socketHdlr.sendMSg();
+
+        // set the ending time of the computation
+        end = std::chrono::steady_clock::now();
+
+        std::cout << "Bytes sent: " << bytesSent << std::endl;
+        wfile << "Bytes sent: " << bytesSent << "\n";
+
+        // throw the computational time for sending the message in the variable "sendTimings" and print it in the terminal
+        sendTimings.push_back((double)std::chrono::duration_cast<std::chrono::microseconds>(end-start).count()/1000.0);
+        std::cout << "sending time: "<< sendTimings[i] << " ms" << std::endl;
+        wfile << "sending time: "<< sendTimings[i] << " ms\n";
+
+        // throw the overall computational time in the variable "timings" and print it in the terminal
+        timings.push_back(updateTimings[i]+sendTimings[i]);
+        std::cout << "overall time: "<< timings[i] << " ms" << std::endl;
+        std::cout << std::endl;
+        wfile << "overall time: "<< timings[i] << " ms\n \n";
+        
+    }
+
+    // find the average computational time and print it in the terminal
+    for(auto& n: updateTimings){
+        sumUpdate +=n;
+    }
+    std::cout << "average update time: " << sumUpdate/(double)updateTimings.size() << " ms" << std::endl;
+    wfile << "average update time: " << sumUpdate/(double)updateTimings.size() << " ms \n";
+
+    // find the average computational time and print it in the terminal
+    for(auto& n: sendTimings){
+        sumSending +=n;
+    }
+    std::cout << "average sending time: " << sumSending/(double)sendTimings.size() << " ms" << std::endl;
+    wfile << "average sending time: " << sumSending/(double)sendTimings.size() << " ms\n";
+
+    // find the average computational time and print it in the terminal
+    for(auto& n: timings){
+        sumTime +=n;
+    }
+    std::cout << "average overall time: " << sumTime/(double)timings.size() << " ms" << std::endl;
+    wfile << "average overall time: " << sumTime/(double)timings.size() << " ms\n \n";
+
+    std::cout << std::endl;
+
+    // delete the contains of the variables (empty the vectors)
+    updateTimings.clear();
+    sendTimings.clear();
+    timings.clear();
+
+    return 0;
 }

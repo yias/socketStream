@@ -140,11 +140,13 @@ def main(args):
 
 			# check communication validity with a hand-shake protocol
 			# conCheck=handShake(connection,10)
+			counter=0
 			while(True):
 			# retrieve the message identifier. once it is received, compose the message
 				data=connection.recv(BUFFER_SIZE)
 				# print(data)
-
+				counter+=1
+				print("messages received",counter)
 				if data.decode('utf-8')==msg_idf:
 					# receive bytes until the full message is received
 					full_msg=''
@@ -158,8 +160,8 @@ def main(args):
 					msg_validity, tr_msg = msgExtractor(full_msg,HEADERSIZE,endMSG)
 					if msg_validity:
 						msg_data=json.loads(tr_msg)
-						print('name: %s' %(msg_data.get("name")))
-						print('data: %s' %(msg_data.get("data")))
+						# print('name: %s' %(msg_data.get("name")))
+						# print('data: %s' %(msg_data.get("data")))
 						# yy=msg_data.get("year")
 						# print(yy[0][1], yy[1])
 

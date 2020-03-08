@@ -1,0 +1,6 @@
+# ignore the contains of the folders logfiles, data and build
+# logfiles/
+# data/
+# build/
+
+# ignore all the *.obj files
