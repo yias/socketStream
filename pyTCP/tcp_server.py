@@ -123,8 +123,10 @@ def main(args):
 	# end-connection identifier
 	ec_id="\ne@c"
 	# listen for new connections
-	# sock.settimeout(3)
+	# if sys.version_info.major>2:
+	# 	sock.settimeout(3)
 	sock.listen(6)
+
 	#Wait for a connection
 	connection_exist=False
 	print('waiting for a connections ... ')
@@ -166,7 +168,10 @@ def main(args):
 					print('Connection terminated by client ', client_address)
 					connection.close()
 					break
-            	
+
+		# except socket.timeout as e:
+		# 	print("socket timeout. retry")
+		# 	pass
 		except KeyboardInterrupt:
 			# if Ctrl+C is pressed in the keyboard, close the connections (if any) and exit
 			if connection_exist:

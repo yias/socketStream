@@ -10,7 +10,7 @@
         // },
         {
             "type": "shell",
-            "label": "cl.exe build active file",
+            "label": "cl.exe build example file",
             "command": "cl.exe",
             "args": [
                 "-I", "${env:CPP_DEPENDENCIES}\\rapidjson\\include",
@@ -19,8 +19,32 @@
                 "/Zi",
                 "/EHsc",
                 "/Fe:",
-                "${workspaceFolder}\\build\\testSocket.exe",
-                "${workspaceFolder}\\source\\source.cpp",
+                "${workspaceFolder}\\build\\example.exe",
+                "${workspaceFolder}\\source\\example.cpp",
+                "${workspaceFolder}\\source\\socketStream.cpp",
+                "${workspaceFolder}\\source\\md5.cpp"
+            ],
+            "problemMatcher": [
+                "$msCompile"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "type": "shell",
+            "label": "cl.exe build diagnostics file",
+            "command": "cl.exe",
+            "args": [
+                "-I", "${env:CPP_DEPENDENCIES}\\rapidjson\\include",
+                "-I", "${workspaceFolder}\\include",
+                "-I", "${workspaceFolder}\\source",
+                "/Zi",
+                "/EHsc",
+                "/Fe:",
+                "${workspaceFolder}\\build\\runDiagnostcs.exe",
+                "${workspaceFolder}\\source\\runDiagnostics.cpp",
                 "${workspaceFolder}\\source\\socketStream.cpp",
                 "${workspaceFolder}\\source\\md5.cpp"
             ],
