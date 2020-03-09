@@ -18,9 +18,16 @@
 #include <sstream>
 
 // include library for socket programming
-#include <winsock2.h>
-#include <windows.h>
-#include <ws2tcpip.h>
+#ifdef _WIN32
+    #include <winsock2.h>
+    #include <windows.h>
+    #include <ws2tcpip.h>
+#else
+    #include <sys/socket.h>
+    #include <arpa/inet.h>
+    #include <netdb.h>
+    #include <unistd.h>
+#endif
 
 
 // Need to link with Ws2_32.lib, Mswsock.lib, and Advapi32.lib
@@ -40,8 +47,10 @@
 
 class socketStream{
 
-    // define a struct for storing infor regarding the socket
-    WSADATA wsaData;
+    #ifdef _WIN32
+        // define a struct for storing infor regarding the socket
+        WSADATA wsaData;
+    #endif
 
     // define socket object
     SOCKET ConnectSocket; // = INVALID_SOCKET;

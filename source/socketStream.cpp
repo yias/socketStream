@@ -118,12 +118,14 @@ socketStream::socketStream(char* svrIPAddress, int srvPosrt){
 
 int socketStream::initialize_sockeStream(){
 
-    // Initialize Winsock
-    iResult = WSAStartup(MAKEWORD(2,2), &wsaData);
-    if (iResult != 0) {
-        std::cerr << "[socketStream] WSAStartup failed with error: " << iResult << std::endl;
-        return iResult;
-    }
+    #ifdef _WIN32
+        // Initialize Winsock
+        iResult = WSAStartup(MAKEWORD(2,2), &wsaData);
+        if (iResult != 0) {
+            std::cerr << "[socketStream] WSAStartup failed with error: " << iResult << std::endl;
+            return iResult;
+        }
+    #endif
 
     std::ostringstream i2s;
     i2s << Host_Port;
@@ -132,7 +134,9 @@ int socketStream::initialize_sockeStream(){
     iResult = getaddrinfo(Host_IP, i2s.str().c_str(), &hints, &result);
     if ( iResult != 0 ) {
         std::cerr << "[socketStream] getaddrinfo failed with error: " << iResult << std::endl;;
-        WSACleanup();
+        #ifdef _WIN32
+            WSACleanup();
+        #endif
         return iResult;
     }
 
@@ -148,12 +152,14 @@ int socketStream::initialize_sockeStream(char* svrIPAddress, int srvPosrt){
 
     Host_Port = (unsigned int)srvPosrt;
 
-    // Initialize Winsock
-    iResult = WSAStartup(MAKEWORD(2,2), &wsaData);
-    if (iResult != 0) {
-        std::cerr << "[socketStream] WSAStartup failed with error: " << iResult << std::endl;
-        return iResult;
-    }
+     #ifdef _WIN32
+        // Initialize Winsock
+        iResult = WSAStartup(MAKEWORD(2,2), &wsaData);
+        if (iResult != 0) {
+            std::cerr << "[socketStream] WSAStartup failed with error: " << iResult << std::endl;
+            return iResult;
+        }
+    #endif
 
     std::ostringstream i2s;
     i2s << Host_Port;
@@ -162,7 +168,9 @@ int socketStream::initialize_sockeStream(char* svrIPAddress, int srvPosrt){
     iResult = getaddrinfo(Host_IP, i2s.str().c_str(), &hints, &result);
     if ( iResult != 0 ) {
         std::cerr << "getaddrinfo failed with error: " << iResult << std::endl;;
-        WSACleanup();
+        #ifdef _WIN32
+            WSACleanup();
+        #endif
         return iResult;
     }
 
@@ -181,7 +189,9 @@ int socketStream::make_connection(){
         ConnectSocket = socket(ptr->ai_family, ptr->ai_socktype, ptr->ai_protocol);
         if (ConnectSocket == INVALID_SOCKET) {
             std::cerr << "[socketStream] socket failed with error: " <<  WSAGetLastError() << std::endl;
-            WSACleanup();
+            #ifdef _WIN32
+                WSACleanup();
+            #endif
             return -1;
         }
 
@@ -199,7 +209,9 @@ int socketStream::make_connection(){
 
     if (ConnectSocket == INVALID_SOCKET) {
         std::cerr << "[socketStream] Unable to connect to server!" << std::endl;
-        WSACleanup();
+        #ifdef _WIN32
+            WSACleanup();
+        #endif
         return -2;
     }
 
@@ -586,7 +598,9 @@ int socketStream::sendMSg(){
             if (iResult == SOCKET_ERROR) {
                 std::cerr << "[socketStream] Send message failed with error: " << WSAGetLastError() << std::endl;
                 closesocket(ConnectSocket);
-                WSACleanup();
+                #ifdef _WIN32
+                    WSACleanup();
+                #endif
                 return -1;
             }
         }else{
@@ -611,23 +625,35 @@ int socketStream::closeCommunication(){
     if (iResult == SOCKET_ERROR) {
         std::cerr << "[socketStream] Send failed with error: " << WSAGetLastError() << std::endl;
         closesocket(ConnectSocket);
-        WSACleanup();
+        #ifdef _WIN32
+            WSACleanup();
+        #endif
         return -1;
     }
 
-    iResult = shutdown(ConnectSocket, SD_SEND);
-    if (iResult == SOCKET_ERROR) {
-        std::cerr << "[socketStream] Shutdown failed with error: " << WSAGetLastError() << std::endl;
-        closesocket(ConnectSocket);
-        WSACleanup();
-        return -2;
-    }
+    #ifdef _WIN32
+        iResult = shutdown(ConnectSocket, SD_SEND);
+        if (iResult == SOCKET_ERROR) {
+            std::cerr << "[socketStream] Shutdown failed with error: " << WSAGetLastError() << std::endl;
+            closesocket(ConnectSocket);
+            WSACleanup();
+            return -2;
+        }
+    #else
+        iResult = shutdown(ConnectSocket, SHUT_RDWR);
+        if (iResult == 0){
+            iResult = close(ConnectSocket);
+            return -2;
+        }
+    #endif
 
     isComActive = false;
 
     // cleanup
     closesocket(ConnectSocket);
-    WSACleanup(); 
+    #ifdef _WIN32
+        WSACleanup();
+    #endif
 
     return 0;
 }
