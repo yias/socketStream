@@ -2,8 +2,10 @@
 
 #include "socketStream.h"
 #include <chrono>
+#include <ctime>
 #include <fstream>
 #include <random>
+#include <codecvt>
 
 // function to read a matrix from a text file
 std::vector< std::vector<double> > txt2matrix(std::string filename);
@@ -29,9 +31,29 @@ int main(int argc, char **argv){
         }
     #endif
 
+
+    // local current time to put it in the name of the logfile
+    std::time_t rawtime;
+    struct tm *timeinfo;
+    char time_buffer[80];
+
+    std::time(&rawtime);
+    timeinfo = localtime(&rawtime);
+
+    std::strftime(time_buffer, sizeof(time_buffer), "%Y%m%d_%H_%M_%S", timeinfo);
+
+    // std::wstring logfileName = L"logfiles\\diagnostics_logfile_";
+    
+    std::string covString(time_buffer);
+    std::string logfileName = "logfiles\\diagnostics_logfile_" + covString +".txt";
+
     // declase an ofstream object for writing to file
     std::ofstream wfile;
-    wfile.open("logfiles\\logfile.txt");
+    wfile.open(logfileName);
+    if(!wfile.is_open()){
+        std::cerr << "Unable to open file" <<std::endl;
+        return -1;
+    }
 
 
     // define the variable that holds the server IP. In this case, the server would be a local server.
