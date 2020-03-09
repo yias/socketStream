@@ -190,7 +190,7 @@ int main(int argc, char **argv){
     nb_channels = 150;
 
     std::cout << "6) updating the message with a 2D matrix of shape (" << samples_window << "x" << nb_channels << ") and send without checksum:" << std::endl;
-    wfile << "6) updating the message with a 2D matrix of shape (" << samples_window << "x" << nb_channels << "):\n";
+    wfile << "6) updating the message with a 2D matrix of shape (" << samples_window << "x" << nb_channels << ") and send without checksum:\n";
 
     cTimings(samples_window, nb_channels, sfield, socketHdlr, wfile);
 
