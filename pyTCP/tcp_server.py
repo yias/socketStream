@@ -28,11 +28,14 @@ import time
 def calc_checksum(s):
     return '%2X' % (-(sum(ord(c) for c in s) % 256) & 0xFF)
 
-def msgExtractor(msg, hdrSize, endMsgID):
+def msgExtractor(msg, hdrSize, bfrDigits, endMsgID):
 	msgSize=int(msg[:hdrSize])
-	tmp_msg=msg[hdrSize+1:hdrSize+msgSize+1]
+	# bfrDigits = len(str(bfrSize))
+	msgOverhead = int(msg[hdrSize+1:hdrSize+1+bfrDigits])
+	tmp_msg=msg[hdrSize+1+bfrDigits:hdrSize+1+bfrDigits+msgSize]
+
 	if(msg[hdrSize+1]==1):
-		hashcode=msg[hdrSize+msgSize:-len(endMsgID)]
+		hashcode=msg[hdrSize+msgSize:-msgOverhead-len(endMsgID)]
 		hc_check=hashlib.md5()
 		hc_check.update(tmp_msg)
 		if hc_check.hexdigest()==hashcode:
@@ -109,7 +112,7 @@ def main(args):
 	# clients_address=list() #np.empty([1,])
 
 	# define buffer size
-	BUFFER_SIZE=4
+	BUFFER_SIZE=16
 
 	# define a header size of the message
 	HEADERSIZE=8
@@ -126,6 +129,10 @@ def main(args):
 	# if sys.version_info.major>2:
 	# 	sock.settimeout(3)
 	sock.listen(6)
+
+	bfrDigits = len(str(BUFFER_SIZE))
+	msg_idf_len = len(msg_idf)
+
 
 	#Wait for a connection
 	connection_exist=False
@@ -145,19 +152,20 @@ def main(args):
 			# retrieve the message identifier. once it is received, compose the message
 				data=connection.recv(BUFFER_SIZE)
 				# print(data)
+				data_check = data[:msg_idf_len]
 				counter+=1
 				print("messages received",counter)
-				if data.decode('utf-8')==msg_idf:
+				if data_check.decode('utf-8')==msg_idf:
 					# receive bytes until the full message is received
-					full_msg=''
+					full_msg=data[msg_idf_len:]
 					while (True):
-						dataT=connection.recv(1)
+						dataT=connection.recv(BUFFER_SIZE)
 						full_msg+=dataT.decode("utf-8") 
 						if full_msg[-4:]==endMSG:
 							break
 
 					# extract message
-					msg_validity, tr_msg = msgExtractor(full_msg,HEADERSIZE,endMSG)
+					msg_validity, tr_msg = msgExtractor(full_msg,HEADERSIZE, bfrDigits, endMSG)
 					if msg_validity:
 						msg_data=json.loads(tr_msg)
 						# print('name: %s' %(msg_data.get("name")))
@@ -165,7 +173,7 @@ def main(args):
 						# yy=msg_data.get("year")
 						# print(yy[0][1], yy[1])
 
-				if  data.decode('utf-8')==ec_id:
+				if  data_check.decode('utf-8')==ec_id:
 					# if end-of-communication identifier received, terminate the connection
 					print('Connection terminated by client ', client_address)
 					connection.close()
