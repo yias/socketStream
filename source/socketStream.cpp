@@ -18,11 +18,13 @@ socketStream::socketStream(void){
 
     headerSize=8;
 
-    bufferSize=4;
+    bufferSize=16;
 
     msgOverhead = 0;
 
     msgHeader = std::string(headerSize, ' ');
+
+    msgOHstring = std::string(std::to_string(bufferSize).length(), ' ');
 
     Host_IP = DEFAULT_HOST_IP;
 
@@ -63,11 +65,13 @@ socketStream::socketStream(const char* svrIPAddress){
 
     headerSize = 8;
 
-    bufferSize=4;
+    bufferSize=16;
 
     msgOverhead = 0;
 
     msgHeader = std::string(headerSize, ' ');
+
+    msgOHstring = std::string(std::to_string(bufferSize).length(), ' ');
 
     Host_IP = svrIPAddress;
 
@@ -107,11 +111,13 @@ socketStream::socketStream(const char* svrIPAddress, int srvPosrt){
 
     headerSize=8;
 
-    bufferSize=4;
+    bufferSize=16;
 
     msgOverhead = 0;
 
     msgHeader = std::string(headerSize, ' ');
+
+    msgOHstring = std::string(std::to_string(bufferSize).length(), ' ');
 
     Host_IP = svrIPAddress;
 
@@ -157,6 +163,8 @@ int socketStream::initialize_sockeStream(){
         #endif
         return iResult;
     }
+
+    // msgOHstring = std::string((int)std::to_string(bufferSize).length(), ' ');
 
     return 0;
 
@@ -623,10 +631,16 @@ int socketStream::sendMSg(){
         }
         
         // compute the overhead of the message
-        msgOverhead = (int((msg2send.length()+minMsgSize)/bufferSize)+1)*bufferSize - int((msg2send.length()+minMsgSize));
-        
+        msgOverhead = (int((msg2send.length()+minMsgSize)/bufferSize)+1)*bufferSize - (msg2send.length()+minMsgSize);
+
+        std::ostringstream i2s2;
+        i2s2 << msgOverhead;        
+
+        msgOHstring.replace(msgOHstring.begin(),msgOHstring.end()+i2s2.str().length()-msgOHstring.length(),i2s2.str());
+
+
         // compose the final message
-        final_msg = msg_idf + msgHeader + std::to_string(int(useHashKey)) + std::to_string(msgOverhead) + msg2send + std::string(msgOverhead, ' ') + endMSG;
+        final_msg = msg_idf + msgHeader + std::to_string(int(useHashKey)) + msgOHstring + msg2send + std::string(msgOverhead, ' ') + endMSG;
 
         // send the message
         if(isComActive){

@@ -42,7 +42,7 @@
 
 #include <chrono>
 
-#define DEFAULT_BUFLEN 1024
+#define DEFAULT_BUFLEN 2048
 #define DEFAULT_PORT 10352
 #define DEFAULT_HOST_IP "localhost"
 
@@ -88,10 +88,12 @@ class socketStream{
     unsigned int headerSize;                                                        // the header of the packet containing the number of bytes to be streamed
     unsigned int minMsgSize;                                                        // the size of the packet if it doesn't include the message
     unsigned int msgOverhead;
+    // unsigned int msgOverhead_buffer;
 
     std::string msgHeader;                                                          // the header of the message containing the size of the data
     std::string msg2send;                                                           // the message to be sent
-    std::string final_msg;                                                          // the message including the header and the message identifications 
+    std::string final_msg;                                                          // the message including the header and the message identifications
+    std::string msgOHstring;
 
     bool msgInitilized;                                                             // a flag to check if the message is initialized
 
