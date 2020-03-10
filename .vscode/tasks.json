@@ -3,11 +3,33 @@
     // for the documentation about the tasks.json format
     "version": "2.0.0",
     "tasks": [
-        // {
-        //     "label": "echo",
-        //     "type": "shell",
-        //     "command": "echo ${workspaceFolder}"
-        // },
+        {
+            "type": "shell",
+            "label": "g++.exe build diagnostics file",
+            "command": "g++.exe",
+            "args": [
+                "-g", "${workspaceFolder}\\source\\runDiagnostics.cpp",
+                "${workspaceFolder}\\source\\socketStream.cpp",
+                "${workspaceFolder}\\source\\md5.cpp",
+                "-o", "${workspaceFolder}\\build\\testrunDiagnostics.exe",
+                "-I", "${env:CPP_DEPENDENCIES}\\rapidjson\\include",
+                "-I", "${workspaceFolder}\\include",
+                "-I", "${workspaceFolder}\\source",
+                // "/Zi",
+                // "/EHsc",
+                // "/Fe:",
+                // "",
+                // ,
+                // "
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
         {
             "type": "shell",
             "label": "cl.exe build example file",

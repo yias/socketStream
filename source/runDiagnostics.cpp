@@ -57,7 +57,7 @@ int main(int argc, char **argv){
 
 
     // define the variable that holds the server IP. In this case, the server would be a local server.
-    char *srvIP = "localhost";
+    const char *srvIP = "localhost";
 
     // if no new server IP is defined from the user, continue with the pre-defined server IP (localhost)
     if(argc!=2){
@@ -92,7 +92,7 @@ int main(int argc, char **argv){
 
     // define a which field will be updated and with which value
     std::string sfield("name");
-    char *svalue = {"random_data"};
+    const char *svalue = {"random_data"};
 
     // measure the time it takes to update the field and print this time and write it to the logfile
     start = std::chrono::steady_clock::now();
@@ -350,7 +350,7 @@ int cTimings(int samples_window, int nb_channels, std::string sfield, socketStre
 
         // throw the computational time for updating the message in the variable "updateTimings" and print it in the terminal
         updateTimings.push_back((double)std::chrono::duration_cast<std::chrono::microseconds>(end-start).count()/1000.0);
-        std::cout << "update time: "<< updateTimings[i] << " ms" << std::endl;
+        // std::cout << "update time: "<< updateTimings[i] << " ms" << std::endl;
         wfile << "update time: "<< updateTimings[i] << " ms\n";
 
         // set the starting time of the computation
@@ -367,12 +367,12 @@ int cTimings(int samples_window, int nb_channels, std::string sfield, socketStre
 
         // throw the computational time for sending the message in the variable "sendTimings" and print it in the terminal
         sendTimings.push_back((double)std::chrono::duration_cast<std::chrono::microseconds>(end-start).count()/1000.0);
-        std::cout << "sending time: "<< sendTimings[i] << " ms" << std::endl;
+        // std::cout << "sending time: "<< sendTimings[i] << " ms" << std::endl;
         wfile << "sending time: "<< sendTimings[i] << " ms\n";
 
         // throw the overall computational time in the variable "timings" and print it in the terminal
         timings.push_back(updateTimings[i]+sendTimings[i]);
-        std::cout << "overall time: "<< timings[i] << " ms" << std::endl;
+        // std::cout << "overall time: "<< timings[i] << " ms" << std::endl;
         std::cout << std::endl;
         wfile << "overall time: "<< timings[i] << " ms\n \n";
         

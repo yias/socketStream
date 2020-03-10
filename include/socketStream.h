@@ -40,7 +40,9 @@
 #include "rapidjson/writer.h"
 #include "rapidjson/stringbuffer.h"
 
-#define DEFAULT_BUFLEN 512
+#include <chrono>
+
+#define DEFAULT_BUFLEN 1024
 #define DEFAULT_PORT 10352
 #define DEFAULT_HOST_IP "localhost"
 
@@ -63,7 +65,9 @@ class socketStream{
 
     int recvbuflen = DEFAULT_BUFLEN;
 
-    char *Host_IP;                                                                  // the IP of the server
+    unsigned int bufferSize;                                                        // the buffer size on the clients side
+
+    const char *Host_IP;                                                            // the IP of the server
 
     unsigned int Host_Port;                                                         // the port to be used
 
@@ -73,13 +77,17 @@ class socketStream{
 
     rapidjson::Document dDoc;                                                       // a json object to store the data to a specific structure
 
-    rapidjson::StringBuffer str_buffer;                                             // buffer for stringify the json object
+    rapidjson::StringBuffer str_buffer;                                             // buffer for stringifing the json object
+    
+    rapidjson::Writer<rapidjson::StringBuffer> writer;                              // writer to stringify the json object
     
     // variables used in the communication protocol
-    char *msg_idf;                                                                  // the new message identifier  
+    char *msg_idf;                                                                  // the new packet identifier  
     char *endMSG;                                                                   // the end-of-message identifier
     char *ec_id;                                                                    // the end-of-connection identifier
-    unsigned int headerSize;                                                        // the header of the message containing the number of bytes to be streamed
+    unsigned int headerSize;                                                        // the header of the packet containing the number of bytes to be streamed
+    unsigned int minMsgSize;                                                        // the size of the packet if it doesn't include the message
+    unsigned int msgOverhead;
 
     std::string msgHeader;                                                          // the header of the message containing the size of the data
     std::string msg2send;                                                           // the message to be sent
@@ -95,13 +103,13 @@ public:
 
     socketStream(void);                                                             // empty constructor, setting the default values
 
-    socketStream(char* scrIPAdress);                                                // constructor with setting the server IP address
+    socketStream(const char* scrIPAdress);                                                // constructor with setting the server IP address
 
-    socketStream(char* svrIPAddress, int srvPosrt);                                 // constructor with setting the server IP address and port
+    socketStream(const char* svrIPAddress, int srvPosrt);                                 // constructor with setting the server IP address and port
 
     int initialize_sockeStream();                                                   // initialize the socketStream object
 
-    int initialize_sockeStream(char* svrIPAddress, int srvPosrt);                   // initialize the socketStream object re-setting the server IP address and port
+    int initialize_sockeStream(const char* svrIPAddress, int srvPosrt);                   // initialize the socketStream object re-setting the server IP address and port
 
     int make_connection();                                                          // connect with the server
 
@@ -114,7 +122,7 @@ public:
     int printMSGString();                                                           // get the message contents as strins
 
     
-    int updateMSG(std::string field, char *value);                                  // update the specific field of the message (for strings)
+    int updateMSG(std::string field, const char *value);                                  // update the specific field of the message (for strings)
     int updateMSG(std::string field, int *value, int arraylength);                  // update the specific field of the message (for array of integers)
     int updateMSG(std::string field, double *value, int arraylength);               // update the specific field of the message (for array of doubles)
     int updateMSG(std::string field, std::vector <int> value);                      // update the specific field of the message (for vector of integers)

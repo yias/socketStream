@@ -18,6 +18,10 @@ socketStream::socketStream(void){
 
     headerSize=8;
 
+    bufferSize=4;
+
+    msgOverhead = 0;
+
     msgHeader = std::string(headerSize, ' ');
 
     Host_IP = DEFAULT_HOST_IP;
@@ -36,12 +40,14 @@ socketStream::socketStream(void){
 
     useHashKey = true;
 
+    minMsgSize = std::strlen(msg_idf) + headerSize + std::strlen(endMSG) + std::to_string(bufferSize).length() +1;
+
     std::cout << "[socketStream] Starting socketStream with default parameters" << std::endl;
     std::cout << "[socketStream] IP address: " << Host_IP << ", Port: " << Host_Port << std::endl;
 }
 
 
-socketStream::socketStream(char* svrIPAddress){
+socketStream::socketStream(const char* svrIPAddress){
 
     ConnectSocket = INVALID_SOCKET;
 
@@ -56,6 +62,10 @@ socketStream::socketStream(char* svrIPAddress){
     ec_id = "\ne@c";
 
     headerSize = 8;
+
+    bufferSize=4;
+
+    msgOverhead = 0;
 
     msgHeader = std::string(headerSize, ' ');
 
@@ -75,11 +85,13 @@ socketStream::socketStream(char* svrIPAddress){
 
     useHashKey = true;
 
+    minMsgSize = std::strlen(msg_idf) + headerSize + std::strlen(endMSG) + std::to_string(bufferSize).length() + 1;
+
     std::cout << "[socketStream] Starting up socketStream on server address " << Host_IP << " and default port " << Host_Port << std::endl;
 }
 
 
-socketStream::socketStream(char* svrIPAddress, int srvPosrt){
+socketStream::socketStream(const char* svrIPAddress, int srvPosrt){
 
     ConnectSocket = INVALID_SOCKET;
 
@@ -94,6 +106,10 @@ socketStream::socketStream(char* svrIPAddress, int srvPosrt){
     ec_id = "\ne@c";
 
     headerSize=8;
+
+    bufferSize=4;
+
+    msgOverhead = 0;
 
     msgHeader = std::string(headerSize, ' ');
 
@@ -112,6 +128,8 @@ socketStream::socketStream(char* svrIPAddress, int srvPosrt){
     msgInitilized = false;
 
     useHashKey = true;
+
+    minMsgSize = std::strlen(msg_idf) + headerSize + std::strlen(endMSG) + std::to_string(bufferSize).length()+1;
 
     std::cout << "[socketStream] Starting socketStream on server address " << Host_IP << " and port " << Host_Port << std::endl;
 }
@@ -145,7 +163,7 @@ int socketStream::initialize_sockeStream(){
 }
 
 
-int socketStream::initialize_sockeStream(char* svrIPAddress, int srvPosrt){
+int socketStream::initialize_sockeStream(const char* svrIPAddress, int srvPosrt){
     
     // setting the server IP address and port
     Host_IP = svrIPAddress;
@@ -262,7 +280,7 @@ int socketStream::initialize_msgStruct(std::vector <std::string> fields){
 }
 
 
-int socketStream::updateMSG(std::string field, char *value){
+int socketStream::updateMSG(std::string field, const char *value){
 
     if(msgInitilized){
         if(dDoc.HasMember(field.c_str())){
@@ -565,33 +583,52 @@ int socketStream::printMSGString(){
 }
 
 int socketStream::sendMSg(){
+    /** 
+     * 
+     * The function composes the message and sends it
+     * 
+     * Return:
+     *      the number of bytes sent, if completed correctly
+     *      the error type (negative integer), if not completed correctly
+     * 
+     */
+    
 
     if(msgInitilized){
 
+        // clear the buffers
         str_buffer.Clear();
         final_msg.clear();
         msg2send.clear();
 
-        rapidjson::Writer<rapidjson::StringBuffer> writer(str_buffer);
+        // rapidjson::Writer<rapidjson::StringBuffer> writer(str_buffer);
+
+        // get the json object in a string format
+        writer.Reset(str_buffer);
 
         dDoc.Accept(writer);
 
         msg2send = str_buffer.GetString();
 
+        // introduce the lenght of the string in the header of the file
         std::ostringstream i2s;
         i2s << msg2send.length();
 
         msgHeader.replace(msgHeader.begin(),msgHeader.end()+i2s.str().length()-msgHeader.length(),i2s.str());
-        // msgHeader += std::to_string(int(useHashKey));
 
+        // if a checksum is needed, create and introduce it to the message
         if(useHashKey){
             std::string md5_key = md5(msg2send.c_str());
             msg2send += md5_key;
         }
+        
+        // compute the overhead of the message
+        msgOverhead = (int((msg2send.length()+minMsgSize)/bufferSize)+1)*bufferSize - int((msg2send.length()+minMsgSize));
+        
+        // compose the final message
+        final_msg = msg_idf + msgHeader + std::to_string(int(useHashKey)) + std::to_string(msgOverhead) + msg2send + std::string(msgOverhead, ' ') + endMSG;
 
-        final_msg = msg_idf + msgHeader + std::to_string(int(useHashKey)) + msg2send + endMSG;
-        // std::cout << "the final_msg: " << final_msg << std::endl;
-
+        // send the message
         if(isComActive){
             // if the communication is active, send message
             iResult = send( ConnectSocket, final_msg.c_str(), (int)final_msg.size(), 0 );
