@@ -82,9 +82,9 @@ class socketStream{
     rapidjson::Writer<rapidjson::StringBuffer> writer;                              // writer to stringify the json object
     
     // variables used in the communication protocol
-    char *msg_idf;                                                                  // the new packet identifier  
-    char *endMSG;                                                                   // the end-of-message identifier
-    char *ec_id;                                                                    // the end-of-connection identifier
+    const char *msg_idf;                                                                  // the new packet identifier  
+    const char *endMSG;                                                                   // the end-of-message identifier
+    const char *ec_id;                                                                    // the end-of-connection identifier
     unsigned int headerSize;                                                        // the header of the packet containing the number of bytes to be streamed
     unsigned int minMsgSize;                                                        // the size of the packet if it doesn't include the message
     unsigned int msgOverhead;
