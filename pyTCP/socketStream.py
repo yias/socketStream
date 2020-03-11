@@ -60,11 +60,11 @@ class socketStream(object):
 
         self.hc_check=hashlib.md5()
 
-        self.msg_data
+        self.msg_data = []
 
     def msgExtractor(self, msg):
         msgSize=int(msg[:self.HEADERSIZE])
-        msgOverhead = int(msg[self.HEADERSIZE+1:self.HEADERSIZE+1+bfrDigits])
+        msgOverhead = int(msg[self.HEADERSIZE+1:self.HEADERSIZE+1+self.bfrDigits])
         tmp_msg=msg[self.HEADERSIZE+1+self.bfrDigits:self.HEADERSIZE+1+self.bfrDigits+msgSize]
         if(msg[self.HEADERSIZE+1]==1):
             hashcode=msg[self.HEADERSIZE+msgSize:-msgOverhead-len(self.endMSG)]
@@ -124,17 +124,20 @@ class socketStream(object):
     def run(self):
         print('waiting for a connections ... ')
 
-        while(True):
+        while(not self.connection_exist):
             try:
                 # check if any connection inquire exists and accept it
                 self.connection, self.client_address = self.sock.accept()
                 self.connection_exist = True
                 print('connection from ', self.client_address)
-
+                # msg_receiver = threading.Thread(target = self.runReceiver(), args = (1,))
+                # msg_receiver.start()
                 # check communication validity with a hand-shake protocol
                 # conCheck=handShake(connection,10)
-                # thread.start_new_thread
-                counter=0
+                # msg_receiver = threading.Thread(target = self.runReceiver)
+
+                # msg_receiver.start()
+                counter = 0;
                 while(True):
                 # retrieve the message identifier. once it is received, compose the message
                     data=self.connection.recv(self.BUFFER_SIZE)
@@ -184,25 +187,28 @@ class socketStream(object):
 
     def runReceiver(self):
         counter=0
-        while(True):
-            # retrieve the message identifier. once it is received, compose the message
-            data=self.connection.recv(self.BUFFER_SIZE)
-            data_check = data[:self.msg_idf_len]
-            counter+=1
-            print("messages received",counter)
-            if data_check.decode('utf-8')==self.msg_idf:
-                # receive bytes until the full message is received
-                full_msg=data[self.msg_idf_len:].decode("utf-8")
-                while (True):
-                    dataT=self.connection.recv(self.BUFFER_SIZE)
-                    full_msg+=dataT.decode("utf-8") 
-                    if full_msg[-4:]==self.endMSG:
-                        break
+        while(self.connection_exist):
+            try:
+                # retrieve the message identifier. once it is received, compose the message
+                data=self.connection.recv(self.BUFFER_SIZE)
+                data_check = data[:self.msg_idf_len]
+                counter+=1
+                print("messages received",counter)
+                if data_check.decode('utf-8')==self.msg_idf:
+                    # receive bytes until the full message is received
+                    full_msg=data[self.msg_idf_len:].decode("utf-8")
+                    while (True):
+                        dataT=self.connection.recv(self.BUFFER_SIZE)
+                        full_msg+=dataT.decode("utf-8") 
+                        if full_msg[-4:]==self.endMSG:
+                            break
 
-                # extract message
-                msg_validity, tr_msg = self.msgExtractor(full_msg)
-                if msg_validity:
-                    self.msg_data=json.loads(tr_msg)
+                    # extract message
+                    msg_validity, tr_msg = self.msgExtractor(full_msg)
+                    if msg_validity:
+                        self.msg_data=json.loads(tr_msg)
+                        # print(type(self.msg_data))
+                        # print(self.msg_data.get("name"))
 
                 if  data_check.decode('utf-8')==self.ec_id:
                     # if end-of-communication identifier received, terminate the connection
@@ -210,6 +216,15 @@ class socketStream(object):
                     self.connection.close()
                     self.connection_exist = False
                     break
+            except KeyboardInterrupt:
+                if self.connection_exist:
+                    self.connection.close()
+                    self.connection_exist = False
+                break
+            
 
     def get_latest(self):
         return self.msg_data
+
+    def isClientConnected(self):
+        return self.connection_exist

@@ -51,7 +51,7 @@ def randomString(strlength=10):
 	return ''.join(random.choice(letters) for i in range(strlength))
 
 
-def handShake(conn, strlength):/
+def handShake(conn, strlength):
 
 	ping_times=np.empty([10,1], dtype=np.float64)
 	compute_times=np.empty([10,1], dtype=np.float64)
