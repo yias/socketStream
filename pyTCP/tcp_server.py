@@ -157,7 +157,7 @@ def main(args):
 				print("messages received",counter)
 				if data_check.decode('utf-8')==msg_idf:
 					# receive bytes until the full message is received
-					full_msg=data[msg_idf_len:]
+					full_msg=data[msg_idf_len:].decode("utf-8")
 					while (True):
 						dataT=connection.recv(BUFFER_SIZE)
 						full_msg+=dataT.decode("utf-8") 
