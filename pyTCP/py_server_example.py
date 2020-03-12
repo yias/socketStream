@@ -16,35 +16,49 @@ def main():
 	
 	sockHndlr = socketStream.socketStream(IPaddress = '128.178.145.79')
 
-	sockHndlr.run()
+	sockHndlr.make_connection()
+
+	sockHndlr.start_receiveing()
 
 	# sockHndlr.runReceiver()
 
-	msg_receiver = threading.Thread(target = sockHndlr.runReceiver)
+	# msg_receiver = threading.Thread(target = sockHndlr.run, name= 'daemon')
 
-	msg_receiver.start()
+	# msg_receiver.start()
 
-	print('test')
+	# msg_receiver.join()
 
-	msg_update = threading.Thread(target=testthread, args=sockHndlr)
 
-	msg_update.start()
+	# print('test')
+
+	# msg_update = threading.Thread(target=testthread, args=sockHndlr)
+
+	# msg_update.start()
+
+	# sockHndlr.make_connection()
+
+	# sockHndlr.start()
+	# sockHndlr.join()
+
+	# print("okkkkkkkkkkkkkkkkkkkkkkkkkkkokok")
+	# print(sockHndlr.isClientConnected())
 
 	counter=0
 	while (sockHndlr.isClientConnected()):
-		# msg = sockHndlr.get_latest()
-		counter +=1
-		# print(counter)
-		# with('app.json','w') as msg:
-		# 	json.dump(sockHndlr.get_latest(), msg)
-		# msg = json.load(sockHndlr.get_latest())
-		# msg = sockHndlr.get_latest()
-		# print(type(msg))
-		# print(msg.get("name"))
-		# ttr=json.loads(msg)
-		# print(ttr.get("name"))
+		tt=sockHndlr.get_latest()
+		print(tt[0])
+		# print("test")
+
+		# try:
+			
+		# except KeyboardInterrupt:
+			
+		# 	break
+		# finally:
+		# 	pass
 
 	sockHndlr.close_communication()
+	
 
 
 

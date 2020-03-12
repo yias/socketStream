@@ -21,9 +21,48 @@ import json
 
 # import modules for theading programming
 import threading
-import time
+import Future
+# import time
 
-class socketStream(object):
+def runReceiver2(connection, sokObject):
+    counter=0
+    while(True):
+        try:
+            # retrieve the message identifier. once it is received, compose the message
+            data=connection.recv(sokObject.BUFFER_SIZE)
+            data_check = data[:sokObject.msg_idf_len]
+            counter += 1
+            print("messages received",counter)
+            if data_check.decode('utf-8')==sokObject.msg_idf:
+                # receive bytes until the full message is received
+                full_msg=data[sokObject.msg_idf_len:].decode("utf-8")
+                while (True):
+                    dataT=sokObject.connection.recv(sokObject.BUFFER_SIZE)
+                    full_msg+=dataT.decode("utf-8") 
+                    if full_msg[-4:]==sokObject.endMSG:
+                        break
+
+                # extract message
+                msg_validity, tr_msg = sokObject.msgExtractor(full_msg)
+                if msg_validity:
+                    msg_data=json.loads(tr_msg)
+                    sokObject.set_data(msg_data)
+                    
+
+            if  data_check.decode('utf-8')==sokObject.ec_id:
+                # if end-of-communication identifier received, terminate the connection
+                print('Connection terminated by client ', sokObject.client_address)
+                connection.close()
+                # connection_exist = False
+                break
+        except KeyboardInterrupt:
+            if connection_exist:
+                connection.close()
+            break
+
+
+
+class socketStream():
     def __init__ (self, IPaddress = 'localhost', port = 10352):
         # Create a TCP/IP socket
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -60,7 +99,13 @@ class socketStream(object):
 
         self.hc_check=hashlib.md5()
 
-        self.msg_data = []
+        self.msg_data = ''
+
+        self.thread = threading.Thread(target=self.runReceiver, args = ())
+        self.thread.daemon = True
+        # self.thread.start()
+
+        self.lock = threading.Lock()
 
     def msgExtractor(self, msg):
         msgSize=int(msg[:self.HEADERSIZE])
@@ -123,20 +168,28 @@ class socketStream(object):
 
     def run(self):
         print('waiting for a connections ... ')
-
+        counter = 0
         while(not self.connection_exist):
+            # print(counter)
+            counter +=1
             try:
                 # check if any connection inquire exists and accept it
+
                 self.connection, self.client_address = self.sock.accept()
                 self.connection_exist = True
                 print('connection from ', self.client_address)
-                # msg_receiver = threading.Thread(target = self.runReceiver(), args = (1,))
+                # msg_receiver = threading.Thread(target = self.runReceiver, name = 'daemon')
+
+                # msg_receiver = threading.Thread(target = runReceiver2, args=(self.connection, self), name = 'daemon')
                 # msg_receiver.start()
+                # msg_receiver.join()
+
                 # check communication validity with a hand-shake protocol
                 # conCheck=handShake(connection,10)
                 # msg_receiver = threading.Thread(target = self.runReceiver)
 
                 # msg_receiver.start()
+
                 counter = 0;
                 while(True):
                 # retrieve the message identifier. once it is received, compose the message
@@ -175,7 +228,9 @@ class socketStream(object):
                     self.connection_exist = False
                 break
             finally:
-                print('Waiting for new clients ....')
+                pass
+                # print('Waiting for new clients ....')
+        print("exit")
         
     def close_communication(self):
         # close communications
@@ -224,7 +279,41 @@ class socketStream(object):
             
 
     def get_latest(self):
-        return self.msg_data
+        self.lock.acquire()
+        trace = self.msg_data
+        self.lock.release()
+        return trace
 
     def isClientConnected(self):
         return self.connection_exist
+
+    def set_data(self, msg):
+        self.msg_data = msg
+
+    def start_receiveing(self):
+        self.thread.start()
+
+
+    def make_connection(self):
+        print('waiting for a connections ... ')
+        counter = 0
+        while(not self.connection_exist):
+            # print(counter)
+            counter +=1
+            try:
+                # check if any connection inquire exists and accept it
+
+                self.connection, self.client_address = self.sock.accept()
+                self.connection_exist = True
+                print('connection from ', self.client_address)
+                
+            except KeyboardInterrupt:
+                # if Ctrl+C is pressed in the keyboard, close the connections (if any) and exit
+                if self.connection_exist:
+                    self.connection.close()
+                    self.connection_exist = False
+                break
+            finally:
+                pass
+                # print('Waiting for new clients ....')
+        print("exit")
