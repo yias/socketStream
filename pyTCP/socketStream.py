@@ -239,7 +239,7 @@ class socketStream():
     def isClientConnected(self):
         return self.connection_exist
 
-    def isFirstValueReceived(self):
+    def isFirstMsgReceived(self):
         return self.firstValueReceived
 
     def set_data(self, msg):

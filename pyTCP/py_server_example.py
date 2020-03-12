@@ -11,21 +11,20 @@ import numpy as np
 
 def main(args):
     sockHndlr = socketStream.socketStream(IPaddress = args.host, port = args.port)
-# sockHndlr.run()
+
     sockHndlr.make_connection()
-# print(sockHndlr.isClientConnected())
+
     sockHndlr.start_receiveing()
-    # counter=0
+
     while(sockHndlr.isClientConnected()):
-        if sockHndlr.isFirstValueReceived():
+        if sockHndlr.isFirstMsgReceived():
             tt=sockHndlr.get_latest()
-            # print(tt.get("name"))
+            print(tt.get("name"))
             test=tt.get("data")
             rt=np.array(test, dtype=np.float32)
             print(rt[0][:2])
 
     sockHndlr.close_communication()
-	# print(counter)
 
 
 if __name__ == '__main__':
