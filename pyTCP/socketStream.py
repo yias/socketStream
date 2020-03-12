@@ -21,46 +21,7 @@ import json
 
 # import modules for theading programming
 import threading
-import Future
-# import time
-
-def runReceiver2(connection, sokObject):
-    counter=0
-    while(True):
-        try:
-            # retrieve the message identifier. once it is received, compose the message
-            data=connection.recv(sokObject.BUFFER_SIZE)
-            data_check = data[:sokObject.msg_idf_len]
-            counter += 1
-            print("messages received",counter)
-            if data_check.decode('utf-8')==sokObject.msg_idf:
-                # receive bytes until the full message is received
-                full_msg=data[sokObject.msg_idf_len:].decode("utf-8")
-                while (True):
-                    dataT=sokObject.connection.recv(sokObject.BUFFER_SIZE)
-                    full_msg+=dataT.decode("utf-8") 
-                    if full_msg[-4:]==sokObject.endMSG:
-                        break
-
-                # extract message
-                msg_validity, tr_msg = sokObject.msgExtractor(full_msg)
-                if msg_validity:
-                    msg_data=json.loads(tr_msg)
-                    sokObject.set_data(msg_data)
-                    
-
-            if  data_check.decode('utf-8')==sokObject.ec_id:
-                # if end-of-communication identifier received, terminate the connection
-                print('Connection terminated by client ', sokObject.client_address)
-                connection.close()
-                # connection_exist = False
-                break
-        except KeyboardInterrupt:
-            if connection_exist:
-                connection.close()
-            break
-
-
+import time
 
 class socketStream():
     def __init__ (self, IPaddress = 'localhost', port = 10352):
@@ -99,13 +60,14 @@ class socketStream():
 
         self.hc_check=hashlib.md5()
 
-        self.msg_data = ''
+        self.msg_data = {}
 
         self.thread = threading.Thread(target=self.runReceiver, args = ())
         self.thread.daemon = True
         # self.thread.start()
 
         self.lock = threading.Lock()
+        self.firstValueReceived = False
 
     def msgExtractor(self, msg):
         msgSize=int(msg[:self.HEADERSIZE])
@@ -178,17 +140,6 @@ class socketStream():
                 self.connection, self.client_address = self.sock.accept()
                 self.connection_exist = True
                 print('connection from ', self.client_address)
-                # msg_receiver = threading.Thread(target = self.runReceiver, name = 'daemon')
-
-                # msg_receiver = threading.Thread(target = runReceiver2, args=(self.connection, self), name = 'daemon')
-                # msg_receiver.start()
-                # msg_receiver.join()
-
-                # check communication validity with a hand-shake protocol
-                # conCheck=handShake(connection,10)
-                # msg_receiver = threading.Thread(target = self.runReceiver)
-
-                # msg_receiver.start()
 
                 counter = 0;
                 while(True):
@@ -210,6 +161,7 @@ class socketStream():
                         msg_validity, tr_msg = self.msgExtractor(full_msg)
                         if msg_validity:
                             self.msg_data=json.loads(tr_msg)
+                            # print(self.msg_data.get("name"))
 
                     if  data_check.decode('utf-8')==self.ec_id:
                         # if end-of-communication identifier received, terminate the connection
@@ -248,7 +200,7 @@ class socketStream():
                 data=self.connection.recv(self.BUFFER_SIZE)
                 data_check = data[:self.msg_idf_len]
                 counter+=1
-                print("messages received",counter)
+                # print("messages received",counter)
                 if data_check.decode('utf-8')==self.msg_idf:
                     # receive bytes until the full message is received
                     full_msg=data[self.msg_idf_len:].decode("utf-8")
@@ -262,8 +214,8 @@ class socketStream():
                     msg_validity, tr_msg = self.msgExtractor(full_msg)
                     if msg_validity:
                         self.msg_data=json.loads(tr_msg)
-                        # print(type(self.msg_data))
-                        # print(self.msg_data.get("name"))
+                        if not self.firstValueReceived:
+                            self.firstValueReceived = True
 
                 if  data_check.decode('utf-8')==self.ec_id:
                     # if end-of-communication identifier received, terminate the connection
@@ -286,6 +238,9 @@ class socketStream():
 
     def isClientConnected(self):
         return self.connection_exist
+
+    def isFirstValueReceived(self):
+        return self.firstValueReceived
 
     def set_data(self, msg):
         self.msg_data = msg

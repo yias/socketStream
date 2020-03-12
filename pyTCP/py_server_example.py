@@ -5,65 +5,32 @@ import socketStream
 import threading
 import time
 import json
-
-def testthread(sSobg):
-	while(sSobg.isClientConnected()):
-		mesg=sSobg.get_latest()
-		print("ok")
+import argparse
+import numpy as np
 
 
-def main():
-	
-	sockHndlr = socketStream.socketStream(IPaddress = '128.178.145.79')
+def main(args):
+    sockHndlr = socketStream.socketStream(IPaddress = args.host, port = args.port)
+# sockHndlr.run()
+    sockHndlr.make_connection()
+# print(sockHndlr.isClientConnected())
+    sockHndlr.start_receiveing()
+    # counter=0
+    while(sockHndlr.isClientConnected()):
+        if sockHndlr.isFirstValueReceived():
+            tt=sockHndlr.get_latest()
+            # print(tt.get("name"))
+            test=tt.get("data")
+            rt=np.array(test, dtype=np.float32)
+            print(rt[0][:2])
 
-	sockHndlr.make_connection()
-
-	sockHndlr.start_receiveing()
-
-	# sockHndlr.runReceiver()
-
-	# msg_receiver = threading.Thread(target = sockHndlr.run, name= 'daemon')
-
-	# msg_receiver.start()
-
-	# msg_receiver.join()
-
-
-	# print('test')
-
-	# msg_update = threading.Thread(target=testthread, args=sockHndlr)
-
-	# msg_update.start()
-
-	# sockHndlr.make_connection()
-
-	# sockHndlr.start()
-	# sockHndlr.join()
-
-	# print("okkkkkkkkkkkkkkkkkkkkkkkkkkkokok")
-	# print(sockHndlr.isClientConnected())
-
-	counter=0
-	while (sockHndlr.isClientConnected()):
-		tt=sockHndlr.get_latest()
-		print(tt[0])
-		# print("test")
-
-		# try:
-			
-		# except KeyboardInterrupt:
-			
-		# 	break
-		# finally:
-		# 	pass
-
-	sockHndlr.close_communication()
-	
-
-
-
-
+    sockHndlr.close_communication()
+	# print(counter)
 
 
 if __name__ == '__main__':
-	main()
+	parser = argparse.ArgumentParser(description='TCP server for receiving inputs from a client with socketStream')
+	parser.add_argument('--host', type=str, help= 'the IP of the server', default='localhost')
+	parser.add_argument('--port', type=int, help= 'the port on which the server is listening', default=10352)
+	args=parser.parse_args()
+	main(args)
