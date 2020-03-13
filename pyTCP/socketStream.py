@@ -24,7 +24,7 @@ import threading
 import time
 
 class socketStream():
-    def __init__ (self, IPaddress = 'localhost', port = 10352):
+    def __init__ (self, IPaddress = 'localhost', port = 10352, bufferSize = 128):
         # Create a TCP/IP socket
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -36,35 +36,47 @@ class socketStream():
         self.sock.bind(self.server_address)
 
         # define buffer size
-        self.BUFFER_SIZE=16
+        self.BUFFER_SIZE = bufferSize
 
         # define a header size of the message
-        self.HEADERSIZE=8
+        self.HEADERSIZE = 8
 
         # define message identifier
-        self.msg_idf="!&?5"
+        self.msg_idf = "!&?5"
 
         # end-of-message identifier
-        self.endMSG="!3tt"
+        self.endMSG = "!3tt"
 
         # end-connection identifier
-        self.ec_id="\ne@c"
+        self.ec_id = "\ne@c"
 
         # listen for new connections
-        self.sock.listen(6)
+        self.sock.listen(1)
 
         self.bfrDigits = len(str(self.BUFFER_SIZE))
         self.msg_idf_len = len(self.msg_idf)
 
+        self.serverRunnig = True
+
         self.connection_exist = False
+
+        self.serverThread = threading.Thread(target = self.wait_connections, args = ())
+        self.serverThread.daemon = True
+        self.serverThread.start()
 
         self.hc_check=hashlib.md5()
 
         self.msg_data = {}
 
-        self.thread = threading.Thread(target=self.runReceiver, args = ())
-        self.thread.daemon = True
+        # self.numberofConnections = 0
+        # self.sConnections = []
+        # self.clientAdresses = []
+        # self.receiverThreads = []
+
+        self.ReceiverThread = threading.Thread(target=self.runReceiver, args = ())
+        self.ReceiverThread.daemon = True
         # self.thread.start()
+
 
         self.lock = threading.Lock()
         self.firstValueReceived = False
@@ -120,12 +132,12 @@ class socketStream():
             t_time0=time.time()
 
         if((1*(validity_counter)).mean()>0.8):
-            print('valid communication established')
-            print('compute times: %s %s %s s' %(compute_times.mean(), u'\u00b1', compute_times.std()))
-            print('ping times:  %s %s %s s' %(ping_times[:9].mean(), u'\u00b1', ping_times[:9].std()))
+            print('[socketStream] Valid communication established')
+            print('[socketStream] Compute times: %s %s %s s' %(compute_times.mean(), u'\u00b1', compute_times.std()))
+            print('[socketStream] Ping times:  %s %s %s s' %(ping_times[:9].mean(), u'\u00b1', ping_times[:9].std()))
             return True
         else:
-            print('communication is not valid')
+            print('[socketStream] Communication is not valid')
             return False
 
     def run(self):
@@ -139,7 +151,7 @@ class socketStream():
 
                 self.connection, self.client_address = self.sock.accept()
                 self.connection_exist = True
-                print('connection from ', self.client_address)
+                print('[socketStream] Connection from ', self.client_address)
 
                 counter = 0;
                 while(True):
@@ -165,7 +177,7 @@ class socketStream():
 
                     if  data_check.decode('utf-8')==self.ec_id:
                         # if end-of-communication identifier received, terminate the connection
-                        print('Connection terminated by client ', self.client_address)
+                        print('[socketStream] Connection terminated by client ', self.client_address)
                         self.connection.close()
                         self.connection_exist = False
                         break
@@ -190,7 +202,7 @@ class socketStream():
             self.connection.close()
             self.connection_exist = False
         self.sock.close()
-        print('all connections killed')
+        print('[socketStream] All connections killed')
 
     def runReceiver(self):
         counter=0
@@ -219,13 +231,14 @@ class socketStream():
 
                 if  data_check.decode('utf-8')==self.ec_id:
                     # if end-of-communication identifier received, terminate the connection
-                    print('Connection terminated by client ', self.client_address)
+                    print('[socketStream] Connection terminated by client ', self.client_address)
                     self.connection.close()
                     self.connection_exist = False
+                    self.firstValueReceived = False
                     break
             except KeyboardInterrupt:
                 if self.connection_exist:
-                    self.connection.close()
+                    conn.close()
                     self.connection_exist = False
                 break
             
@@ -242,33 +255,74 @@ class socketStream():
     def isFirstMsgReceived(self):
         return self.firstValueReceived
 
+    def isServerRunning(self):
+        return self.serverRunnig
+
+    def sockectStream_ok(self):
+        return (self.serverRunnig and self.connection_exist and self.firstValueReceived)
+
     def set_data(self, msg):
         self.msg_data = msg
 
     def start_receiveing(self):
-        self.thread.start()
+        self.ReceiverThread.start()
 
-
-    def make_connection(self):
-        print('waiting for a connections ... ')
+    def wait_connections(self):
+        print('[socketStream] Waiting for connections ... ')
         counter = 0
-        while(not self.connection_exist):
-            # print(counter)
-            counter +=1
-            try:
-                # check if any connection inquire exists and accept it
-
-                self.connection, self.client_address = self.sock.accept()
-                self.connection_exist = True
-                print('connection from ', self.client_address)
+        while(self.serverRunnig):
+            # check if any connection inquire exists and accept it
+            self.connection, self.client_address = self.sock.accept()
+            print('[socketStream] Connection from ', self.client_address)
+            testThrd = threading.Thread(target=self.runReceiver, args = ())
+            testThrd.daemon = True
+            self.connection_exist = True
+            testThrd.start()
+            testThrd.join()
+    
+    
                 
-            except KeyboardInterrupt:
-                # if Ctrl+C is pressed in the keyboard, close the connections (if any) and exit
-                if self.connection_exist:
-                    self.connection.close()
-                    self.connection_exist = False
-                break
-            finally:
-                pass
-                # print('Waiting for new clients ....')
-        print("exit")
+            # except KeyboardInterrupt:
+            #     # if Ctrl+C is pressed in the keyboard, close the connections (if any) and exit
+            #     if self.connection_exist:
+            #         self.connection.close()
+            #         self.connection_exist = False
+            #         self.serverRunnig = False
+            #     self.close_communication()
+            #     break
+            # finally:
+            #     if not self.connection_exist:
+            #         print('waiting for connections ... ')
+            #     pass
+
+
+    # def wait_connections(self):
+    #     print('waiting for connections ... ')
+    #     counter = 0
+    #     while(self.serverRunnig):
+    #         # print(counter)
+    #         counter +=1
+    #         try:
+    #             # check if any connection inquire exists and accept it
+    #             self.connection, self.client_address = self.sock.accept()
+    #             print('connection from ', self.client_address)
+    #             testThrd = threading.Thread(target=self.runReceiver, args = ())
+    #             testThrd.daemon = True
+    #             self.connection_exist = True
+    #             testThrd.start()
+    #             testThrd.join()
+    #             # self.ReceiverThread.start()
+                
+                
+    #         except KeyboardInterrupt:
+    #             # if Ctrl+C is pressed in the keyboard, close the connections (if any) and exit
+    #             if self.connection_exist:
+    #                 self.connection.close()
+    #                 self.connection_exist = False
+    #                 self.serverRunnig = False
+    #             self.close_communication()
+    #             break
+    #         finally:
+    #             if not self.connection_exist:
+    #                 print('waiting for connections ... ')
+    #             pass
