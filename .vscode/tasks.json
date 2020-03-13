@@ -16,13 +16,7 @@
                 "-lws2_32",
                 "-I", "${env:CPP_DEPENDENCIES}\\rapidjson\\include",
                 "-I", "${workspaceFolder}\\include",
-                "-I", "${workspaceFolder}\\source",
-                // "/Zi",
-                // "/EHsc",
-                // "/Fe:",
-                // "",
-                // ,
-                // "
+                "-I", "${workspaceFolder}\\source"
             ],
             "problemMatcher": [
                 "$gcc"
