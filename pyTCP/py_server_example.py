@@ -1,5 +1,11 @@
 #!/usr/bin/env python
-
+"""
+    developer: Iason Batzianoulis
+    maintaner: Iason Batzianoulis
+    email: iasonbatz@gmail.com
+    description: 
+    This scripts is an example on how to use the socketStream server for listening to inputs from a client
+"""
 
 import socketStream
 import argparse
@@ -11,7 +17,6 @@ def main(args):
 
     counter=0
     while(True):
-        # print(counter)
         try:
             if sockHndlr.sockectStream_ok():
                 tt=sockHndlr.get_latest()
