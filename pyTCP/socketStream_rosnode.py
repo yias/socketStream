@@ -19,7 +19,7 @@ def talker():
 	rosmsg = Float32MultiArray()
 	rosmsg.layout.data_offset = 0
 
-	sockHndlr = socketStream.socketStream(IPaddress = "128.178.145.79", port = 10352)
+	sockHndlr = socketStream.socketStream(IPaddress = "localhost", port = 10352)
 
 	while not rospy.is_shutdown():
 		if sockHndlr.sockectStream_ok():
