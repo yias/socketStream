@@ -12,6 +12,7 @@
                 "${workspaceFolder}\\source\\socketStream.cpp",
                 "${workspaceFolder}\\source\\md5.cpp",
                 "-o", "${workspaceFolder}\\build\\testrunDiagnostics.exe",
+                "-O3",
                 "-lws2_32",
                 "-I", "${env:CPP_DEPENDENCIES}\\rapidjson\\include",
                 "-I", "${workspaceFolder}\\include",

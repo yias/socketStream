@@ -2,9 +2,11 @@
 logfiles/
 data/
 build/
+pyTCP/__pycache__/
 
 # ignore all the *.obj files
 *.obj
 # *.txt
 *.pdb
 *.o
+*.pyc
