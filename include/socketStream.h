@@ -45,6 +45,8 @@
 #define DEFAULT_BUFLEN 2048
 #define DEFAULT_PORT 10352
 #define DEFAULT_HOST_IP "localhost"
+#define SOCKETSTREAM_SERVER 1
+#define SOCKETSTREAM_CLIENT 0
 
 
 class socketStream{
@@ -57,6 +59,8 @@ class socketStream{
     // define socket object
     SOCKET ConnectSocket; // = INVALID_SOCKET;
 
+    SOCKET ListenSocket;                            // for the server
+
     struct addrinfo *result, *ptr, hints;
 
     char recvbuf[DEFAULT_BUFLEN];
@@ -64,6 +68,8 @@ class socketStream{
     int iResult;
 
     int recvbuflen = DEFAULT_BUFLEN;
+
+    bool isServer;
 
     unsigned int bufferSize;                                                        // the buffer size on the clients side
 
@@ -103,21 +109,21 @@ class socketStream{
 
 public:
 
-    socketStream(void);                                                             // empty constructor, setting the default values
+    socketStream(void);                                                                                         // empty constructor, setting the default values, default: TCP client
 
-    socketStream(const char* scrIPAdress);                                                // constructor with setting the server IP address
+    socketStream(const char* scrIPAdress, const int socketStreamMode = SOCKETSTREAM_CLIENT);                    // constructor with setting the server IP address
 
-    socketStream(const char* svrIPAddress, int srvPosrt);                                 // constructor with setting the server IP address and port
+    socketStream(const char* svrIPAddress, int srvPosrt, const int socketStreamMode = SOCKETSTREAM_CLIENT);     // constructor with setting the server IP address and port
 
-    int initialize_sockeStream();                                                   // initialize the socketStream object
+    int initialize_socketStream();                                                                              // initialize the socketStream object
 
-    int initialize_sockeStream(const char* svrIPAddress, int srvPosrt);                   // initialize the socketStream object re-setting the server IP address and port
+    int initialize_socketStream(const char* svrIPAddress, int srvPosrt);                                        // initialize the socketStream object re-setting the server IP address and port
 
-    int make_connection();                                                          // connect with the server
+    int make_connection();                                                                                      // connect with the server
 
-    int initialize_msgStruct(std::vector<std::string> fields);                      // setting the fields of the message 
+    int initialize_msgStruct(std::vector<std::string> fields);                                                  // setting the fields of the message 
 
-    int printMSGcontents();                                                         // print the contents of the message
+    int printMSGcontents();                                                                                     // print the contents of the message
 
     int printMSGcontentsTypes();                                                    // print everything that is contained in the message
 

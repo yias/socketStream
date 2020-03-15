@@ -104,7 +104,7 @@ int main(int argc, char **argv){
     wfile << "Message update (field names): " << (double)(std::chrono::duration_cast<std::chrono::microseconds>(end-start).count())/1000.0 << " ms\n\n";
 
     // initialize the socket for streaming the data
-    if(socketHdlr.initialize_sockeStream()<0){
+    if(socketHdlr.initialize_socketStream()<0){
         std::cerr << "Unable to initialize socket" << std::endl;
         return -1;
     }

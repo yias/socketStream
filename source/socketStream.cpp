@@ -6,9 +6,13 @@ socketStream::socketStream(void){
 
     ConnectSocket = INVALID_SOCKET;
 
+    ListenSocket = INVALID_SOCKET;                      // for the server
+
     result = NULL;
     
     ptr = NULL;
+
+    isServer = false;
 
     msg_idf = "!&?5";
 
@@ -32,7 +36,7 @@ socketStream::socketStream(void){
 
     memset(&hints, 0, sizeof hints);
 
-    hints.ai_family = AF_UNSPEC;
+    hints.ai_family = AF_INET;
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_protocol = IPPROTO_TCP;
 
@@ -49,13 +53,20 @@ socketStream::socketStream(void){
 }
 
 
-socketStream::socketStream(const char* svrIPAddress){
+socketStream::socketStream(const char* svrIPAddress, const int socketStreamMode){
 
     ConnectSocket = INVALID_SOCKET;
 
     result = NULL;
     
     ptr = NULL;
+
+    if(socketStreamMode==SOCKETSTREAM_SERVER){
+        isServer = true;
+    }else{
+        isServer = false;
+    }
+    
 
     msg_idf = "!&?5";
 
@@ -83,6 +94,10 @@ socketStream::socketStream(const char* svrIPAddress){
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_protocol = IPPROTO_TCP;
 
+    if(isServer){
+        hints.ai_flags = AI_PASSIVE;                   // for the server
+    } 
+
     isComActive = false;
 
     msgInitilized = false;
@@ -95,13 +110,19 @@ socketStream::socketStream(const char* svrIPAddress){
 }
 
 
-socketStream::socketStream(const char* svrIPAddress, int srvPosrt){
+socketStream::socketStream(const char* svrIPAddress, int srvPosrt, const int socketStreamMode){
 
     ConnectSocket = INVALID_SOCKET;
 
     result = NULL;
     
     ptr = NULL;
+
+    if(socketStreamMode==SOCKETSTREAM_SERVER){
+        isServer = true;
+    }else{
+        isServer = false;
+    }
 
     msg_idf = "!&?5";
 
@@ -125,9 +146,13 @@ socketStream::socketStream(const char* svrIPAddress, int srvPosrt){
 
     memset(&hints, 0, sizeof hints);
 
-    hints.ai_family = AF_UNSPEC;
+    hints.ai_family = AF_INET;
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_protocol = IPPROTO_TCP;
+
+    if(isServer){
+        hints.ai_flags = AI_PASSIVE;                   // for the server
+    } 
 
     isComActive = false;
 
@@ -140,7 +165,7 @@ socketStream::socketStream(const char* svrIPAddress, int srvPosrt){
     std::cout << "[socketStream] Starting socketStream on server address " << Host_IP << " and port " << Host_Port << std::endl;
 }
 
-int socketStream::initialize_sockeStream(){
+int socketStream::initialize_socketStream(){
 
     #ifdef _WIN32
         // Initialize Winsock
@@ -157,21 +182,50 @@ int socketStream::initialize_sockeStream(){
     // Resolve the server address and port
     iResult = getaddrinfo(Host_IP, i2s.str().c_str(), &hints, &result);
     if ( iResult != 0 ) {
-        std::cerr << "[socketStream] getaddrinfo failed with error: " << iResult << std::endl;;
+        std::cerr << "[socketStream] Getaddrinfo failed with error: " << iResult << std::endl;
         #ifdef _WIN32
             WSACleanup();
         #endif
         return iResult;
     }
 
-    // msgOHstring = std::string((int)std::to_string(bufferSize).length(), ' ');
+    if(isServer){
+        // Create a SOCKET for connecting to server
+        ListenSocket = socket(result->ai_family, result->ai_socktype, result->ai_protocol);
+        if (ListenSocket == INVALID_SOCKET) {
+            std::cerr << "[socketStream] Socket failed with error:";
+            #ifdef _WIN32
+                std::cerr << WSAGetLastError(); ;
+                WSACleanup();
+            #endif
+            std::cerr << std::endl;
+            freeaddrinfo(result);
+            return -3;
+        }
+
+        // Setup the TCP listening socket
+        iResult = bind( ListenSocket, result->ai_addr, (int)result->ai_addrlen);
+        if (iResult == SOCKET_ERROR) {
+            std::cerr << "[socketStream] Bind failed with error:";
+            #ifdef _WIN32
+                std::cerr << WSAGetLastError();
+                WSACleanup();
+            #endif
+            std::cerr << std::endl;
+            closesocket(ListenSocket);
+            freeaddrinfo(result);
+            return -4;
+        }
+
+        freeaddrinfo(result);
+    }
 
     return 0;
 
 }
 
 
-int socketStream::initialize_sockeStream(const char* svrIPAddress, int srvPosrt){
+int socketStream::initialize_socketStream(const char* svrIPAddress, int srvPosrt){
     
     // setting the server IP address and port
     Host_IP = svrIPAddress;
@@ -198,6 +252,37 @@ int socketStream::initialize_sockeStream(const char* svrIPAddress, int srvPosrt)
             WSACleanup();
         #endif
         return iResult;
+    }
+
+    if(isServer){
+        // Create a SOCKET for connecting to server
+        ListenSocket = socket(result->ai_family, result->ai_socktype, result->ai_protocol);
+        if (ListenSocket == INVALID_SOCKET) {
+            std::cerr << "[socketStream] Socket failed with error:";
+            #ifdef _WIN32
+                std::cerr << WSAGetLastError(); ;
+                WSACleanup();
+            #endif
+            std::cerr << std::endl;
+            freeaddrinfo(result);
+            return -3;
+        }
+
+        // Setup the TCP listening socket
+        iResult = bind( ListenSocket, result->ai_addr, (int)result->ai_addrlen);
+        if (iResult == SOCKET_ERROR) {
+            std::cerr << "[socketStream] Bind failed with error:";
+            #ifdef _WIN32
+                std::cerr << WSAGetLastError();
+                WSACleanup();
+            #endif
+            std::cerr << std::endl;
+            closesocket(ListenSocket);
+            freeaddrinfo(result);
+            return -4;
+        }
+
+        freeaddrinfo(result);
     }
 
     return 0;

@@ -55,7 +55,7 @@ int main(int argc, char **argv){
 
 
     // initialize the socket
-    if(socketHdlr.initialize_sockeStream()<0){
+    if(socketHdlr.initialize_socketStream()<0){
         std::cerr << "Unable to initialize socket" << std::endl;
         return -4;
     }
