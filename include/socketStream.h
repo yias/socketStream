@@ -60,6 +60,7 @@ class socketStream{
     SOCKET ConnectSocket; // = INVALID_SOCKET;
 
     SOCKET ListenSocket;                            // for the server
+    std::vector <SOCKET> clientsSockets;
 
     struct addrinfo *result, *ptr, hints;
 
@@ -70,6 +71,7 @@ class socketStream{
     int recvbuflen = DEFAULT_BUFLEN;
 
     bool isServer;
+    bool serverRunning;
 
     unsigned int bufferSize;                                                        // the buffer size on the clients side
 
@@ -147,6 +149,12 @@ public:
     int setHeaderSize(unsigned int hSize);                                          // setting the header size
 
     std::string getFullmsg();                                                       // returning the full message as a string
+
+    int runServer();
+
+    int runReceiver();
+
+    int get_latest();
 
     ~socketStream(void);                                                            // destructor
 

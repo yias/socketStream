@@ -13,6 +13,7 @@ socketStream::socketStream(void){
     ptr = NULL;
 
     isServer = false;
+    serverRunning = false;
 
     msg_idf = "!&?5";
 
@@ -96,6 +97,7 @@ socketStream::socketStream(const char* svrIPAddress, const int socketStreamMode)
 
     if(isServer){
         hints.ai_flags = AI_PASSIVE;                   // for the server
+        serverRunning = false;
     } 
 
     isComActive = false;
@@ -152,6 +154,7 @@ socketStream::socketStream(const char* svrIPAddress, int srvPosrt, const int soc
 
     if(isServer){
         hints.ai_flags = AI_PASSIVE;                   // for the server
+        serverRunning = false;
     } 
 
     isComActive = false;
@@ -786,7 +789,25 @@ int socketStream::closeCommunication(){
     isComActive = false;
 
     // cleanup
-    closesocket(ConnectSocket);
+    if(isServer){
+        closesocket(ListenSocket);
+        // shutdown the connection since we're done
+        for(int i = 0; i < (int)clientsSockets.size(); i++){
+            iResult = shutdown(clientsSockets[i], SD_SEND);
+            if (iResult == SOCKET_ERROR) {
+                std::cerr << "[socketStream] Shutting-down socket client " << i << " failed with error:" << WSAGetLastError() << std::endl;
+                WSACleanup();
+                return -3;
+            }
+            closesocket(clientsSockets[i]);
+        }
+        std::cout << "[socketStream] All sockets are successfully closed" << std::endl;
+        std::cout << "[socketStream] Server is shutted-down" << std::endl;
+    }
+    else{
+        closesocket(ConnectSocket);
+    }
+    
     #ifdef _WIN32
         WSACleanup();
     #endif
@@ -808,6 +829,54 @@ int socketStream::setHeaderSize(unsigned int hSize){
 std::string socketStream::getFullmsg(){
     return final_msg;
 }
+
+int socketStream::runServer(){
+
+    if(!isServer){
+        std::cerr << "[socketStream] socketStream is not in the server mode" << std::endl;
+        return -1;
+    }
+
+    iResult = listen(ListenSocket, SOMAXCONN);
+    if (iResult == SOCKET_ERROR) {
+        std::cerr << "[socketStream] Listen failed with error: "; 
+        #ifdef _WIN32
+            std::cerr << WSAGetLastError();
+            WSACleanup();
+        #endif
+        std::cerr << std::endl;
+        closesocket(ListenSocket);
+        return -2;
+    }
+
+    serverRunning = true;
+
+    // Accept a client socket
+    SOCKET ClientSocket = accept(ListenSocket, NULL, NULL);
+    if (ClientSocket == INVALID_SOCKET) {
+        std::cerr << "[socketStream] Accept failed with error: ";
+        #ifdef _WIN32
+            std::cerr << WSAGetLastError();
+            WSACleanup();
+        #endif
+        std::cerr << std::endl;
+        closesocket(ListenSocket);
+        return -2;
+    }
+
+    return 0;
+}
+
+
+int socketStream::runReceiver(){
+    return 0;
+}
+
+
+int socketStream::get_latest(){
+    return 0;
+}
+
 
 socketStream::~socketStream(){
     if(isComActive){
