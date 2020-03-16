@@ -11,7 +11,7 @@ int main(int argc, char **argv){
 
     // if no new server IP is defined from the user, continue with the pre-defined server IP (localhost)
     if(argc!=2){
-        std::cout << "No server IP suplied. Continue with localhost" << std::endl;
+        std::cout << "No server IP provided. Continue with localhost" << std::endl;
     }else{
         srvIP=argv[1];
     }
@@ -21,8 +21,32 @@ int main(int argc, char **argv){
 
     svrHdlr.initialize_socketStream();
 
-    svrHdlr.runServer();    
+    svrHdlr.runServer();
 
+
+    std::string msg;
+
+    while(true){
+        std::cout << int(svrHdlr.sockectStream_ok()) << std::endl;
+        if(svrHdlr.sockectStream_ok()){
+            msg = svrHdlr.get_latest();
+            std::cout << msg << std::endl;
+        }
+
+        // if(kbhit()){
+        //     #ifdef _WIN32
+        //         if(getch()=='q')
+        //             
+        //             break;
+        //     #endif
+        //     #ifdef linux
+        //         if(getch()=='q')
+        //             break;
+        //     #endif
+        // }
+    } 
+
+    svrHdlr.closeCommunication();
 
     return 0;
 }

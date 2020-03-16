@@ -109,6 +109,7 @@ class socketStream{
     std::string msg2send;                                                           // the message to be sent
     std::string final_msg;                                                          // the message including the header and the message identifications
     std::string msgOHstring;
+    std::string msg2return; // for server
 
     bool msgInitilized;                                                             // a flag to check if the message is initialized
 
@@ -117,6 +118,8 @@ class socketStream{
     int printArray(rapidjson::Value::ConstMemberIterator itr);                      // printing an array from iterator
 
     int checkKeyPressed(std::string checkkey);
+
+    std::string messageExtractor(std::string fullmsg, bool* msgValidity);
 
 public:
 
@@ -159,11 +162,15 @@ public:
 
     std::string getFullmsg();                                                       // returning the full message as a string
 
+    int wait_connections();
+
     int runServer();
 
     int runReceiver(int connectionID);
 
-    int get_latest();
+    std::string get_latest();
+
+    bool sockectStream_ok();
 
     ~socketStream(void);                                                            // destructor
 
