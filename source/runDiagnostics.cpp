@@ -41,8 +41,6 @@ int main(int argc, char **argv){
     timeinfo = localtime(&rawtime);
 
     std::strftime(time_buffer, sizeof(time_buffer), "%Y%m%d_%H_%M_%S", timeinfo);
-
-    // std::wstring logfileName = L"logfiles\\diagnostics_logfile_";
     
     std::string covString(time_buffer);
     std::string logfileName = "logfiles\\diagnostics_logfile_" + covString +".txt";

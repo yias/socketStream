@@ -4,7 +4,7 @@
 	maintaner: Iason Batzianoulis
 	email: iasonbatz@gmail.com
 	description: 
-	This scripts creates a TCP/IP server for listening to inputs from a client
+	This scripts defines a class that handles a TCP/IP server for listening to inputs from a client
 """
 
 # import standard modules 
@@ -238,7 +238,7 @@ class socketStream():
                     break
             except KeyboardInterrupt:
                 if self.connection_exist:
-                    conn.close()
+                    self.connection.close()
                     self.connection_exist = False
                 break
             

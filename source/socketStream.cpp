@@ -1,6 +1,34 @@
 
 #include "socketStream.h"
 
+#ifdef linux
+#include <stdio.h>
+#include <sys/select.h>
+#include <termios.h>
+#include <stropts.h>
+
+int _kbhit() {
+    static const int STDIN = 0;
+    static bool initialized = false;
+
+    if (! initialized) {
+        // Use termios to turn off line buffering
+        termios term;
+        tcgetattr(STDIN, &term);
+        term.c_lflag &= ~ICANON;
+        tcsetattr(STDIN, TCSANOW, &term);
+        setbuf(stdin, NULL);
+        initialized = true;
+    }
+
+    int bytesWaiting;
+    ioctl(STDIN, FIONREAD, &bytesWaiting);
+    return bytesWaiting;
+}
+
+#endif
+
+
 
 socketStream::socketStream(void){
 
@@ -220,6 +248,20 @@ int socketStream::initialize_socketStream(){
             return -4;
         }
 
+        iResult = listen(ListenSocket, SOMAXCONN);
+        if (iResult == SOCKET_ERROR) {
+            std::cerr << "[socketStream] Listen failed with error: "; 
+            #ifdef _WIN32
+                std::cerr << WSAGetLastError();
+                WSACleanup();
+            #endif
+            std::cerr << std::endl;
+            closesocket(ListenSocket);
+            return -2;
+        }
+
+        serverRunning = true;
+
         freeaddrinfo(result);
     }
 
@@ -284,6 +326,20 @@ int socketStream::initialize_socketStream(const char* svrIPAddress, int srvPosrt
             freeaddrinfo(result);
             return -4;
         }
+
+        iResult = listen(ListenSocket, SOMAXCONN);
+        if (iResult == SOCKET_ERROR) {
+            std::cerr << "[socketStream] Listen failed with error: "; 
+            #ifdef _WIN32
+                std::cerr << WSAGetLastError();
+                WSACleanup();
+            #endif
+            std::cerr << std::endl;
+            closesocket(ListenSocket);
+            return -2;
+        }
+
+        serverRunning = true;
 
         freeaddrinfo(result);
     }
@@ -830,6 +886,25 @@ std::string socketStream::getFullmsg(){
     return final_msg;
 }
 
+
+int socketStream::checkKeyPressed(std::string key){
+
+    char keyHit;
+    std::cout << "test\n";
+    std::lock_guard<std::mutex> guard(threadMutex);
+    while(true){
+        // keyHit=std::cin.get();
+        keyHit = getchar();
+        if(key[0]==keyHit){
+            serverRunning = false;
+            break;
+        }
+    }
+
+    return 0;
+}
+
+
 int socketStream::runServer(){
 
     if(!isServer){
@@ -837,38 +912,121 @@ int socketStream::runServer(){
         return -1;
     }
 
-    iResult = listen(ListenSocket, SOMAXCONN);
-    if (iResult == SOCKET_ERROR) {
-        std::cerr << "[socketStream] Listen failed with error: "; 
-        #ifdef _WIN32
-            std::cerr << WSAGetLastError();
-            WSACleanup();
-        #endif
-        std::cerr << std::endl;
-        closesocket(ListenSocket);
+    if(!serverRunning){
+        std::cerr << "[socketStream] server is not initialized properly" << std::endl;
         return -2;
     }
 
-    serverRunning = true;
+    std::string checkChar ("q");
+    // checkKeyPressed(checkChar);
+    std::thread checkKhit(&socketStream::checkKeyPressed, this, checkChar);
+    checkKhit.detach();
 
-    // Accept a client socket
-    SOCKET ClientSocket = accept(ListenSocket, NULL, NULL);
-    if (ClientSocket == INVALID_SOCKET) {
-        std::cerr << "[socketStream] Accept failed with error: ";
-        #ifdef _WIN32
-            std::cerr << WSAGetLastError();
-            WSACleanup();
-        #endif
-        std::cerr << std::endl;
-        closesocket(ListenSocket);
-        return -2;
+    while(serverRunning){
+        struct sockaddr_in clientAddress;
+
+        // Accept a client socket
+        SOCKET ClientSocket = accept(ListenSocket, (struct sockaddr *)&clientAddress, NULL);
+        if (ClientSocket == INVALID_SOCKET) {
+            std::cerr << "[socketStream] Accept failed with error: ";
+            #ifdef _WIN32
+                std::cerr << WSAGetLastError();
+                WSACleanup();
+            #endif
+            std::cerr << std::endl;
+            closesocket(ListenSocket);
+            return -2;
+        }
+        std::string clAddStr = inet_ntoa(clientAddress.sin_addr);
+        clientsAddresses.push_back(clAddStr);
+        firstMsgReceived.push_back(false);
+
+        std::cout << "[socketStream] Accepted connection from client: " << clAddStr << std::endl;
+
+        std::cout << "number of connections: " << clientsSockets.size() << std::endl;
+        clientsSockets.push_back(ClientSocket);
+
+        runReceiver((int)clientsSockets.size() - 1);
+
+        // if(_kbhit()){
+        //     std::cout<<"test\n";
+        //     #ifdef _WIN32
+        //         if(getch()=='q')
+        //             break;
+        //     #endif
+        //     #ifdef linux
+        //         if(getch()=='q')
+        //             break;
+        //     #endif
+        // }
+        std::cout << "[socketStream] Waiting for new connections ... " << std::endl;
     }
 
+    serverRunning = false;
+
+    
     return 0;
 }
 
 
-int socketStream::runReceiver(){
+int socketStream::runReceiver(int connectionID){
+
+    int iResutlReceiver = 0;
+    char tmp_buf[DEFAULT_BUFLEN];
+    std::string fullmsg;
+
+    
+    int counter = 0;
+
+    do{
+        iResutlReceiver = recv(clientsSockets[connectionID], recvbuf, bufferSize, 0);
+        if(iResult<0){
+            std::cerr << "[socketStream] Unable to receive data" << std::endl;
+        }
+        memcpy(tmp_buf, recvbuf, strlen(msg_idf));
+        if(strcmp(tmp_buf, msg_idf)==0){
+            std::cout << "[socketStream] New message received, " << ++counter << std::endl;
+            memcpy(tmp_buf, recvbuf + strlen(msg_idf), strlen(recvbuf)- strlen(msg_idf));
+            fullmsg = std::string(tmp_buf);
+            while(true){
+                iResutlReceiver = recv(clientsSockets[connectionID], recvbuf, bufferSize, 0);
+                if(iResult<0){
+                    std::cerr << "[socketStream] Unable to receive data" << std::endl;
+                }
+                fullmsg += recvbuf;
+                
+                if(fullmsg.substr(fullmsg.length()-strlen(endMSG), strlen(endMSG)).compare(endMSG)==0){
+                    std::cout << fullmsg << std::endl;
+                    if(!firstMsgReceived[connectionID])
+                        firstMsgReceived[connectionID] = true;
+                    break;
+                }
+            }            
+        }
+        memcpy(tmp_buf, recvbuf, strlen(ec_id));
+        if(strcmp(tmp_buf, ec_id)==0){
+            // the connection is terminated from client
+            iResutlReceiver = shutdown(clientsSockets[connectionID], SD_SEND);
+            if (iResult == SOCKET_ERROR) {
+                std::cerr << "[socketStream] Shutdown failed with error:" ;
+                #ifdef _WIN32
+                    std::cerr << WSAGetLastError();
+                    WSACleanup();
+                #endif
+                std::cerr << std::endl;
+                closesocket(clientsSockets[connectionID]);
+                return -1;
+            }
+            std::cout << "[socketStream] Connection terminated by client (id: " << connectionID << ", adrees: " << clientsAddresses[connectionID] << ")" << std::endl;
+            firstMsgReceived[connectionID]= false ;
+            clientsSockets.erase(clientsSockets.begin() + connectionID);
+            clientsAddresses.erase(clientsAddresses.begin() + connectionID);
+        }
+        memset(recvbuf, 0, sizeof(recvbuf));
+        memset(tmp_buf, 0, sizeof(tmp_buf));
+        
+    }while(iResutlReceiver>0);
+
     return 0;
 }
 

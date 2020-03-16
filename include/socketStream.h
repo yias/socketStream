@@ -22,6 +22,7 @@
     #include <winsock2.h>
     #include <windows.h>
     #include <ws2tcpip.h>
+    #include <conio.h>
 #else
     #include <sys/socket.h>
     #include <arpa/inet.h>
@@ -41,6 +42,8 @@
 #include "rapidjson/stringbuffer.h"
 
 #include <chrono>
+#include <thread>
+#include <mutex>
 
 #define DEFAULT_BUFLEN 2048
 #define DEFAULT_PORT 10352
@@ -61,6 +64,10 @@ class socketStream{
 
     SOCKET ListenSocket;                            // for the server
     std::vector <SOCKET> clientsSockets;
+    std::vector <std::string> clientsAddresses;
+    std::vector <bool> firstMsgReceived; 
+
+    std::mutex threadMutex;
 
     struct addrinfo *result, *ptr, hints;
 
@@ -109,6 +116,8 @@ class socketStream{
 
     int printArray(rapidjson::Value::ConstMemberIterator itr);                      // printing an array from iterator
 
+    int checkKeyPressed(std::string checkkey);
+
 public:
 
     socketStream(void);                                                                                         // empty constructor, setting the default values, default: TCP client
@@ -152,7 +161,7 @@ public:
 
     int runServer();
 
-    int runReceiver();
+    int runReceiver(int connectionID);
 
     int get_latest();
 
