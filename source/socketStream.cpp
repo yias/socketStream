@@ -82,7 +82,7 @@ socketStream::socketStream(void){
 }
 
 
-socketStream::socketStream(const char* svrIPAddress, const int socketStreamMode){
+socketStream::socketStream(const char* svrIPAddress){
 
     ConnectSocket = INVALID_SOCKET;
 
@@ -90,11 +90,11 @@ socketStream::socketStream(const char* svrIPAddress, const int socketStreamMode)
     
     ptr = NULL;
 
-    if(socketStreamMode==SOCKETSTREAM_SERVER){
-        isServer = true;
-    }else{
-        isServer = false;
-    }
+    // if(socketStreamMode==SOCKETSTREAM_SERVER){
+    //     isServer = true;
+    // }else{
+    //     isServer = false;
+    // }
     
 
     msg_idf = "!&?5";
@@ -123,10 +123,18 @@ socketStream::socketStream(const char* svrIPAddress, const int socketStreamMode)
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_protocol = IPPROTO_TCP;
 
-    if(isServer){
-        hints.ai_flags = AI_PASSIVE;                   // for the server
-        serverRunning = false;
-    } 
+    // if(isServer){
+    //     hints.ai_flags = AI_PASSIVE;                   // for the server
+    //     serverRunning = false;
+    //     clientsSockets = std::vector <SOCKET> (MAX_NB_CONNECTIONS);
+    //     clientsAddresses = std::vector <std::string> (MAX_NB_CONNECTIONS);
+    //     firstMsgReceived = std::vector <bool> (MAX_NB_CONNECTIONS, false);
+    //     isNewMsgReceived = std::vector <bool> (MAX_NB_CONNECTIONS, false);
+    //     connetionSlots = std::vector <bool> (MAX_NB_CONNECTIONS, false);
+    //     clientIDs = std::vector <std::string> (MAX_NB_CONNECTIONS);
+    //     clientMsgs = std::vector <std::string> (MAX_NB_CONNECTIONS);
+        
+    // } 
 
     isComActive = false;
 
@@ -183,6 +191,13 @@ socketStream::socketStream(const char* svrIPAddress, int srvPosrt, const int soc
     if(isServer){
         hints.ai_flags = AI_PASSIVE;                   // for the server
         serverRunning = false;
+        clientsSockets = std::vector <SOCKET> (MAX_NB_CONNECTIONS);
+        clientsAddresses = std::vector <std::string> (MAX_NB_CONNECTIONS);
+        firstMsgReceived = std::vector <bool> (MAX_NB_CONNECTIONS, false);
+        isNewMsgReceived = std::vector <bool> (MAX_NB_CONNECTIONS, false);
+        connetionSlots = std::vector <bool> (MAX_NB_CONNECTIONS, false);
+        clientIDs = std::vector <std::string> (MAX_NB_CONNECTIONS);
+        clientMsgs = std::vector <std::string> (MAX_NB_CONNECTIONS);
     } 
 
     isComActive = false;
@@ -832,22 +847,27 @@ int socketStream::sendMSg(){
 
 int socketStream::closeCommunication(){
 
-    // std::lock_guard<std::mutex> guard(threadMutex);
 
     // cleanup
     if(isServer){
-        closesocket(ListenSocket);
-        // shutdown the connection since we're done
-        for(int i = 0; i < (int)clientsSockets.size(); i++){
-            iResult = shutdown(clientsSockets[i], SD_SEND);
-            if (iResult == SOCKET_ERROR) {
-                std::cerr << "[socketStream] Shutting-down socket client " << i << " failed with error:" << WSAGetLastError() << std::endl;
-                WSACleanup();
-                return -3;
-            }
-            closesocket(clientsSockets[i]);
-        }
+        
         serverRunning = false;
+
+        // shutdown the connections, if exist
+        for(int i = 0; i < (int)clientsSockets.size(); i++){
+            if(connetionSlots[i]){
+                iResult = shutdown(clientsSockets[i], SD_SEND);
+                if (iResult == SOCKET_ERROR) {
+                    std::cerr << "[socketStream] Shutting-down socket client " << i << " failed with error:" << WSAGetLastError() << std::endl;
+                    WSACleanup();
+                    return -3;
+                }
+            closesocket(clientsSockets[i]);
+            }
+        }
+
+        closesocket(ListenSocket);
+        
         threadMutex.lock();
         std::cout << "[socketStream] All sockets are successfully closed" << std::endl;
         std::cout << "[socketStream] Server is shutted-down" << std::endl;
@@ -932,6 +952,15 @@ int socketStream::checkKeyPressed(std::string key){
 }
 
 
+int socketStream::findEmptySlot(){
+    for (int i = 0; i < (int)connetionSlots.size(); i++ ){
+        if (!connetionSlots[i]){
+            return i;
+        }
+    }
+    return -1;
+}
+
 int socketStream::runServer(){
     if(serverRunning){
         std::thread listenerThread(&socketStream::wait_connections, this);
@@ -958,47 +987,59 @@ int socketStream::wait_connections(){
         return -2;
     }
 
-    std::lock_guard<std::mutex> guard(threadMutex);
+    int slotNumber = -1;
+    int nbConnections = 0;
     while(serverRunning){
         struct sockaddr_in clientAddress;
 
         // Accept a client socket
         SOCKET ClientSocket = accept(ListenSocket, (struct sockaddr *)&clientAddress, NULL);
         if (ClientSocket == INVALID_SOCKET) {
+            
             threadMutex.lock();
-            std::cerr << "[socketStream] Accept failed with error: ";
+            
             #ifdef _WIN32
-                std::cerr << WSAGetLastError();
-                WSACleanup();
+                if(WSAGetLastError()!=10004){
+                    std::cerr << "[socketStream] Accept failed with error: ";
+                    std::cerr << WSAGetLastError();
+                    WSACleanup();
+                    std::cerr << std::endl;
+                }
             #endif
-            std::cerr << std::endl;
             threadMutex.unlock();
             closesocket(ListenSocket);
             return -2;
         }
         std::string clAddStr = inet_ntoa(clientAddress.sin_addr);
-        clientsAddresses.push_back(clAddStr);
-        firstMsgReceived.push_back(false);
+        slotNumber = findEmptySlot();
+        if(slotNumber < 0){
+            iResult = shutdown(ClientSocket, SD_SEND);
+            if (iResult == SOCKET_ERROR) {
+                std::cerr << "[socketStream] Shutdown failed with error:" ;
+                #ifdef _WIN32
+                    std::cerr << WSAGetLastError();
+                    WSACleanup();
+                #endif
+                std::cerr << std::endl;
+                closesocket(ClientSocket);
+            }
+            std::cout << "[socketStream] Connection from " << clAddStr << " is rejected due to maximum connections capacity reached" << std::endl; 
+        }else{
+            threadMutex.lock();
+            clientsAddresses[slotNumber] = clAddStr;
+            firstMsgReceived[slotNumber]= false;
+            isNewMsgReceived[slotNumber] = false;
+            clientsSockets[slotNumber] = ClientSocket;
+            connetionSlots[slotNumber] = true;
+            clientIDs[slotNumber] = std::string("sS_c#") + std::to_string(slotNumber);
+            threadMutex.unlock();
+            std::cout << "[socketStream] Accepted connection from client: " << clAddStr << " with id: " << clientIDs[slotNumber] << std::endl;           
 
-        std::cout << "[socketStream] Accepted connection from client: " << clAddStr << std::endl;
+            std::thread receiverThread(&socketStream::runReceiver, this, slotNumber);
+            receiverThread.detach();
+        }
+        
 
-        std::cout << "number of connections: " << clientsSockets.size() + 1 << std::endl;
-        clientsSockets.push_back(ClientSocket);
-
-        // runReceiver((int)clientsSockets.size() - 1);
-        std::thread receiverThread(&socketStream::runReceiver, this, (int)clientsSockets.size() - 1);
-        receiverThread.detach();
-
-        // if(kbhit()){
-        //     #ifdef _WIN32
-        //         if(getch()=='q')
-        //             break;
-        //     #endif
-        //     #ifdef linux
-        //         if(getch()=='q')
-        //             break;
-        //     #endif
-        // }
         std::cout << "[socketStream] Waiting for new connections ... " << std::endl;
     }
 
@@ -1018,38 +1059,51 @@ int socketStream::runReceiver(int connectionID){
     bool connectionExists = true;
     char clientRecvbuf[DEFAULT_BUFLEN];
     std::string validMsg;
-    bool tmpf = false;
-    
+    bool msgValidity = false;
+
+    threadMutex.lock();
+    SOCKET clntSocket=clientsSockets[connectionID];
+    threadMutex.unlock();
     int counter = 0;
 
+    auto start = std::chrono::steady_clock::now();
+    auto end = std::chrono::steady_clock::now();
     do{
-        iResutlReceiver = recv(clientsSockets[connectionID], clientRecvbuf, bufferSize, 0);
-        if(iResult<0){
+        iResutlReceiver = recv(clntSocket, clientRecvbuf, bufferSize, 0);
+        if(iResutlReceiver<0){
             std::cerr << "[socketStream] Unable to receive data" << std::endl;
         }
         memcpy(tmp_buf, clientRecvbuf, strlen(msg_idf));
         if(strcmp(tmp_buf, msg_idf)==0){
-            std::cout << "[socketStream] New message received, " << ++counter << std::endl;
-            memcpy(tmp_buf, clientRecvbuf + strlen(msg_idf), strlen(clientRecvbuf)- strlen(msg_idf));
+            memcpy(tmp_buf, clientRecvbuf + strlen(msg_idf), strlen(clientRecvbuf) - strlen(msg_idf));
             fullmsg = std::string(tmp_buf);
             while(true){
-                iResutlReceiver = recv(clientsSockets[connectionID], clientRecvbuf, bufferSize, 0);
-                // std::cout << std::string(clientRecvbuf) <<std::endl;
-                if(iResult<0){
+                iResutlReceiver = recv(clntSocket, clientRecvbuf, bufferSize, 0);
+                if(iResutlReceiver<0){
                     std::cerr << "[socketStream] Unable to receive data" << std::endl;
                 }
+                
                 fullmsg += clientRecvbuf;
                 memset(clientRecvbuf, 0, sizeof(clientRecvbuf));
                 if(fullmsg.substr(fullmsg.length()-strlen(endMSG), strlen(endMSG)).compare(endMSG)==0){
-                    // std::cout << fullmsg << std::endl;
-                    validMsg = messageExtractor(fullmsg, &tmpf);
-                    if(tmpf){
-                        // threadMutex.lock();
-                        // if (dDoc.Parse(validMsg.c_str()).HasParseError()){
-                        //     std::cerr << "[socketStream] Unable to convert msg to json format" << std::endl;
-                        // }
-                        // threadMutex.unlock();
-                        msg2return = validMsg;
+                    validMsg = messageExtractor(fullmsg, &msgValidity);
+                    if(msgValidity){
+                        threadMutex.lock();
+                        clientMsgs[connectionID] = validMsg;
+                        if(!isNewMsgReceived[connectionID]){
+                            isNewMsgReceived[connectionID] = true;
+                        }
+                        threadMutex.unlock();
+                        counter++;
+                        end = std::chrono::steady_clock::now();
+                        if((double)(std::chrono::duration_cast<std::chrono::microseconds>(end-start).count())/1000.0 > 1000){
+                            threadMutex.lock();
+                            std::cout<< "[socketStream] Receiving from client " << clientIDs[connectionID] << " with frequency " << counter << " Hz" << std::endl;
+                            threadMutex.unlock();
+                            counter = 0;
+                            start = std::chrono::steady_clock::now();
+                        }
+
                     }
                     if(!firstMsgReceived[connectionID])
                         firstMsgReceived[connectionID] = true;
@@ -1061,21 +1115,27 @@ int socketStream::runReceiver(int connectionID){
         memcpy(tmp_buf, clientRecvbuf, strlen(ec_id));
         if(strcmp(tmp_buf, ec_id)==0){
             // the connection is terminated from client
-            iResutlReceiver = shutdown(clientsSockets[connectionID], SD_SEND);
-            if (iResult == SOCKET_ERROR) {
+            iResutlReceiver = shutdown(clntSocket, SD_SEND);
+            if (iResutlReceiver == SOCKET_ERROR) {
                 std::cerr << "[socketStream] Shutdown failed with error:" ;
                 #ifdef _WIN32
                     std::cerr << WSAGetLastError();
                     WSACleanup();
                 #endif
                 std::cerr << std::endl;
-                closesocket(clientsSockets[connectionID]);
+                closesocket(clntSocket);
                 return -1;
             }
-            std::cout << "[socketStream] Connection terminated by client (id: " << connectionID << ", adrees: " << clientsAddresses[connectionID] << ")" << std::endl;
+            std::cout << "[socketStream] Connection terminated by client (id: " << clientIDs[connectionID] << ", address: " << clientsAddresses[connectionID] << ")" << std::endl;
+            threadMutex.lock();
             firstMsgReceived[connectionID]= false ;
-            clientsSockets.erase(clientsSockets.begin() + connectionID);
-            clientsAddresses.erase(clientsAddresses.begin() + connectionID);
+            clientsSockets[connectionID] = INVALID_SOCKET;
+            clientsAddresses[connectionID] = " ";
+            isNewMsgReceived[connectionID] = false;
+            connetionSlots[connectionID] = false;
+            clientIDs[connectionID] = " ";
+            clientMsgs[connectionID] = " ";
+            threadMutex.unlock();
             connectionExists = false;
         }
         memset(clientRecvbuf, 0, sizeof(clientRecvbuf));
@@ -1099,10 +1159,14 @@ int socketStream::runReceiver(int connectionID){
             connectionExists = false;
             return -1;
         }
-        std::cout << "[socketStream] Connection with the client (id: " << connectionID << ", address: " << clientsAddresses[connectionID] << " ) forcefully terminated" << std::endl;
+        std::cout << "[socketStream] Connection with the client (id: " << clientIDs[connectionID] << ", address: " << clientsAddresses[connectionID] << " ) forcefully terminated" << std::endl;
         firstMsgReceived[connectionID]= false ;
-        clientsSockets.erase(clientsSockets.begin() + connectionID);
-        clientsAddresses.erase(clientsAddresses.begin() + connectionID);
+        clientsSockets[connectionID] = INVALID_SOCKET;
+        clientsAddresses[connectionID] = " ";
+        isNewMsgReceived[connectionID] = false;
+        connetionSlots[connectionID] = false;
+        clientIDs[connectionID] = " ";
+        clientMsgs[connectionID] = " ";
         memset(clientRecvbuf, 0, sizeof(clientRecvbuf));
         memset(tmp_buf, 0, sizeof(tmp_buf));
     }
@@ -1135,15 +1199,28 @@ std::string socketStream::messageExtractor(std::string fullmsg, bool* msgValidit
 
 }
 
-std::string socketStream::get_latest(){
-    // threadMutex.lock();
-    std::string l_msg = msg2return;
-    // threadMutex.unlock();
+std::string socketStream::get_latest(int clSlot){
+    std::string l_msg = clientMsgs[clSlot];
+    if(firstMsgReceived[clSlot]){
+        if(isNewMsgReceived[clSlot]){
+            threadMutex.lock();
+            isNewMsgReceived[clSlot] = false;
+            threadMutex.unlock();
+        }
+    }
     return l_msg;
 }
 
 bool socketStream::sockectStream_ok(){
-    return (serverRunning && firstMsgReceived[0]);
+    bool va1 = serverRunning;
+    if(firstMsgReceived.size()>0){
+        va1 = serverRunning && firstMsgReceived[0];
+        if(isNewMsgReceived.size()>0){
+            va1 = serverRunning && firstMsgReceived[0] && isNewMsgReceived[0];
+        }
+        return va1;
+    }
+    return false;
 }
 
 
@@ -1174,6 +1251,7 @@ socketStream::~socketStream(){
         }
     }
 
-    
+    threadMutex.lock();
     std::cout << "[socketStream] Connection terminated" << std::endl;
+    threadMutex.unlock();
 }

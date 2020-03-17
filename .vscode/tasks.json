@@ -5,6 +5,29 @@
     "tasks": [
         {
             "type": "shell",
+            "label": "g++.exe build sendingWithTime file",
+            "command": "g++.exe",
+            "args": [
+                "-g", "${workspaceFolder}\\source\\sendingWithTime.cpp",
+                "${workspaceFolder}\\source\\socketStream.cpp",
+                "${workspaceFolder}\\source\\md5.cpp",
+                "-o", "${workspaceFolder}\\build\\sendWithTime.exe",
+                "-O3",
+                "-lws2_32",
+                "-I", "${env:CPP_DEPENDENCIES}\\rapidjson\\include",
+                "-I", "${workspaceFolder}\\include",
+                "-I", "${workspaceFolder}\\source"
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "type": "shell",
             "label": "g++.exe build diagnostics file",
             "command": "g++.exe",
             "args": [

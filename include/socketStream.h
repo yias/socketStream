@@ -50,6 +50,7 @@
 #define DEFAULT_HOST_IP "localhost"
 #define SOCKETSTREAM_SERVER 1
 #define SOCKETSTREAM_CLIENT 0
+#define MAX_NB_CONNECTIONS 10
 
 
 class socketStream{
@@ -65,7 +66,11 @@ class socketStream{
     SOCKET ListenSocket;                            // for the server
     std::vector <SOCKET> clientsSockets;
     std::vector <std::string> clientsAddresses;
-    std::vector <bool> firstMsgReceived; 
+    std::vector <bool> firstMsgReceived;
+    std::vector <bool> isNewMsgReceived;
+    std::vector <bool> connetionSlots;
+    std::vector <std::string> clientIDs;
+    std::vector <std::string> clientMsgs;
 
     std::mutex threadMutex;
 
@@ -121,11 +126,15 @@ class socketStream{
 
     std::string messageExtractor(std::string fullmsg, bool* msgValidity);
 
+    int runReceiver(int connectionID);
+
+    int findEmptySlot();
+
 public:
 
     socketStream(void);                                                                                         // empty constructor, setting the default values, default: TCP client
 
-    socketStream(const char* scrIPAdress, const int socketStreamMode = SOCKETSTREAM_CLIENT);                    // constructor with setting the server IP address
+    socketStream(const char* scrIPAdress);                    // constructor with setting the server IP address
 
     socketStream(const char* svrIPAddress, int srvPosrt, const int socketStreamMode = SOCKETSTREAM_CLIENT);     // constructor with setting the server IP address and port
 
@@ -166,9 +175,7 @@ public:
 
     int runServer();
 
-    int runReceiver(int connectionID);
-
-    std::string get_latest();
+    std::string get_latest(int clSlot);
 
     bool sockectStream_ok();
 

@@ -25,25 +25,28 @@ int main(int argc, char **argv){
 
 
     std::string msg;
+    rapidjson::Document tmp_doc;
+    int counter = 0;
 
     while(true){
-        std::cout << int(svrHdlr.sockectStream_ok()) << std::endl;
         if(svrHdlr.sockectStream_ok()){
-            msg = svrHdlr.get_latest();
-            std::cout << msg << std::endl;
+            msg = svrHdlr.get_latest(0);
+            // if(tmp_doc.Parse(msg.c_str()).HasParseError()){
+            //     std::cerr << "Unable to convert msg to json format" << std::endl;
+            // }
+            // std::cout << "messages: " << ++counter << std::endl;
         }
 
-        // if(kbhit()){
-        //     #ifdef _WIN32
-        //         if(getch()=='q')
-        //             
-        //             break;
-        //     #endif
-        //     #ifdef linux
-        //         if(getch()=='q')
-        //             break;
-        //     #endif
-        // }
+        if(kbhit()){
+            #ifdef _WIN32
+                if(getch()=='q')
+                    break;
+            #endif
+            #ifdef linux
+                if(getch()=='q')
+                    break;
+            #endif
+        }
     } 
 
     svrHdlr.closeCommunication();
