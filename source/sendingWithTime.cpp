@@ -62,6 +62,8 @@ int main(int argc, char **argv){
         return -4;
     }
 
+    socketHdlr.set_clientName("sendWtime");
+
     // attemp a connection with the server
     if(socketHdlr.make_connection()<0){
         std::cerr << "Unable to connect to " << srvIP << std::endl;
@@ -73,7 +75,7 @@ int main(int argc, char **argv){
 
     double time2run = 60000;
 
-    std::chrono::milliseconds timespan(1);
+    std::chrono::milliseconds timespan(150);
     
     while((double)(std::chrono::duration_cast<std::chrono::microseconds>(end-start).count())/1000.0 < time2run){
         // send the message to the server
@@ -82,7 +84,7 @@ int main(int argc, char **argv){
             return -6;
         }
         end = std::chrono::steady_clock::now();
-        // std::this_thread::sleep_for(timespan);
+        std::this_thread::sleep_for(timespan);
     }
     
 

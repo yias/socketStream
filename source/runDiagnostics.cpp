@@ -67,7 +67,8 @@ int main(int argc, char **argv){
     // create an sockectStream object with the selected server IP address 
     socketStream socketHdlr(srvIP);
 
-    // return 0;
+    // set client's name
+    socketHdlr.set_clientName("diagnostics");
 
     // decalre a variable as a vector of strings for containing the fields of the message
     std::vector <std::string> test_rjson;

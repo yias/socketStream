@@ -59,6 +59,8 @@ socketStream::socketStream(void){
 
     msgOHstring = std::string(std::to_string(bufferSize).length(), ' ');
 
+    clientName = randomString(5);
+
     Host_IP = DEFAULT_HOST_IP;
 
     Host_Port = DEFAULT_PORT;
@@ -89,13 +91,8 @@ socketStream::socketStream(const char* svrIPAddress){
     result = NULL;
     
     ptr = NULL;
-
-    // if(socketStreamMode==SOCKETSTREAM_SERVER){
-    //     isServer = true;
-    // }else{
-    //     isServer = false;
-    // }
     
+    isServer = false;
 
     msg_idf = "!&?5";
 
@@ -113,6 +110,8 @@ socketStream::socketStream(const char* svrIPAddress){
 
     msgOHstring = std::string(std::to_string(bufferSize).length(), ' ');
 
+    clientName = randomString(5);
+
     Host_IP = svrIPAddress;
 
     Host_Port = DEFAULT_PORT;
@@ -122,19 +121,6 @@ socketStream::socketStream(const char* svrIPAddress){
     hints.ai_family = AF_INET;
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_protocol = IPPROTO_TCP;
-
-    // if(isServer){
-    //     hints.ai_flags = AI_PASSIVE;                   // for the server
-    //     serverRunning = false;
-    //     clientsSockets = std::vector <SOCKET> (MAX_NB_CONNECTIONS);
-    //     clientsAddresses = std::vector <std::string> (MAX_NB_CONNECTIONS);
-    //     firstMsgReceived = std::vector <bool> (MAX_NB_CONNECTIONS, false);
-    //     isNewMsgReceived = std::vector <bool> (MAX_NB_CONNECTIONS, false);
-    //     connetionSlots = std::vector <bool> (MAX_NB_CONNECTIONS, false);
-    //     clientIDs = std::vector <std::string> (MAX_NB_CONNECTIONS);
-    //     clientMsgs = std::vector <std::string> (MAX_NB_CONNECTIONS);
-        
-    // } 
 
     isComActive = false;
 
@@ -177,6 +163,8 @@ socketStream::socketStream(const char* svrIPAddress, int srvPosrt, const int soc
     msgHeader = std::string(headerSize, ' ');
 
     msgOHstring = std::string(std::to_string(bufferSize).length(), ' ');
+
+    clientName = randomString(5);
 
     Host_IP = svrIPAddress;
 
@@ -418,12 +406,30 @@ int socketStream::make_connection(){
         return -2;
     }
 
+    bool validConnection = handshake_server(10);
+    if(!validConnection){
+        std::cout << "[socketStream] Handshake protocol failed! Closing connection with the server" << std::endl;
+        closesocket(ConnectSocket);
+        ConnectSocket = INVALID_SOCKET;
+        #ifdef _WIN32
+            WSACleanup();
+        #endif
+        return -3;
+    }
+
     std::cout << "[socketStream] Connected to server " << Host_IP << " in port " << Host_Port << std::endl;
 
     isComActive = true;
 
     return 0;
 
+}
+
+int socketStream::set_clientName(std::string cID){
+
+    clientName = cID;
+
+    return 0;
 }
 
 int socketStream::initialize_msgStruct(std::vector <std::string> fields){
@@ -785,6 +791,7 @@ int socketStream::sendMSg(){
         str_buffer.Clear();
         final_msg.clear();
         msg2send.clear();
+        msgHeader = std::string(headerSize, ' ');
 
         // rapidjson::Writer<rapidjson::StringBuffer> writer(str_buffer);
 
@@ -1025,18 +1032,33 @@ int socketStream::wait_connections(){
             }
             std::cout << "[socketStream] Connection from " << clAddStr << " is rejected due to maximum connections capacity reached" << std::endl; 
         }else{
-            threadMutex.lock();
-            clientsAddresses[slotNumber] = clAddStr;
-            firstMsgReceived[slotNumber]= false;
-            isNewMsgReceived[slotNumber] = false;
-            clientsSockets[slotNumber] = ClientSocket;
-            connetionSlots[slotNumber] = true;
-            clientIDs[slotNumber] = std::string("sS_c#") + std::to_string(slotNumber);
-            threadMutex.unlock();
-            std::cout << "[socketStream] Accepted connection from client: " << clAddStr << " with id: " << clientIDs[slotNumber] << std::endl;           
+            bool validclient = handshake_client(ClientSocket, 10, slotNumber);
+            if(!validclient){
+                std::cout << "[socketStream] Handshake protocol with client " << clAddStr << " failed! Closing connection with client." << std::endl;
+                iResult = shutdown(ClientSocket, SD_SEND);
+                if (iResult == SOCKET_ERROR) {
+                    std::cerr << "[socketStream] Shutdown failed with error:" ;
+                    #ifdef _WIN32
+                        std::cerr << WSAGetLastError();
+                        WSACleanup();
+                    #endif
+                    std::cerr << std::endl;
+                    closesocket(ClientSocket);
+                }
+            }else{
+                threadMutex.lock();
+                clientsAddresses[slotNumber] = clAddStr;
+                firstMsgReceived[slotNumber]= false;
+                isNewMsgReceived[slotNumber] = false;
+                clientsSockets[slotNumber] = ClientSocket;
+                connetionSlots[slotNumber] = true;
+                // clientIDs[slotNumber] = std::string("sS_c#") + std::to_string(slotNumber);
+                threadMutex.unlock();
+                std::cout << "[socketStream] Accepted connection from client: " << clAddStr << " with id: " << clientIDs[slotNumber] << std::endl;           
 
-            std::thread receiverThread(&socketStream::runReceiver, this, slotNumber);
-            receiverThread.detach();
+                std::thread receiverThread(&socketStream::runReceiver, this, slotNumber);
+                receiverThread.detach();
+            }
         }
         
 
@@ -1098,7 +1120,7 @@ int socketStream::runReceiver(int connectionID){
                         end = std::chrono::steady_clock::now();
                         if((double)(std::chrono::duration_cast<std::chrono::microseconds>(end-start).count())/1000.0 > 1000){
                             threadMutex.lock();
-                            std::cout<< "[socketStream] Receiving from client " << clientIDs[connectionID] << " with frequency " << counter << " Hz" << std::endl;
+                            std::cout<< "[socketStream] Receiving from client \"" << clientIDs[connectionID] << "\" with frequency " << counter << " Hz" << std::endl;
                             threadMutex.unlock();
                             counter = 0;
                             start = std::chrono::steady_clock::now();
@@ -1126,7 +1148,7 @@ int socketStream::runReceiver(int connectionID){
                 closesocket(clntSocket);
                 return -1;
             }
-            std::cout << "[socketStream] Connection terminated by client (id: " << clientIDs[connectionID] << ", address: " << clientsAddresses[connectionID] << ")" << std::endl;
+            std::cout << "[socketStream] Connection terminated by client (id: \"" << clientIDs[connectionID] << "\", address: " << clientsAddresses[connectionID] << ")" << std::endl;
             threadMutex.lock();
             firstMsgReceived[connectionID]= false ;
             clientsSockets[connectionID] = INVALID_SOCKET;
@@ -1176,8 +1198,7 @@ int socketStream::runReceiver(int connectionID){
 
 
 std::string socketStream::messageExtractor(std::string fullmsg, bool* msgValidity){
-
-    // std::string msg;
+    
     int bfrDigits = std::strlen(std::to_string(bufferSize).c_str());
     int msgSize = std::stoi(fullmsg.substr(0, headerSize).c_str());
     int msgOverhead = std::stoi(fullmsg.substr(headerSize + 1, headerSize + 1 + bfrDigits));
@@ -1199,30 +1220,334 @@ std::string socketStream::messageExtractor(std::string fullmsg, bool* msgValidit
 
 }
 
-std::string socketStream::get_latest(int clSlot){
-    std::string l_msg = clientMsgs[clSlot];
-    if(firstMsgReceived[clSlot]){
-        if(isNewMsgReceived[clSlot]){
+std::string socketStream::get_latest(){
+    std::string l_msg = clientMsgs[0];
+    if(firstMsgReceived[0]){
+        if(isNewMsgReceived[0]){
             threadMutex.lock();
-            isNewMsgReceived[clSlot] = false;
+            isNewMsgReceived[0] = false;
             threadMutex.unlock();
         }
     }
     return l_msg;
 }
 
-bool socketStream::sockectStream_ok(){
-    bool va1 = serverRunning;
-    if(firstMsgReceived.size()>0){
-        va1 = serverRunning && firstMsgReceived[0];
-        if(isNewMsgReceived.size()>0){
-            va1 = serverRunning && firstMsgReceived[0] && isNewMsgReceived[0];
+std::string socketStream::get_latest(std::string cltName, bool* newMSG){
+    std::string l_msg = "";
+    
+    auto srch_result = std::find(std::begin(clientIDs), std::end(clientIDs), cltName);
+    if(srch_result != std::end(clientIDs)){
+        int idx= std::distance(clientIDs.begin(),srch_result);
+        *newMSG = isNewMsgReceived[idx];
+        if(isNewMsgReceived[idx]){ 
+            threadMutex.lock();
+            isNewMsgReceived[idx] = false;
+            threadMutex.unlock();
         }
-        return va1;
+
+        return clientMsgs[idx];
     }
+
+    std::cout << "[socketStream] The client \"" << cltName << "\" is not connected. Check if the name is correct" << std::endl;
+    std::cout << "[socketStream] Returning empty string" << std::endl;
+
+    return "";
+}
+
+bool socketStream::sockectStream_ok(){
+    bool tmp = false;
+    
+    std::for_each(connetionSlots.begin(), connetionSlots.end(),[&tmp](const bool &connetionSlots){tmp = tmp || connetionSlots;});
+    
+    std::for_each(firstMsgReceived.begin(), firstMsgReceived.end(),[&tmp](const bool &firstMsgReceived){tmp = tmp || firstMsgReceived;});
+    
+    std::for_each(isNewMsgReceived.begin(), isNewMsgReceived.end(),[&tmp](const bool &isNewMsgReceived){tmp = tmp || isNewMsgReceived;});
+    
+    return (tmp && serverRunning);
+
+}
+
+
+std::string socketStream::randomString(int strlength){
+    std::string numbersLetters = "0123456789ABCDEFGHIJKLMNOPQRSTWXYZabcdefghijklmnopqrstwxyz";
+
+    std::string randomStr;
+    for(int i = 0; i < strlength; i++){
+        randomStr+=numbersLetters[rand() % numbersLetters.length()];
+    }
+
+    return randomStr;
+}
+
+
+bool socketStream::handshake_client(SOCKET conc, int strlength, int slotNb){
+
+    int iResutlReceiver = 0;
+    int uHsKey = 1;
+    char clientRecvbuf[DEFAULT_BUFLEN];
+    bool msgValidity = false;
+    std::vector <double> ping_times(10,0);
+    std::vector <double> compute_times(10,0);
+    std::vector <bool> validity_counter(10, false);
+    std::string validMsg;
+    std::string fullmsg;
+
+    auto start_ping = std::chrono::steady_clock::now();
+    auto end_ping = std::chrono::steady_clock::now();
+
+    memset(clientRecvbuf, 0, sizeof(clientRecvbuf));
+    for(int i = 0; i < 10; i++){
+        while(true){
+            iResutlReceiver = recv(conc, clientRecvbuf, bufferSize, 0);
+            if(iResutlReceiver<0){
+                std::cerr << "[socketStream] Unable to receive data" << std::endl;
+            }
+            fullmsg += std::string(clientRecvbuf);
+            memset(clientRecvbuf, 0, sizeof(clientRecvbuf));
+            if(fullmsg.substr(fullmsg.length()-strlen(endMSG), strlen(endMSG)).compare(endMSG)==0){
+                 break;
+            }
+        }
+        end_ping = std::chrono::steady_clock::now();
+        ping_times[i]=(double)(std::chrono::duration_cast<std::chrono::microseconds>(end_ping-start_ping).count())/1000.0;
+        validMsg = messageExtractor(fullmsg.substr(strlen(msg_idf), fullmsg.length()), &msgValidity);
+        validity_counter[i] = msgValidity;
+        
+        std::string ranString=randomString(strlength);
+        start_ping = std::chrono::steady_clock::now();
+        std::string md5_key = md5(ranString.c_str());
+
+        
+
+        // introduce the lenght of the string in the header of the file
+        std::ostringstream i2s;
+        i2s << ranString.length();
+
+        msgHeader.replace(msgHeader.begin(),msgHeader.end()+i2s.str().length()-msgHeader.length(),i2s.str());
+        ranString += md5_key;
+        // compute the overhead of the message
+        msgOverhead = (int((ranString.length()+minMsgSize)/bufferSize)+1)*bufferSize - (ranString.length()+minMsgSize);
+
+        std::ostringstream i2s2;
+        i2s2 << msgOverhead;        
+
+        msgOHstring.replace(msgOHstring.begin(),msgOHstring.end()+i2s2.str().length()-msgOHstring.length(),i2s2.str());
+
+        // compose the final message
+        final_msg = msg_idf + msgHeader + std::to_string(uHsKey) + msgOHstring + ranString + std::string(msgOverhead, ' ') + endMSG;
+
+        end_ping = std::chrono::steady_clock::now();
+        compute_times[i] = (double)(std::chrono::duration_cast<std::chrono::microseconds>(end_ping-start_ping).count())/1000.0;
+        start_ping = std::chrono::steady_clock::now();
+        iResutlReceiver = send(conc, final_msg.c_str(), (int)final_msg.size(), 0 );
+        if (iResutlReceiver == SOCKET_ERROR) {
+            std::cerr << "[socketStream] Send message failed with error: " << WSAGetLastError() << std::endl;
+            closesocket(conc);
+            #ifdef _WIN32
+                WSACleanup();
+            #endif
+            return false;
+        }
+        
+        memset(clientRecvbuf, 0, sizeof(clientRecvbuf));
+        fullmsg.clear();
+        final_msg.clear();
+        msgHeader = std::string(headerSize, ' ');
+    }
+
+    double sumVec1 = 0;
+    // find the average computational time and ping time and print it in the terminal
+    for(auto& n: compute_times){
+        sumVec1 += n;
+    }
+    double avCompute = sumVec1/(double)compute_times.size();
+
+    double sumVec2 = 0;
+    for(auto& n: ping_times){
+        sumVec2 += n;
+    }
+    double avPing = sumVec2/(double)ping_times.size();
+
+    double validityAverage = 0;
+    for(int i = 0; i<validity_counter.size(); i++){
+        validityAverage += double(validity_counter[i]);
+    }
+    validityAverage = validityAverage/(double)validity_counter.size();
+
+    if(validityAverage==1){
+        while(true){
+            iResutlReceiver = recv(conc, clientRecvbuf, bufferSize, 0);
+            if(iResutlReceiver<0){
+                std::cerr << "[socketStream] Unable to receive data" << std::endl;
+            }
+            fullmsg += std::string(clientRecvbuf);
+            memset(clientRecvbuf, 0, sizeof(clientRecvbuf));
+            if(fullmsg.substr(fullmsg.length()-strlen(endMSG), strlen(endMSG)).compare(endMSG)==0){
+                 break;
+            }
+        }        
+        validMsg = messageExtractor(fullmsg.substr(strlen(msg_idf), fullmsg.length()), &msgValidity);
+
+        threadMutex.lock();
+        if(msgValidity){
+            clientIDs[slotNb]=validMsg;
+        }else{
+            clientIDs[slotNb]="None";
+        }
+        std::cout << "[socketStream] Average ping time to the client: " << avPing << " ms" << std::endl;
+        std::cout << "[socketStream] message construction time: " << avCompute << " ms" << std::endl;
+        threadMutex.unlock();
+        return true;
+    }
+
+    
+    
+
     return false;
 }
 
+bool socketStream::handshake_server(int strlength){
+
+    // std::cout << "inside handshake_server\n";
+
+    int iResutlReceiver = 0;
+    int uHsKey = 1;
+    char clientRecvbuf[DEFAULT_BUFLEN];
+    bool msgValidity = false;
+    std::vector <double> ping_times(10,0);
+    std::vector <double> compute_times(10,0);
+    std::vector <bool> validity_counter(10, false);
+    std::string validMsg;
+    std::string fullmsg;
+
+    auto start_ping = std::chrono::steady_clock::now();
+    auto end_ping = std::chrono::steady_clock::now();
+
+    memset(clientRecvbuf, 0, sizeof(clientRecvbuf));
+    for(int i = 0; i < 10; i++){
+        std::string ranString=randomString(strlength);
+        start_ping = std::chrono::steady_clock::now();
+        std::string md5_key = md5(ranString.c_str());
+
+        
+
+        // introduce the lenght of the string in the header of the file
+        std::ostringstream i2s;
+        i2s << ranString.length();
+
+        msgHeader.replace(msgHeader.begin(),msgHeader.end()+i2s.str().length()-msgHeader.length(),i2s.str());
+        ranString += md5_key;
+        // compute the overhead of the message
+        msgOverhead = (int((ranString.length()+minMsgSize)/bufferSize)+1)*bufferSize - (ranString.length()+minMsgSize);
+
+        std::ostringstream i2s2;
+        i2s2 << msgOverhead;        
+
+        msgOHstring.replace(msgOHstring.begin(),msgOHstring.end()+i2s2.str().length()-msgOHstring.length(),i2s2.str());
+
+        // compose the final message
+        final_msg = msg_idf + msgHeader + std::to_string(uHsKey) + msgOHstring + ranString + std::string(msgOverhead, ' ') + endMSG;
+
+        end_ping = std::chrono::steady_clock::now();
+        compute_times[i] = (double)(std::chrono::duration_cast<std::chrono::microseconds>(end_ping-start_ping).count())/1000.0;
+        start_ping = std::chrono::steady_clock::now();
+        iResutlReceiver = send(ConnectSocket, final_msg.c_str(), (int)final_msg.size(), 0 );
+        if (iResutlReceiver == SOCKET_ERROR) {
+            std::cerr << "[socketStream] Send message failed with error: " << WSAGetLastError() << std::endl;
+            closesocket(ConnectSocket);
+            #ifdef _WIN32
+                WSACleanup();
+            #endif
+            return false;
+        }
+        
+        while(true){
+            iResutlReceiver = recv(ConnectSocket, clientRecvbuf, bufferSize, 0);
+            if(iResutlReceiver<0){
+                std::cerr << "[socketStream] Unable to receive data" << std::endl;
+            }
+            fullmsg += std::string(clientRecvbuf);
+            memset(clientRecvbuf, 0, sizeof(clientRecvbuf));
+             if(fullmsg.substr(fullmsg.length()-strlen(endMSG), strlen(endMSG)).compare(endMSG)==0){
+                 break;
+            }
+        }
+        end_ping = std::chrono::steady_clock::now();
+        ping_times[i]=(double)(std::chrono::duration_cast<std::chrono::microseconds>(end_ping-start_ping).count())/1000.0;
+        validMsg = messageExtractor(fullmsg.substr(strlen(msg_idf), fullmsg.length()), &msgValidity);
+        validity_counter[i] = msgValidity;
+
+        memset(clientRecvbuf, 0, sizeof(clientRecvbuf));
+        fullmsg.clear();
+        final_msg.clear();
+        msgHeader = std::string(headerSize, ' ');
+    }
+
+    double sumVec1 = 0;
+    // find the average computational time and ping time and print it in the terminal
+    for(auto& n: compute_times){
+        sumVec1 += n;
+    }
+    double avCompute = sumVec1/(double)compute_times.size();
+
+    double sumVec2 = 0;
+    for(auto& n: ping_times){
+        sumVec2 += n;
+    }
+    double avPing = sumVec2/(double)ping_times.size();
+
+    double validityAverage = 0;
+    for(int i = 0; i<validity_counter.size(); i++){
+        validityAverage += double(validity_counter[i]);
+    }
+    validityAverage = validityAverage/(double)validity_counter.size();
+
+    if(validityAverage==1){
+        //send the name of the client
+        std::string ranString=clientName;
+        std::string md5_key = md5(ranString.c_str());
+        
+
+        // introduce the lenght of the string in the header of the file
+        std::ostringstream i2s;
+        i2s << ranString.length();
+        // std::cout << "length of my name"
+
+        msgHeader.replace(msgHeader.begin(),msgHeader.end()+i2s.str().length()-msgHeader.length(),i2s.str());
+        ranString += md5_key;
+        // compute the overhead of the message
+        msgOverhead = (int((ranString.length()+minMsgSize)/bufferSize)+1)*bufferSize - (ranString.length()+minMsgSize);
+
+        std::ostringstream i2s2;
+        i2s2 << msgOverhead;        
+
+        msgOHstring.replace(msgOHstring.begin(),msgOHstring.end()+i2s2.str().length()-msgOHstring.length(),i2s2.str());
+
+        // compose the final message
+        final_msg = msg_idf + msgHeader + std::to_string(uHsKey) + msgOHstring + ranString + std::string(msgOverhead, ' ') + endMSG;  
+        iResutlReceiver = send(ConnectSocket, final_msg.c_str(), (int)final_msg.size(), 0 );
+        if (iResutlReceiver == SOCKET_ERROR) {
+            std::cerr << "[socketStream] Send message failed with error: " << WSAGetLastError() << std::endl;
+            closesocket(ConnectSocket);
+            #ifdef _WIN32
+                WSACleanup();
+            #endif
+            return false;
+        }
+
+        // print some diagnostics
+        threadMutex.lock();
+        std::cout << "[socketStream] Average ping time to the server: " << avPing << " ms" << std::endl;
+        std::cout << "[socketStream] Average message construction time: " << avCompute << " ms" << std::endl;
+        threadMutex.unlock();
+        fullmsg.clear();
+        final_msg.clear();
+        msgHeader = std::string(headerSize, ' ');
+        return true;
+    }
+
+    return false;
+}
 
 socketStream::~socketStream(){
 

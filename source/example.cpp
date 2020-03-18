@@ -60,6 +60,9 @@ int main(int argc, char **argv){
         return -4;
     }
 
+    // set client's name
+    socketHdlr.set_clientName("example");
+
     // attemp a connection with the server
     if(socketHdlr.make_connection()<0){
         std::cerr << "Unable to connect to " << srvIP << std::endl;

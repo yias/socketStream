@@ -27,10 +27,12 @@ int main(int argc, char **argv){
     std::string msg;
     rapidjson::Document tmp_doc;
     int counter = 0;
+    bool isNew = false;
 
     while(true){
         if(svrHdlr.sockectStream_ok()){
-            msg = svrHdlr.get_latest(0);
+            msg = svrHdlr.get_latest("sendWtime", &isNew);
+            // std::cout << msg << std::endl;
             // if(tmp_doc.Parse(msg.c_str()).HasParseError()){
             //     std::cerr << "Unable to convert msg to json format" << std::endl;
             // }

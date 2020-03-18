@@ -119,7 +119,7 @@ class socketStream():
             if t_time0!=0.0:
                 ping_times[i-1]=time.time()-t_time0
             t_time=time.time()
-            msg_validity, tr_msg = self.msgExtractor(msg_full,HEADERSIZE,self.endMSG)
+            msg_validity, tr_msg = self.msgExtractor(msg_full,HEADERSIZE)
             validity_counter[i]=msg_validity
 
             dcdr=hashlib.md5()
@@ -269,7 +269,6 @@ class socketStream():
 
     def wait_connections(self):
         print('[socketStream] Waiting for connections ... ')
-        counter = 0
         while(self.serverRunnig):
             # check if any connection inquire exists and accept it
             self.connection, self.client_address = self.sock.accept()
@@ -281,48 +280,4 @@ class socketStream():
             testThrd.join()
     
     
-                
-            # except KeyboardInterrupt:
-            #     # if Ctrl+C is pressed in the keyboard, close the connections (if any) and exit
-            #     if self.connection_exist:
-            #         self.connection.close()
-            #         self.connection_exist = False
-            #         self.serverRunnig = False
-            #     self.close_communication()
-            #     break
-            # finally:
-            #     if not self.connection_exist:
-            #         print('waiting for connections ... ')
-            #     pass
-
-
-    # def wait_connections(self):
-    #     print('waiting for connections ... ')
-    #     counter = 0
-    #     while(self.serverRunnig):
-    #         # print(counter)
-    #         counter +=1
-    #         try:
-    #             # check if any connection inquire exists and accept it
-    #             self.connection, self.client_address = self.sock.accept()
-    #             print('connection from ', self.client_address)
-    #             testThrd = threading.Thread(target=self.runReceiver, args = ())
-    #             testThrd.daemon = True
-    #             self.connection_exist = True
-    #             testThrd.start()
-    #             testThrd.join()
-    #             # self.ReceiverThread.start()
-                
-                
-    #         except KeyboardInterrupt:
-    #             # if Ctrl+C is pressed in the keyboard, close the connections (if any) and exit
-    #             if self.connection_exist:
-    #                 self.connection.close()
-    #                 self.connection_exist = False
-    #                 self.serverRunnig = False
-    #             self.close_communication()
-    #             break
-    #         finally:
-    #             if not self.connection_exist:
-    #                 print('waiting for connections ... ')
-    #             pass
+  

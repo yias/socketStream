@@ -16,6 +16,7 @@
 #include <vector>
 #include <string>
 #include <sstream>
+#include <algorithm>
 
 // include library for socket programming
 #ifdef _WIN32
@@ -110,6 +111,7 @@ class socketStream{
     unsigned int msgOverhead;
     // unsigned int msgOverhead_buffer;
 
+    std::string clientName;
     std::string msgHeader;                                                          // the header of the message containing the size of the data
     std::string msg2send;                                                           // the message to be sent
     std::string final_msg;                                                          // the message including the header and the message identifications
@@ -129,6 +131,12 @@ class socketStream{
     int runReceiver(int connectionID);
 
     int findEmptySlot();
+
+    bool handshake_client(SOCKET conc, int strlength, int slotNb);
+
+    bool handshake_server(int strlength);
+
+    std::string randomString(int strlength);
 
 public:
 
@@ -152,7 +160,8 @@ public:
 
     int printMSGString();                                                           // get the message contents as strins
 
-    
+    int set_clientName(std::string cID);
+
     int updateMSG(std::string field, const char *value);                                  // update the specific field of the message (for strings)
     int updateMSG(std::string field, int *value, int arraylength);                  // update the specific field of the message (for array of integers)
     int updateMSG(std::string field, double *value, int arraylength);               // update the specific field of the message (for array of doubles)
@@ -175,7 +184,8 @@ public:
 
     int runServer();
 
-    std::string get_latest(int clSlot);
+    std::string get_latest();
+    std::string get_latest(std::string cltName, bool* newMSG);
 
     bool sockectStream_ok();
 
