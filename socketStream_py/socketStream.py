@@ -63,7 +63,7 @@ class socketStream():
         self.msg_idf_len = len(self.msg_idf)
 
         # minimum size of the packet
-        self.minMsgSize = len(self.msg_idf) + self.HEADERSIZE + len(self.endMSG) + self.bfrDigits+1;
+        self.minMsgSize = len(self.msg_idf) + self.HEADERSIZE + len(self.endMSG) + self.bfrDigits+1
 
         # the use or no of checksum
         self.useHashKey = True
@@ -134,7 +134,7 @@ class socketStream():
             msg_len=('{:<'+str(self.HEADERSIZE)+'}').format(str(sys.getsizeof(test_msg)))
             # compute the overhead of the message
             ranString = test_msg + chSum
-            msgOverhead = (int((len(ranString)+self.minMsgSize)/self.BUFFER_SIZE)+1)*self.BUFFER_SIZE - (len(ranString)+self.minMsgSize);
+            msgOverhead = (int((len(ranString)+self.minMsgSize)/self.BUFFER_SIZE)+1)*self.BUFFER_SIZE - (len(ranString)+self.minMsgSize)
             overheadStr = " " * msgOverhead
             compute_times[i]=time.time()-t_time
             msg2send = self.msg_idf+msg_len+str(int(self.useHashKey))+str(msgOverhead)+(test_msg)+chSum+overheadStr+self.endMSG
@@ -169,7 +169,7 @@ class socketStream():
                 self.connection_exist = True
                 print('[socketStream] Connection from ', self.client_address)
 
-                counter = 0;
+                counter = 0
                 while(True):
                 # retrieve the message identifier. once it is received, compose the message
                     data=self.connection.recv(self.BUFFER_SIZE)
