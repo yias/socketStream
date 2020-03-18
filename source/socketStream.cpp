@@ -1181,7 +1181,7 @@ int socketStream::runReceiver(int connectionID){
             connectionExists = false;
             return -1;
         }
-        std::cout << "[socketStream] Connection with the client (id: " << clientIDs[connectionID] << ", address: " << clientsAddresses[connectionID] << " ) forcefully terminated" << std::endl;
+        std::cout << "[socketStream] Connection with the client (id: " << clientIDs[connectionID] << ", address: " << clientsAddresses[connectionID] << " ) forcibly terminated" << std::endl;
         firstMsgReceived[connectionID]= false ;
         clientsSockets[connectionID] = INVALID_SOCKET;
         clientsAddresses[connectionID] = " ";
@@ -1469,7 +1469,7 @@ bool socketStream::handshake_server(int strlength){
             fullmsg += std::string(clientRecvbuf);
             memset(clientRecvbuf, 0, sizeof(clientRecvbuf));
              if(fullmsg.substr(fullmsg.length()-strlen(endMSG), strlen(endMSG)).compare(endMSG)==0){
-                 break;
+                break;
             }
         }
         end_ping = std::chrono::steady_clock::now();

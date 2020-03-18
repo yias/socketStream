@@ -87,5 +87,6 @@
         "xlocmon": "cpp",
         "xloctime": "cpp"
     },
-    "C_Cpp.errorSquiggles": "Disabled"
+    "C_Cpp.errorSquiggles": "Disabled",
+    "python.pythonPath": "C:\\ProgramData\\Anaconda3\\envs\\pyStream\\python.exe"
 }

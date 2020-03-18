@@ -53,8 +53,20 @@ class socketStream():
         # listen for new connections
         self.sock.listen(1)
 
+        # clients name
+        self.clientName = ''
+
+        # the number of digits of the buffersize
         self.bfrDigits = len(str(self.BUFFER_SIZE))
+
+        # the lenght of the message identifier
         self.msg_idf_len = len(self.msg_idf)
+
+        # minimum size of the packet
+        self.minMsgSize = len(self.msg_idf) + self.HEADERSIZE + len(self.endMSG) + self.bfrDigits+1;
+
+        # the use or no of checksum
+        self.useHashKey = True
 
         self.serverRunnig = True
 
@@ -68,14 +80,8 @@ class socketStream():
 
         self.msg_data = {}
 
-        # self.numberofConnections = 0
-        # self.sConnections = []
-        # self.clientAdresses = []
-        # self.receiverThreads = []
-
         self.ReceiverThread = threading.Thread(target=self.runReceiver, args = ())
         self.ReceiverThread.daemon = True
-        # self.thread.start()
 
 
         self.lock = threading.Lock()
@@ -99,40 +105,50 @@ class socketStream():
         letters = string.ascii_lowercase
         return ''.join(random.choice(letters) for i in range(strlength))
 
-    def handShake(self,conn, strlength):
+    def handShake_client(self,conn, strlength):
     
         ping_times=np.empty([10,1], dtype=np.float64)
         compute_times=np.empty([10,1], dtype=np.float64)
         validity_counter=np.empty([10,1], dtype=bool)
-        HEADERSIZE=4
         t_time0=0.0
 
         # receive and send random msgs to the client 10 times
         for i in range(10):
             msg_full=''
             while (True):
-                dataT=conn.recv(4)
-                msg_full+=dataT
-                if msg_full[-4:].decode('utf-8')==self.endMSG:
+                dataT=conn.recv(self.BUFFER_SIZE)
+                msg_full+=dataT.decode("utf-8")
+                if msg_full[-4:]==self.endMSG:
                     break
 
             if t_time0!=0.0:
                 ping_times[i-1]=time.time()-t_time0
             t_time=time.time()
-            msg_validity, tr_msg = self.msgExtractor(msg_full,HEADERSIZE)
+            msg_validity, tr_msg = self.msgExtractor(msg_full[len(self.msg_idf):])
             validity_counter[i]=msg_validity
 
             dcdr=hashlib.md5()
             test_msg=self.randomString(strlength)
-            dcdr.update(test_msg)
+            dcdr.update(test_msg.encode('utf-8'))
             chSum=dcdr.hexdigest()
-            msg_len=('{:<'+str(HEADERSIZE)+'}').format(str(sys.getsizeof(test_msg)))
+            msg_len=('{:<'+str(self.HEADERSIZE)+'}').format(str(sys.getsizeof(test_msg)))
+            # compute the overhead of the message
+            ranString = test_msg + chSum
+            msgOverhead = (int((len(ranString)+self.minMsgSize)/self.BUFFER_SIZE)+1)*self.BUFFER_SIZE - (len(ranString)+self.minMsgSize);
+            overheadStr = " " * msgOverhead
             compute_times[i]=time.time()-t_time
-            conn.sendall(msg_len.encode('utf-8')+(test_msg).encode('utf-8')+chSum.encode('utf-8')+self.endMSG.encode('utf-8'))
+            msg2send = self.msg_idf+msg_len+str(int(self.useHashKey))+str(msgOverhead)+(test_msg)+chSum+overheadStr+self.endMSG
+            conn.sendall(msg2send.encode('utf-8'))
             t_time0=time.time()
 
-        if((1*(validity_counter)).mean()>0.8):
-            print('[socketStream] Valid communication established')
+        if((1*(validity_counter)).mean()>0.9):
+            while (True):
+                dataT=conn.recv(self.BUFFER_SIZE)
+                msg_full+=dataT.decode('utf-8')
+                if msg_full[-4:]==self.endMSG:
+                    break
+            msg_validity, tr_msg = self.msgExtractor(msg_full[len(self.msg_idf):])
+            self.clientName = tr_msg
             print('[socketStream] Compute times: %s %s %s s' %(compute_times.mean(), u'\u00b1', compute_times.std()))
             print('[socketStream] Ping times:  %s %s %s s' %(ping_times[:9].mean(), u'\u00b1', ping_times[:9].std()))
             return True
@@ -236,11 +252,15 @@ class socketStream():
                     self.connection_exist = False
                     self.firstValueReceived = False
                     break
+                
+                if not self.serverRunnig:
+                    break
             except KeyboardInterrupt:
-                if self.connection_exist:
-                    self.connection.close()
-                    self.connection_exist = False
                 break
+
+        if self.connection_exist:
+            self.connection.close()
+            self.connection_exist = False
             
 
     def get_latest(self):
@@ -272,12 +292,14 @@ class socketStream():
         while(self.serverRunnig):
             # check if any connection inquire exists and accept it
             self.connection, self.client_address = self.sock.accept()
-            print('[socketStream] Connection from ', self.client_address)
-            testThrd = threading.Thread(target=self.runReceiver, args = ())
-            testThrd.daemon = True
-            self.connection_exist = True
-            testThrd.start()
-            testThrd.join()
+            conn_validity = self.handShake_client(self.connection, 10)
+            if conn_validity:
+                print('[socketStream] Connection from %s with ID: %s', self.client_address, self.clientName)
+                testThrd = threading.Thread(target=self.runReceiver, args = ())
+                testThrd.daemon = True
+                self.connection_exist = True
+                testThrd.start()
+                testThrd.join()
     
     
   
