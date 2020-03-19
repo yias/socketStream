@@ -81,6 +81,7 @@ socketStream::socketStream(void){
 
     std::cout << "[socketStream] Starting socketStream with default parameters" << std::endl;
     std::cout << "[socketStream] IP address: " << Host_IP << ", Port: " << Host_Port << std::endl;
+    std::cout << "[socketStream] Client mode" << std::endl;
 }
 
 
@@ -131,6 +132,7 @@ socketStream::socketStream(const char* svrIPAddress){
     minMsgSize = std::strlen(msg_idf) + headerSize + std::strlen(endMSG) + std::to_string(bufferSize).length() + 1;
 
     std::cout << "[socketStream] Starting up socketStream on server address " << Host_IP << " and default port " << Host_Port << std::endl;
+    std::cout << "[socketStream] Client mode" << std::endl;
 }
 
 
@@ -197,6 +199,12 @@ socketStream::socketStream(const char* svrIPAddress, int srvPosrt, const int soc
     minMsgSize = std::strlen(msg_idf) + headerSize + std::strlen(endMSG) + std::to_string(bufferSize).length()+1;
 
     std::cout << "[socketStream] Starting socketStream on server address " << Host_IP << " and port " << Host_Port << std::endl;
+
+    if(isServer){
+        std::cout << "[socketStream] Server mode" << std::endl;
+    }else{
+        std::cout << "[socketStream] Client mode" << std::endl;
+    }
 }
 
 int socketStream::initialize_socketStream(){
@@ -996,6 +1004,7 @@ int socketStream::wait_connections(){
 
     int slotNumber = -1;
     int nbConnections = 0;
+    std::cout << "[socketStream] Server initialized. Waiting for connections ... " << std::endl;
     while(serverRunning){
         struct sockaddr_in clientAddress;
 
@@ -1030,11 +1039,15 @@ int socketStream::wait_connections(){
                 std::cerr << std::endl;
                 closesocket(ClientSocket);
             }
+            threadMutex.lock();
             std::cout << "[socketStream] Connection from " << clAddStr << " is rejected due to maximum connections capacity reached" << std::endl; 
+            threadMutex.unlock();
         }else{
             bool validclient = handshake_client(ClientSocket, 10, slotNumber);
             if(!validclient){
+                threadMutex.lock();
                 std::cout << "[socketStream] Handshake protocol with client " << clAddStr << " failed! Closing connection with client." << std::endl;
+                threadMutex.unlock();
                 iResult = shutdown(ClientSocket, SD_SEND);
                 if (iResult == SOCKET_ERROR) {
                     std::cerr << "[socketStream] Shutdown failed with error:" ;
@@ -1053,16 +1066,17 @@ int socketStream::wait_connections(){
                 clientsSockets[slotNumber] = ClientSocket;
                 connetionSlots[slotNumber] = true;
                 // clientIDs[slotNumber] = std::string("sS_c#") + std::to_string(slotNumber);
-                threadMutex.unlock();
-                std::cout << "[socketStream] Accepted connection from client: " << clAddStr << " with id: " << clientIDs[slotNumber] << std::endl;           
+                std::cout << "[socketStream] Accepted connection from client: " << clAddStr << " with id: " << clientIDs[slotNumber] << std::endl; 
+                threadMutex.unlock();          
 
                 std::thread receiverThread(&socketStream::runReceiver, this, slotNumber);
                 receiverThread.detach();
             }
         }
         
-
+        threadMutex.lock();
         std::cout << "[socketStream] Waiting for new connections ... " << std::endl;
+        threadMutex.unlock();
     }
 
     serverRunning = false;
@@ -1148,6 +1162,7 @@ int socketStream::runReceiver(int connectionID){
                 closesocket(clntSocket);
                 return -1;
             }
+            
             std::cout << "[socketStream] Connection terminated by client (id: \"" << clientIDs[connectionID] << "\", address: " << clientsAddresses[connectionID] << ")" << std::endl;
             threadMutex.lock();
             firstMsgReceived[connectionID]= false ;
@@ -1247,9 +1262,10 @@ std::string socketStream::get_latest(std::string cltName, bool* newMSG){
 
         return clientMsgs[idx];
     }
-
-    std::cout << "[socketStream] The client \"" << cltName << "\" is not connected. Check if the name is correct" << std::endl;
-    std::cout << "[socketStream] Returning empty string" << std::endl;
+    // threadMutex.lock();
+    // std::cout << "[socketStream] The client \"" << cltName << "\" is not connected. Check if the name is correct" << std::endl;
+    // std::cout << "[socketStream] Returning empty string" << std::endl;
+    // threadMutex.unlock();
 
     return "";
 }
@@ -1408,7 +1424,6 @@ bool socketStream::handshake_client(SOCKET conc, int strlength, int slotNb){
 
 bool socketStream::handshake_server(int strlength){
 
-    // std::cout << "inside handshake_server\n";
 
     int iResutlReceiver = 0;
     int uHsKey = 1;

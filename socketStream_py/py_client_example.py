@@ -13,22 +13,24 @@ import numpy as np
 
 
 def main(args):
-    sockHndlr = socketStream.socketStream(IPaddress = args.host, port = args.port, bufferSize = args.buffersize)
+    sockClient = socketStream.socketStream(IPaddress = args.host, port = args.port, bufferSize = args.buffersize, isServer = False)
 
-    counter=0
-    while(True):
-        try:
-            if sockHndlr.sockectStream_ok():
-                tt=sockHndlr.get_latest()
-                print(tt.get("name"))
-                test=tt.get("data")
-                rt=np.array(test, dtype=np.float32)
-                print(rt)
+    sockClient.set_clientName("py_example")
 
-        except KeyboardInterrupt:
-            break
+    sockClient.initialize_msgStruct(["name","data"])
 
-    sockHndlr.close_communication()
+    sockClient.updateMSG("name","Mary")
+
+    sockClient.updateMSG("data", [[2.4,5.6,783.01],[34,55.6,1.2]])
+
+    sockClient.make_connection()
+
+    if sockClient.isConnected():
+        sockClient.sendMSG()
+    
+    sockClient.close_communication()
+
+
 
 
 if __name__ == '__main__':
