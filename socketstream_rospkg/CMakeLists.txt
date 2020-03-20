@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8.3)
 project(socketstream_node)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
-# add_compile_options(-std=c++11)
+add_compile_options(-std=c++11)
 
 find_package(catkin REQUIRED COMPONENTS
   roscpp
@@ -10,7 +10,7 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
 )
 
-
+#set(ENV{CPP_DEPENDENCIES} /home/iasonpc/cpp_ws/dependencies/)
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES socketstream_node
@@ -23,8 +23,11 @@ catkin_package(
 ###########
 
 include_directories(
-# include
+  include
   ${catkin_INCLUDE_DIRS}
+  $ENV{CPP_DEPENDENCIES}/rapidjson/include
 )
 
-
+add_executable(socketStream src/socketStream_node.cpp src/socketStream.cpp src/md5.cpp)
+target_link_libraries(socketStream ${catkin_LIBRARIES})
+#add_dependencies(socketStream beginner_tutorials_generate_messages_cpp)

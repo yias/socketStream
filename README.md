@@ -1,6 +1,6 @@
 # socketStream
 
-A C++ library and python module for exchanging packets over a TCP/IP communication. The socketSteam class supports both client and server implementations on C++ and python. The packets follow the json structure, making them compatible with other languages too. The C++ library supports multi-client server, whilst the server of the python class services only one client. 
+A cros-platform C++ library and Python module for exchanging packets over a TCP/IP communication. The socketSteam class supports both client and server implementations on C++ and python. The packets follow the json structure, making them compatible with other languages too. The C++ library supports multi-client server, whilst the server of the python class services only one client. 
 
 The C++ implementaion of md5 checksum is borrowed from zedwood in this link http://www.zedwood.com/article/cpp-md5-function
 
@@ -47,6 +47,19 @@ and it should print the path on the folder "dependencies"
 
 
 4) clone the socketStream package in workspace directory
+
+```bash
+$ git clone https://github.com/yias/socket_jsonCpp.git
+```
+
+## Running the ros node
+-- for runnng the C++ rosnode:
+
+```bash
+$ git clone https://github.com/yias/socket_jsonCpp.git
+```
+
+-- for runnng the Python rosnode:
 
 ```bash
 $ git clone https://github.com/yias/socket_jsonCpp.git
