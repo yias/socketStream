@@ -1384,7 +1384,7 @@ std::string socketStream::get_latest(std::string cltName, bool* newMSG){
     return "";
 }
 
-bool socketStream::sockectStream_ok(){
+bool socketStream::socketStream_ok(){
     bool tmp = false;
     
     std::for_each(connetionSlots.begin(), connetionSlots.end(),[&tmp](const bool &connetionSlots){tmp = tmp || connetionSlots;});

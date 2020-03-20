@@ -14,7 +14,7 @@
                 "-o", "${workspaceFolder}/build/runDiagnostics.exe",
                 "-O3",
                 "-lpthread",
-                "-I", "/home/iasonpc/cpp_ws/dependencies/rapidjson/include",
+                "-I", "${CPP_DEPENDENCIES}/rapidjson/include",
                 "-I", "${workspaceFolder}/include",
                 "-I", "${workspaceFolder}/source"
             ],
@@ -37,7 +37,7 @@
                 "-o", "${workspaceFolder}/build/client_example.exe",
                 "-O3",
                 "-lpthread",
-                "-I", "/home/iasonpc/cpp_ws/dependencies/rapidjson/include",
+                "-I", "${CPP_DEPENDENCIES}/rapidjson/include",
                 "-I", "${workspaceFolder}/include",
                 "-I", "${workspaceFolder}/source"
             ],
@@ -60,7 +60,7 @@
                 "-o", "${workspaceFolder}/build/sendWithTime.exe",
                 "-O3",
                 "-lpthread",
-                "-I", "/home/iasonpc/cpp_ws/dependencies/rapidjson/include",
+                "-I", "${CPP_DEPENDENCIES}/rapidjson/include",
                 "-I", "${workspaceFolder}/include",
                 "-I", "${workspaceFolder}/source"
             ],
@@ -77,7 +77,7 @@
             "label": "echo env variable",
             "command": "echo",
             "args": [
-                "${workspaceFolder}"
+                "${CPP_DEPENDENCIES}"
             ],
             "problemMatcher": [
                 "$gcc"
@@ -98,7 +98,7 @@
                 "-o", "${workspaceFolder}/build/serverExample.exe",
                 "-O3",
                 "-lpthread",
-                "-I", "/home/iasonpc/cpp_ws/dependencies/rapidjson/include",
+                "-I", "${CPP_DEPENDENCIES}/rapidjson/include",
                 "-I", "${workspaceFolder}/include",
                 "-I", "${workspaceFolder}/source"
             ],

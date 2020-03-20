@@ -20,10 +20,10 @@ def main(args):
         try:
             if sockHndlr.sockectStream_ok():
                 tt=sockHndlr.get_latest()
-                print(tt.get("name"))
+                # print(tt.get("name"))
                 test=tt.get("data")
                 rt=np.array(test, dtype=np.float32)
-                # print(rt)
+                print(rt)
 
         except KeyboardInterrupt:
             break

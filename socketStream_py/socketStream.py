@@ -73,7 +73,7 @@ class socketStream():
             print("[socketStream] Server mode")
             self.sock.bind(self.server_address)
             # listen for new connections
-            self.sock.settimeout(5)
+            self.sock.settimeout(2)
             self.sock.listen(1)
             self.serverRunnig = True
             self.serverThread = threading.Thread(target = self.wait_connections, args = ())
@@ -440,7 +440,7 @@ class socketStream():
         self.clientName = cID
 
     def make_connection(self):
-        print("[socketStream] Attempting to connect to server with address" + self.server_address[0] +" in the port %s" , str(self.server_address[1]))
+        print("[socketStream] Attempting to connect to server with address " + self.server_address[0] +" in the port %s" , str(self.server_address[1]))
         self.sock.connect(self.server_address)
         conValidity = self.handShake_server(10)
         if conValidity:
@@ -480,7 +480,7 @@ class socketStream():
 
         # compute the overhead of the message
         ranString = tmp_msg + chSum
-        print(self.bfrDigits)
+        # print(self.bfrDigits)
 
         msgOverhead = (int((len(ranString)+self.minMsgSize)/self.BUFFER_SIZE)+1)*self.BUFFER_SIZE - (len(ranString)+self.minMsgSize)
         msgOverheadSize = ('{:<'+str(self.bfrDigits)+'}').format(str(msgOverhead))

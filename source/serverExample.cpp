@@ -19,24 +19,36 @@ int main(int argc, char **argv){
     // create an sockectStream object with the selected server IP address and set it up as a server
     socketStream svrHdlr(srvIP, svrPort, SOCKETSTREAM_SERVER);
 
+    // initialize socketStream
     svrHdlr.initialize_socketStream();
 
+    // activate the server
     svrHdlr.runServer();
 
-
+    // define a string object to receive the data
     std::string msg;
     rapidjson::Document tmp_doc;
-    int counter = 0;
-    bool isNew = false;
 
+    //  define a boolean variable for checking if the message is new or not
+    bool isNew = false;
+    
+    int counter = 0;
+    
+    // run until the key "q" is pressed in the keyboard
     while(true){
-        if(svrHdlr.sockectStream_ok()){
+
+        if(svrHdlr.socketStream_ok()){
+            // if the socketStream server is active, receive a message from the client with the name "py_example"
             msg = svrHdlr.get_latest("py_example", &isNew);
             if(isNew){
+                // if the message is new, print the message to the console
                 std::cout << msg << std::endl;
             }
         }
 
+        // check if a key is hit on the keyboard
+        // if yes, check if this key is "q"
+        // if yes, break the loob, otherwise continue
         if(kbhit()){
             #ifdef _WIN32
                 if(getch()=='q')
@@ -49,6 +61,7 @@ int main(int argc, char **argv){
         }
     } 
 
+    // kill all the communications and the socket
     svrHdlr.closeCommunication();
 
     return 0;

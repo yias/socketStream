@@ -218,7 +218,7 @@ public:
     std::string get_latest();
     std::string get_latest(std::string cltName, bool* newMSG);
 
-    bool sockectStream_ok();
+    bool socketStream_ok();
 
     ~socketStream(void);                                                            // destructor
 

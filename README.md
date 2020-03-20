@@ -31,7 +31,7 @@ $ sudo gedit .bashrc
 
 add the following line at the end of the file
 
-CPP_DEPENDENCIES="PATH/TO/DEPENDENCIES/DIRECTORY/dependencies"
+export CPP_DEPENDENCIES="PATH/TO/DEPENDENCIES/DIRECTORY/dependencies"
 
 *the "PATH/TO/DEPENDENCIES/DIRECTORY" corresponds to the path where of the folder "dependencies" that is created on the 1st step. If you don't know the path, navigate to the folder "dependencies" in a terminal (or command prompt on Windows) and type "pwd", it will print the path of this directory 
 
