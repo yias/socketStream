@@ -345,48 +345,6 @@ class socketStream():
         if self.connection_exist:
             self.connection.close()
             self.connection_exist = False
-
-    # def runReceiver(self):
-    #     counter=0
-    #     while(self.connection_exist):
-    #         try:
-    #             # retrieve the message identifier. once it is received, compose the message
-    #             data=self.connection.recv(self.BUFFER_SIZE)
-    #             data_check = data[:self.msg_idf_len]
-    #             counter+=1
-    #             # print("messages received",counter)
-    #             if data_check.decode('utf-8')==self.msg_idf:
-    #                 # receive bytes until the full message is received
-    #                 full_msg=data[self.msg_idf_len:].decode("utf-8")
-    #                 while (True):
-    #                     dataT=self.connection.recv(self.BUFFER_SIZE)
-    #                     full_msg+=dataT.decode("utf-8") 
-    #                     if full_msg[-4:]==self.endMSG:
-    #                         break
-
-    #                 # extract message
-    #                 msg_validity, tr_msg = self.msgExtractor(full_msg)
-    #                 if msg_validity:
-    #                     self.msg_data=json.loads(tr_msg)
-    #                     if not self.firstValueReceived:
-    #                         self.firstValueReceived = True
-
-    #             if  data_check.decode('utf-8')==self.ec_id:
-    #                 # if end-of-communication identifier received, terminate the connection
-    #                 print('[socketStream] Connection terminated by client ', self.client_address)
-    #                 self.connection.close()
-    #                 self.connection_exist = False
-    #                 self.firstValueReceived = False
-    #                 break
-                
-    #             if not self.serverRunnig:
-    #                 break
-    #         except KeyboardInterrupt:
-    #             break
-
-    #     if self.connection_exist:
-    #         self.connection.close()
-    #         self.connection_exist = False
             
 
     def get_latest(self):
