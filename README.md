@@ -45,6 +45,7 @@ and it should print the path on the folder "dependencies"
 
 -- On Windows
 
+![](docs/pics/windows_env_variables_directions.png)
 
 4) clone the socketStream package in workspace directory
 
