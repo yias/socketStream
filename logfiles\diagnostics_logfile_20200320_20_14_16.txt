@@ -1,0 +1,1723 @@
+Message initialization: 0.02 ms
+Message update (field names): 0 ms
+
+1) updating the message with a 2D matrix of shape (100x16):
+trial 1
+--------
+update time: 0.036 ms
+Bytes sent: 29424
+sending time: 0.311 ms
+overall time: 0.347 ms
+ 
+trial 2
+--------
+update time: 0.043 ms
+Bytes sent: 29424
+sending time: 0.462 ms
+overall time: 0.505 ms
+ 
+trial 3
+--------
+update time: 0.034 ms
+Bytes sent: 29424
+sending time: 0.513 ms
+overall time: 0.547 ms
+ 
+trial 4
+--------
+update time: 0.029 ms
+Bytes sent: 29424
+sending time: 0.485 ms
+overall time: 0.514 ms
+ 
+trial 5
+--------
+update time: 0.032 ms
+Bytes sent: 29424
+sending time: 0.444 ms
+overall time: 0.476 ms
+ 
+trial 6
+--------
+update time: 0.029 ms
+Bytes sent: 29424
+sending time: 0.456 ms
+overall time: 0.485 ms
+ 
+trial 7
+--------
+update time: 0.033 ms
+Bytes sent: 29424
+sending time: 0.439 ms
+overall time: 0.472 ms
+ 
+trial 8
+--------
+update time: 0.033 ms
+Bytes sent: 29424
+sending time: 0.504 ms
+overall time: 0.537 ms
+ 
+trial 9
+--------
+update time: 0.029 ms
+Bytes sent: 29424
+sending time: 0.452 ms
+overall time: 0.481 ms
+ 
+trial 10
+--------
+update time: 0.032 ms
+Bytes sent: 29424
+sending time: 0.469 ms
+overall time: 0.501 ms
+ 
+trial 11
+--------
+update time: 0.033 ms
+Bytes sent: 29424
+sending time: 0.488 ms
+overall time: 0.521 ms
+ 
+trial 12
+--------
+update time: 0.039 ms
+Bytes sent: 29424
+sending time: 0.477 ms
+overall time: 0.516 ms
+ 
+trial 13
+--------
+update time: 0.03 ms
+Bytes sent: 29424
+sending time: 0.486 ms
+overall time: 0.516 ms
+ 
+trial 14
+--------
+update time: 0.03 ms
+Bytes sent: 29424
+sending time: 0.471 ms
+overall time: 0.501 ms
+ 
+trial 15
+--------
+update time: 0.032 ms
+Bytes sent: 29424
+sending time: 0.455 ms
+overall time: 0.487 ms
+ 
+trial 16
+--------
+update time: 0.036 ms
+Bytes sent: 29424
+sending time: 0.451 ms
+overall time: 0.487 ms
+ 
+trial 17
+--------
+update time: 0.035 ms
+Bytes sent: 29424
+sending time: 0.458 ms
+overall time: 0.493 ms
+ 
+trial 18
+--------
+update time: 0.033 ms
+Bytes sent: 29424
+sending time: 0.46 ms
+overall time: 0.493 ms
+ 
+trial 19
+--------
+update time: 0.042 ms
+Bytes sent: 29424
+sending time: 0.432 ms
+overall time: 0.474 ms
+ 
+trial 20
+--------
+update time: 0.03 ms
+Bytes sent: 29424
+sending time: 0.471 ms
+overall time: 0.501 ms
+ 
+trial 21
+--------
+update time: 0.028 ms
+Bytes sent: 29424
+sending time: 0.425 ms
+overall time: 0.453 ms
+ 
+trial 22
+--------
+update time: 0.033 ms
+Bytes sent: 29424
+sending time: 0.456 ms
+overall time: 0.489 ms
+ 
+trial 23
+--------
+update time: 0.034 ms
+Bytes sent: 29424
+sending time: 0.454 ms
+overall time: 0.488 ms
+ 
+trial 24
+--------
+update time: 0.041 ms
+Bytes sent: 29424
+sending time: 0.454 ms
+overall time: 0.495 ms
+ 
+trial 25
+--------
+update time: 0.027 ms
+Bytes sent: 29424
+sending time: 0.491 ms
+overall time: 0.518 ms
+ 
+trial 26
+--------
+update time: 0.03 ms
+Bytes sent: 29424
+sending time: 0.479 ms
+overall time: 0.509 ms
+ 
+trial 27
+--------
+update time: 0.036 ms
+Bytes sent: 29424
+sending time: 0.473 ms
+overall time: 0.509 ms
+ 
+trial 28
+--------
+update time: 0.041 ms
+Bytes sent: 29424
+sending time: 0.452 ms
+overall time: 0.493 ms
+ 
+trial 29
+--------
+update time: 0.044 ms
+Bytes sent: 29424
+sending time: 0.455 ms
+overall time: 0.499 ms
+ 
+trial 30
+--------
+update time: 0.032 ms
+Bytes sent: 29424
+sending time: 0.44 ms
+overall time: 0.472 ms
+ 
+average update time: 0.0338667 ms 
+average sending time: 0.458767 ms
+average overall time: 0.492633 ms
+ 
+2) updating the message with a 2D matrix of shape (100x23):
+trial 1
+--------
+update time: 0.057 ms
+Bytes sent: 42112
+sending time: 0.754 ms
+overall time: 0.811 ms
+ 
+trial 2
+--------
+update time: 0.049 ms
+Bytes sent: 42112
+sending time: 0.67 ms
+overall time: 0.719 ms
+ 
+trial 3
+--------
+update time: 0.051 ms
+Bytes sent: 42112
+sending time: 0.67 ms
+overall time: 0.721 ms
+ 
+trial 4
+--------
+update time: 0.038 ms
+Bytes sent: 42112
+sending time: 0.671 ms
+overall time: 0.709 ms
+ 
+trial 5
+--------
+update time: 0.041 ms
+Bytes sent: 42112
+sending time: 0.661 ms
+overall time: 0.702 ms
+ 
+trial 6
+--------
+update time: 0.048 ms
+Bytes sent: 42112
+sending time: 0.686 ms
+overall time: 0.734 ms
+ 
+trial 7
+--------
+update time: 0.038 ms
+Bytes sent: 42112
+sending time: 0.672 ms
+overall time: 0.71 ms
+ 
+trial 8
+--------
+update time: 0.038 ms
+Bytes sent: 42112
+sending time: 0.659 ms
+overall time: 0.697 ms
+ 
+trial 9
+--------
+update time: 0.052 ms
+Bytes sent: 42112
+sending time: 0.645 ms
+overall time: 0.697 ms
+ 
+trial 10
+--------
+update time: 0.043 ms
+Bytes sent: 42112
+sending time: 0.672 ms
+overall time: 0.715 ms
+ 
+trial 11
+--------
+update time: 0.049 ms
+Bytes sent: 42112
+sending time: 0.651 ms
+overall time: 0.7 ms
+ 
+trial 12
+--------
+update time: 0.041 ms
+Bytes sent: 42112
+sending time: 0.651 ms
+overall time: 0.692 ms
+ 
+trial 13
+--------
+update time: 0.049 ms
+Bytes sent: 42112
+sending time: 0.762 ms
+overall time: 0.811 ms
+ 
+trial 14
+--------
+update time: 0.038 ms
+Bytes sent: 42112
+sending time: 0.65 ms
+overall time: 0.688 ms
+ 
+trial 15
+--------
+update time: 0.038 ms
+Bytes sent: 42112
+sending time: 0.646 ms
+overall time: 0.684 ms
+ 
+trial 16
+--------
+update time: 0.048 ms
+Bytes sent: 42112
+sending time: 0.652 ms
+overall time: 0.7 ms
+ 
+trial 17
+--------
+update time: 0.042 ms
+Bytes sent: 42112
+sending time: 0.653 ms
+overall time: 0.695 ms
+ 
+trial 18
+--------
+update time: 0.054 ms
+Bytes sent: 42112
+sending time: 0.668 ms
+overall time: 0.722 ms
+ 
+trial 19
+--------
+update time: 0.039 ms
+Bytes sent: 42112
+sending time: 0.651 ms
+overall time: 0.69 ms
+ 
+trial 20
+--------
+update time: 0.055 ms
+Bytes sent: 42112
+sending time: 0.645 ms
+overall time: 0.7 ms
+ 
+trial 21
+--------
+update time: 0.045 ms
+Bytes sent: 42112
+sending time: 0.744 ms
+overall time: 0.789 ms
+ 
+trial 22
+--------
+update time: 0.051 ms
+Bytes sent: 42112
+sending time: 0.756 ms
+overall time: 0.807 ms
+ 
+trial 23
+--------
+update time: 0.059 ms
+Bytes sent: 42112
+sending time: 0.68 ms
+overall time: 0.739 ms
+ 
+trial 24
+--------
+update time: 0.038 ms
+Bytes sent: 42112
+sending time: 0.65 ms
+overall time: 0.688 ms
+ 
+trial 25
+--------
+update time: 0.05 ms
+Bytes sent: 42112
+sending time: 0.671 ms
+overall time: 0.721 ms
+ 
+trial 26
+--------
+update time: 0.042 ms
+Bytes sent: 42112
+sending time: 0.651 ms
+overall time: 0.693 ms
+ 
+trial 27
+--------
+update time: 0.044 ms
+Bytes sent: 42112
+sending time: 0.684 ms
+overall time: 0.728 ms
+ 
+trial 28
+--------
+update time: 0.056 ms
+Bytes sent: 42112
+sending time: 0.649 ms
+overall time: 0.705 ms
+ 
+trial 29
+--------
+update time: 0.042 ms
+Bytes sent: 42112
+sending time: 0.674 ms
+overall time: 0.716 ms
+ 
+trial 30
+--------
+update time: 0.052 ms
+Bytes sent: 42112
+sending time: 0.674 ms
+overall time: 0.726 ms
+ 
+average update time: 0.0462333 ms 
+average sending time: 0.674067 ms
+average overall time: 0.7203 ms
+ 
+3) updating the message with a 2D matrix of shape (16x100):
+trial 1
+--------
+update time: 0.021 ms
+Bytes sent: 29248
+sending time: 0.464 ms
+overall time: 0.485 ms
+ 
+trial 2
+--------
+update time: 0.028 ms
+Bytes sent: 29248
+sending time: 0.454 ms
+overall time: 0.482 ms
+ 
+trial 3
+--------
+update time: 0.031 ms
+Bytes sent: 29248
+sending time: 0.458 ms
+overall time: 0.489 ms
+ 
+trial 4
+--------
+update time: 0.021 ms
+Bytes sent: 29248
+sending time: 0.449 ms
+overall time: 0.47 ms
+ 
+trial 5
+--------
+update time: 0.03 ms
+Bytes sent: 29248
+sending time: 0.435 ms
+overall time: 0.465 ms
+ 
+trial 6
+--------
+update time: 0.036 ms
+Bytes sent: 29248
+sending time: 0.441 ms
+overall time: 0.477 ms
+ 
+trial 7
+--------
+update time: 0.033 ms
+Bytes sent: 29248
+sending time: 0.442 ms
+overall time: 0.475 ms
+ 
+trial 8
+--------
+update time: 0.04 ms
+Bytes sent: 29248
+sending time: 0.436 ms
+overall time: 0.476 ms
+ 
+trial 9
+--------
+update time: 0.042 ms
+Bytes sent: 29248
+sending time: 0.439 ms
+overall time: 0.481 ms
+ 
+trial 10
+--------
+update time: 0.045 ms
+Bytes sent: 29248
+sending time: 0.441 ms
+overall time: 0.486 ms
+ 
+trial 11
+--------
+update time: 0.033 ms
+Bytes sent: 29248
+sending time: 0.443 ms
+overall time: 0.476 ms
+ 
+trial 12
+--------
+update time: 0.031 ms
+Bytes sent: 29248
+sending time: 0.435 ms
+overall time: 0.466 ms
+ 
+trial 13
+--------
+update time: 0.042 ms
+Bytes sent: 29248
+sending time: 0.449 ms
+overall time: 0.491 ms
+ 
+trial 14
+--------
+update time: 0.031 ms
+Bytes sent: 29248
+sending time: 0.445 ms
+overall time: 0.476 ms
+ 
+trial 15
+--------
+update time: 0.037 ms
+Bytes sent: 29248
+sending time: 0.447 ms
+overall time: 0.484 ms
+ 
+trial 16
+--------
+update time: 0.031 ms
+Bytes sent: 29248
+sending time: 0.437 ms
+overall time: 0.468 ms
+ 
+trial 17
+--------
+update time: 0.035 ms
+Bytes sent: 29248
+sending time: 0.448 ms
+overall time: 0.483 ms
+ 
+trial 18
+--------
+update time: 0.034 ms
+Bytes sent: 29248
+sending time: 0.45 ms
+overall time: 0.484 ms
+ 
+trial 19
+--------
+update time: 0.037 ms
+Bytes sent: 29248
+sending time: 0.446 ms
+overall time: 0.483 ms
+ 
+trial 20
+--------
+update time: 0.039 ms
+Bytes sent: 29248
+sending time: 0.43 ms
+overall time: 0.469 ms
+ 
+trial 21
+--------
+update time: 0.032 ms
+Bytes sent: 29248
+sending time: 0.446 ms
+overall time: 0.478 ms
+ 
+trial 22
+--------
+update time: 0.034 ms
+Bytes sent: 29248
+sending time: 0.447 ms
+overall time: 0.481 ms
+ 
+trial 23
+--------
+update time: 0.034 ms
+Bytes sent: 29248
+sending time: 0.433 ms
+overall time: 0.467 ms
+ 
+trial 24
+--------
+update time: 0.034 ms
+Bytes sent: 29248
+sending time: 0.431 ms
+overall time: 0.465 ms
+ 
+trial 25
+--------
+update time: 0.034 ms
+Bytes sent: 29248
+sending time: 0.434 ms
+overall time: 0.468 ms
+ 
+trial 26
+--------
+update time: 0.032 ms
+Bytes sent: 29248
+sending time: 0.453 ms
+overall time: 0.485 ms
+ 
+trial 27
+--------
+update time: 0.034 ms
+Bytes sent: 29248
+sending time: 0.447 ms
+overall time: 0.481 ms
+ 
+trial 28
+--------
+update time: 0.044 ms
+Bytes sent: 29248
+sending time: 0.436 ms
+overall time: 0.48 ms
+ 
+trial 29
+--------
+update time: 0.034 ms
+Bytes sent: 29248
+sending time: 0.479 ms
+overall time: 0.513 ms
+ 
+trial 30
+--------
+update time: 0.042 ms
+Bytes sent: 29248
+sending time: 0.47 ms
+overall time: 0.512 ms
+ 
+average update time: 0.0343667 ms 
+average sending time: 0.4455 ms
+average overall time: 0.479867 ms
+ 
+4) updating the message with a 2D matrix of shape (23x100):
+trial 1
+--------
+update time: 0.057 ms
+Bytes sent: 41952
+sending time: 0.656 ms
+overall time: 0.713 ms
+ 
+trial 2
+--------
+update time: 0.056 ms
+Bytes sent: 41952
+sending time: 0.667 ms
+overall time: 0.723 ms
+ 
+trial 3
+--------
+update time: 0.048 ms
+Bytes sent: 41952
+sending time: 0.657 ms
+overall time: 0.705 ms
+ 
+trial 4
+--------
+update time: 0.028 ms
+Bytes sent: 41952
+sending time: 0.67 ms
+overall time: 0.698 ms
+ 
+trial 5
+--------
+update time: 0.044 ms
+Bytes sent: 41952
+sending time: 0.629 ms
+overall time: 0.673 ms
+ 
+trial 6
+--------
+update time: 0.033 ms
+Bytes sent: 41952
+sending time: 0.658 ms
+overall time: 0.691 ms
+ 
+trial 7
+--------
+update time: 0.044 ms
+Bytes sent: 41952
+sending time: 0.656 ms
+overall time: 0.7 ms
+ 
+trial 8
+--------
+update time: 0.041 ms
+Bytes sent: 41952
+sending time: 0.638 ms
+overall time: 0.679 ms
+ 
+trial 9
+--------
+update time: 0.039 ms
+Bytes sent: 41952
+sending time: 0.641 ms
+overall time: 0.68 ms
+ 
+trial 10
+--------
+update time: 0.042 ms
+Bytes sent: 41952
+sending time: 41.314 ms
+overall time: 41.356 ms
+ 
+trial 11
+--------
+update time: 0.044 ms
+Bytes sent: 41952
+sending time: 0.659 ms
+overall time: 0.703 ms
+ 
+trial 12
+--------
+update time: 0.045 ms
+Bytes sent: 41952
+sending time: 0.674 ms
+overall time: 0.719 ms
+ 
+trial 13
+--------
+update time: 0.03 ms
+Bytes sent: 41952
+sending time: 0.637 ms
+overall time: 0.667 ms
+ 
+trial 14
+--------
+update time: 0.041 ms
+Bytes sent: 41952
+sending time: 0.628 ms
+overall time: 0.669 ms
+ 
+trial 15
+--------
+update time: 0.034 ms
+Bytes sent: 41952
+sending time: 0.646 ms
+overall time: 0.68 ms
+ 
+trial 16
+--------
+update time: 0.038 ms
+Bytes sent: 41952
+sending time: 0.675 ms
+overall time: 0.713 ms
+ 
+trial 17
+--------
+update time: 0.037 ms
+Bytes sent: 41952
+sending time: 0.639 ms
+overall time: 0.676 ms
+ 
+trial 18
+--------
+update time: 0.035 ms
+Bytes sent: 41952
+sending time: 0.663 ms
+overall time: 0.698 ms
+ 
+trial 19
+--------
+update time: 0.043 ms
+Bytes sent: 41952
+sending time: 0.656 ms
+overall time: 0.699 ms
+ 
+trial 20
+--------
+update time: 0.03 ms
+Bytes sent: 41952
+sending time: 0.616 ms
+overall time: 0.646 ms
+ 
+trial 21
+--------
+update time: 0.041 ms
+Bytes sent: 41952
+sending time: 0.664 ms
+overall time: 0.705 ms
+ 
+trial 22
+--------
+update time: 0.034 ms
+Bytes sent: 41952
+sending time: 0.615 ms
+overall time: 0.649 ms
+ 
+trial 23
+--------
+update time: 0.038 ms
+Bytes sent: 41952
+sending time: 0.671 ms
+overall time: 0.709 ms
+ 
+trial 24
+--------
+update time: 0.039 ms
+Bytes sent: 41952
+sending time: 0.642 ms
+overall time: 0.681 ms
+ 
+trial 25
+--------
+update time: 0.034 ms
+Bytes sent: 41952
+sending time: 0.663 ms
+overall time: 0.697 ms
+ 
+trial 26
+--------
+update time: 0.043 ms
+Bytes sent: 41952
+sending time: 0.662 ms
+overall time: 0.705 ms
+ 
+trial 27
+--------
+update time: 0.03 ms
+Bytes sent: 41952
+sending time: 0.636 ms
+overall time: 0.666 ms
+ 
+trial 28
+--------
+update time: 0.04 ms
+Bytes sent: 41952
+sending time: 0.668 ms
+overall time: 0.708 ms
+ 
+trial 29
+--------
+update time: 0.035 ms
+Bytes sent: 41952
+sending time: 0.604 ms
+overall time: 0.639 ms
+ 
+trial 30
+--------
+update time: 0.039 ms
+Bytes sent: 41952
+sending time: 0.663 ms
+overall time: 0.702 ms
+ 
+average update time: 0.0394 ms 
+average sending time: 2.00557 ms
+average overall time: 2.04497 ms
+ 
+5) updating the message with a 2D matrix of shape (4x150):
+trial 1
+--------
+update time: 0.009 ms
+Bytes sent: 11024
+sending time: 0.173 ms
+overall time: 0.182 ms
+ 
+trial 2
+--------
+update time: 0.011 ms
+Bytes sent: 11024
+sending time: 0.17 ms
+overall time: 0.181 ms
+ 
+trial 3
+--------
+update time: 0.012 ms
+Bytes sent: 11024
+sending time: 0.167 ms
+overall time: 0.179 ms
+ 
+trial 4
+--------
+update time: 0.012 ms
+Bytes sent: 11024
+sending time: 0.172 ms
+overall time: 0.184 ms
+ 
+trial 5
+--------
+update time: 0.011 ms
+Bytes sent: 11024
+sending time: 0.161 ms
+overall time: 0.172 ms
+ 
+trial 6
+--------
+update time: 0.008 ms
+Bytes sent: 11024
+sending time: 0.168 ms
+overall time: 0.176 ms
+ 
+trial 7
+--------
+update time: 0.008 ms
+Bytes sent: 11024
+sending time: 0.171 ms
+overall time: 0.179 ms
+ 
+trial 8
+--------
+update time: 0.008 ms
+Bytes sent: 11024
+sending time: 0.158 ms
+overall time: 0.166 ms
+ 
+trial 9
+--------
+update time: 0.01 ms
+Bytes sent: 11024
+sending time: 0.169 ms
+overall time: 0.179 ms
+ 
+trial 10
+--------
+update time: 0.012 ms
+Bytes sent: 11024
+sending time: 0.168 ms
+overall time: 0.18 ms
+ 
+trial 11
+--------
+update time: 0.011 ms
+Bytes sent: 11024
+sending time: 0.173 ms
+overall time: 0.184 ms
+ 
+trial 12
+--------
+update time: 0.011 ms
+Bytes sent: 11024
+sending time: 0.178 ms
+overall time: 0.189 ms
+ 
+trial 13
+--------
+update time: 0.009 ms
+Bytes sent: 11024
+sending time: 0.182 ms
+overall time: 0.191 ms
+ 
+trial 14
+--------
+update time: 0.009 ms
+Bytes sent: 11024
+sending time: 0.174 ms
+overall time: 0.183 ms
+ 
+trial 15
+--------
+update time: 0.008 ms
+Bytes sent: 11024
+sending time: 0.168 ms
+overall time: 0.176 ms
+ 
+trial 16
+--------
+update time: 0.014 ms
+Bytes sent: 11024
+sending time: 0.168 ms
+overall time: 0.182 ms
+ 
+trial 17
+--------
+update time: 0.017 ms
+Bytes sent: 11024
+sending time: 0.169 ms
+overall time: 0.186 ms
+ 
+trial 18
+--------
+update time: 0.015 ms
+Bytes sent: 11024
+sending time: 0.164 ms
+overall time: 0.179 ms
+ 
+trial 19
+--------
+update time: 0.012 ms
+Bytes sent: 11024
+sending time: 0.167 ms
+overall time: 0.179 ms
+ 
+trial 20
+--------
+update time: 0.013 ms
+Bytes sent: 11024
+sending time: 0.168 ms
+overall time: 0.181 ms
+ 
+trial 21
+--------
+update time: 0.013 ms
+Bytes sent: 11024
+sending time: 39.595 ms
+overall time: 39.608 ms
+ 
+trial 22
+--------
+update time: 0.016 ms
+Bytes sent: 11024
+sending time: 0.192 ms
+overall time: 0.208 ms
+ 
+trial 23
+--------
+update time: 0.014 ms
+Bytes sent: 11024
+sending time: 0.173 ms
+overall time: 0.187 ms
+ 
+trial 24
+--------
+update time: 0.012 ms
+Bytes sent: 11024
+sending time: 0.17 ms
+overall time: 0.182 ms
+ 
+trial 25
+--------
+update time: 0.022 ms
+Bytes sent: 11024
+sending time: 0.166 ms
+overall time: 0.188 ms
+ 
+trial 26
+--------
+update time: 0.014 ms
+Bytes sent: 11024
+sending time: 0.168 ms
+overall time: 0.182 ms
+ 
+trial 27
+--------
+update time: 0.014 ms
+Bytes sent: 11024
+sending time: 0.17 ms
+overall time: 0.184 ms
+ 
+trial 28
+--------
+update time: 0.014 ms
+Bytes sent: 11024
+sending time: 0.172 ms
+overall time: 0.186 ms
+ 
+trial 29
+--------
+update time: 0.012 ms
+Bytes sent: 11024
+sending time: 0.167 ms
+overall time: 0.179 ms
+ 
+trial 30
+--------
+update time: 0.012 ms
+Bytes sent: 11024
+sending time: 0.166 ms
+overall time: 0.178 ms
+ 
+average update time: 0.0121 ms 
+average sending time: 1.48423 ms
+average overall time: 1.49633 ms
+ 
+6) updating the message with a 2D matrix of shape (4x150) and send without checksum:
+trial 1
+--------
+update time: 0.015 ms
+Bytes sent: 10992
+sending time: 0.137 ms
+overall time: 0.152 ms
+ 
+trial 2
+--------
+update time: 0.014 ms
+Bytes sent: 10992
+sending time: 0.139 ms
+overall time: 0.153 ms
+ 
+trial 3
+--------
+update time: 0.012 ms
+Bytes sent: 10992
+sending time: 0.13 ms
+overall time: 0.142 ms
+ 
+trial 4
+--------
+update time: 0.016 ms
+Bytes sent: 10992
+sending time: 0.133 ms
+overall time: 0.149 ms
+ 
+trial 5
+--------
+update time: 0.012 ms
+Bytes sent: 10992
+sending time: 0.134 ms
+overall time: 0.146 ms
+ 
+trial 6
+--------
+update time: 0.012 ms
+Bytes sent: 10992
+sending time: 0.133 ms
+overall time: 0.145 ms
+ 
+trial 7
+--------
+update time: 0.013 ms
+Bytes sent: 10992
+sending time: 0.137 ms
+overall time: 0.15 ms
+ 
+trial 8
+--------
+update time: 0.01 ms
+Bytes sent: 10992
+sending time: 0.134 ms
+overall time: 0.144 ms
+ 
+trial 9
+--------
+update time: 0.016 ms
+Bytes sent: 10992
+sending time: 0.136 ms
+overall time: 0.152 ms
+ 
+trial 10
+--------
+update time: 0.014 ms
+Bytes sent: 10992
+sending time: 0.134 ms
+overall time: 0.148 ms
+ 
+trial 11
+--------
+update time: 0.012 ms
+Bytes sent: 10992
+sending time: 0.135 ms
+overall time: 0.147 ms
+ 
+trial 12
+--------
+update time: 0.014 ms
+Bytes sent: 10992
+sending time: 0.135 ms
+overall time: 0.149 ms
+ 
+trial 13
+--------
+update time: 0.012 ms
+Bytes sent: 10992
+sending time: 0.139 ms
+overall time: 0.151 ms
+ 
+trial 14
+--------
+update time: 0.011 ms
+Bytes sent: 10992
+sending time: 0.133 ms
+overall time: 0.144 ms
+ 
+trial 15
+--------
+update time: 0.017 ms
+Bytes sent: 10992
+sending time: 0.135 ms
+overall time: 0.152 ms
+ 
+trial 16
+--------
+update time: 0.014 ms
+Bytes sent: 10992
+sending time: 0.139 ms
+overall time: 0.153 ms
+ 
+trial 17
+--------
+update time: 0.013 ms
+Bytes sent: 10992
+sending time: 0.127 ms
+overall time: 0.14 ms
+ 
+trial 18
+--------
+update time: 0.012 ms
+Bytes sent: 10992
+sending time: 0.133 ms
+overall time: 0.145 ms
+ 
+trial 19
+--------
+update time: 0.012 ms
+Bytes sent: 10992
+sending time: 0.133 ms
+overall time: 0.145 ms
+ 
+trial 20
+--------
+update time: 0.013 ms
+Bytes sent: 10992
+sending time: 0.128 ms
+overall time: 0.141 ms
+ 
+trial 21
+--------
+update time: 0.012 ms
+Bytes sent: 10992
+sending time: 0.135 ms
+overall time: 0.147 ms
+ 
+trial 22
+--------
+update time: 0.012 ms
+Bytes sent: 10992
+sending time: 0.138 ms
+overall time: 0.15 ms
+ 
+trial 23
+--------
+update time: 0.015 ms
+Bytes sent: 10992
+sending time: 0.134 ms
+overall time: 0.149 ms
+ 
+trial 24
+--------
+update time: 0.012 ms
+Bytes sent: 10992
+sending time: 0.135 ms
+overall time: 0.147 ms
+ 
+trial 25
+--------
+update time: 0.014 ms
+Bytes sent: 10992
+sending time: 0.132 ms
+overall time: 0.146 ms
+ 
+trial 26
+--------
+update time: 0.012 ms
+Bytes sent: 10992
+sending time: 0.132 ms
+overall time: 0.144 ms
+ 
+trial 27
+--------
+update time: 0.015 ms
+Bytes sent: 10992
+sending time: 0.136 ms
+overall time: 0.151 ms
+ 
+trial 28
+--------
+update time: 0.012 ms
+Bytes sent: 10992
+sending time: 0.139 ms
+overall time: 0.151 ms
+ 
+trial 29
+--------
+update time: 0.016 ms
+Bytes sent: 10992
+sending time: 0.125 ms
+overall time: 0.141 ms
+ 
+trial 30
+--------
+update time: 0.012 ms
+Bytes sent: 10992
+sending time: 0.122 ms
+overall time: 0.134 ms
+ 
+average update time: 0.0132 ms 
+average sending time: 0.133733 ms
+average overall time: 0.146933 ms
+ 
+7) updating the message with a 2D matrix of shape (16x100) and send without checksum:
+trial 1
+--------
+update time: 0.034 ms
+Bytes sent: 29216
+sending time: 0.36 ms
+overall time: 0.394 ms
+ 
+trial 2
+--------
+update time: 0.038 ms
+Bytes sent: 29216
+sending time: 0.372 ms
+overall time: 0.41 ms
+ 
+trial 3
+--------
+update time: 0.031 ms
+Bytes sent: 29216
+sending time: 0.34 ms
+overall time: 0.371 ms
+ 
+trial 4
+--------
+update time: 0.036 ms
+Bytes sent: 29216
+sending time: 0.362 ms
+overall time: 0.398 ms
+ 
+trial 5
+--------
+update time: 0.033 ms
+Bytes sent: 29216
+sending time: 0.367 ms
+overall time: 0.4 ms
+ 
+trial 6
+--------
+update time: 0.033 ms
+Bytes sent: 29216
+sending time: 0.368 ms
+overall time: 0.401 ms
+ 
+trial 7
+--------
+update time: 0.036 ms
+Bytes sent: 29216
+sending time: 0.374 ms
+overall time: 0.41 ms
+ 
+trial 8
+--------
+update time: 0.031 ms
+Bytes sent: 29216
+sending time: 0.365 ms
+overall time: 0.396 ms
+ 
+trial 9
+--------
+update time: 0.041 ms
+Bytes sent: 29216
+sending time: 0.365 ms
+overall time: 0.406 ms
+ 
+trial 10
+--------
+update time: 0.036 ms
+Bytes sent: 29216
+sending time: 0.341 ms
+overall time: 0.377 ms
+ 
+trial 11
+--------
+update time: 0.035 ms
+Bytes sent: 29216
+sending time: 0.37 ms
+overall time: 0.405 ms
+ 
+trial 12
+--------
+update time: 0.032 ms
+Bytes sent: 29216
+sending time: 0.365 ms
+overall time: 0.397 ms
+ 
+trial 13
+--------
+update time: 0.031 ms
+Bytes sent: 29216
+sending time: 0.571 ms
+overall time: 0.602 ms
+ 
+trial 14
+--------
+update time: 0.031 ms
+Bytes sent: 29216
+sending time: 0.374 ms
+overall time: 0.405 ms
+ 
+trial 15
+--------
+update time: 0.034 ms
+Bytes sent: 29216
+sending time: 0.369 ms
+overall time: 0.403 ms
+ 
+trial 16
+--------
+update time: 0.027 ms
+Bytes sent: 29216
+sending time: 0.286 ms
+overall time: 0.313 ms
+ 
+trial 17
+--------
+update time: 0.03 ms
+Bytes sent: 29216
+sending time: 0.341 ms
+overall time: 0.371 ms
+ 
+trial 18
+--------
+update time: 0.034 ms
+Bytes sent: 29216
+sending time: 0.369 ms
+overall time: 0.403 ms
+ 
+trial 19
+--------
+update time: 0.036 ms
+Bytes sent: 29216
+sending time: 0.344 ms
+overall time: 0.38 ms
+ 
+trial 20
+--------
+update time: 0.032 ms
+Bytes sent: 29216
+sending time: 0.352 ms
+overall time: 0.384 ms
+ 
+trial 21
+--------
+update time: 0.036 ms
+Bytes sent: 29216
+sending time: 0.368 ms
+overall time: 0.404 ms
+ 
+trial 22
+--------
+update time: 0.032 ms
+Bytes sent: 29216
+sending time: 0.368 ms
+overall time: 0.4 ms
+ 
+trial 23
+--------
+update time: 0.033 ms
+Bytes sent: 29216
+sending time: 43.171 ms
+overall time: 43.204 ms
+ 
+trial 24
+--------
+update time: 0.046 ms
+Bytes sent: 29216
+sending time: 0.366 ms
+overall time: 0.412 ms
+ 
+trial 25
+--------
+update time: 0.042 ms
+Bytes sent: 29216
+sending time: 0.356 ms
+overall time: 0.398 ms
+ 
+trial 26
+--------
+update time: 0.034 ms
+Bytes sent: 29216
+sending time: 0.373 ms
+overall time: 0.407 ms
+ 
+trial 27
+--------
+update time: 0.036 ms
+Bytes sent: 29216
+sending time: 0.376 ms
+overall time: 0.412 ms
+ 
+trial 28
+--------
+update time: 0.037 ms
+Bytes sent: 29216
+sending time: 0.368 ms
+overall time: 0.405 ms
+ 
+trial 29
+--------
+update time: 0.036 ms
+Bytes sent: 29216
+sending time: 0.37 ms
+overall time: 0.406 ms
+ 
+trial 30
+--------
+update time: 0.032 ms
+Bytes sent: 29216
+sending time: 0.368 ms
+overall time: 0.4 ms
+ 
+average update time: 0.0345 ms 
+average sending time: 1.79463 ms
+average overall time: 1.82913 ms
+ 
+8) updating the message with a 2D matrix of shape (16x40) and send without checksum:
+trial 1
+--------
+update time: 0.016 ms
+Bytes sent: 11744
+sending time: 0.151 ms
+overall time: 0.167 ms
+ 
+trial 2
+--------
+update time: 0.014 ms
+Bytes sent: 11744
+sending time: 0.134 ms
+overall time: 0.148 ms
+ 
+trial 3
+--------
+update time: 0.018 ms
+Bytes sent: 11744
+sending time: 0.142 ms
+overall time: 0.16 ms
+ 
+trial 4
+--------
+update time: 0.016 ms
+Bytes sent: 11744
+sending time: 0.142 ms
+overall time: 0.158 ms
+ 
+trial 5
+--------
+update time: 0.018 ms
+Bytes sent: 11744
+sending time: 0.145 ms
+overall time: 0.163 ms
+ 
+trial 6
+--------
+update time: 0.016 ms
+Bytes sent: 11744
+sending time: 0.145 ms
+overall time: 0.161 ms
+ 
+trial 7
+--------
+update time: 0.013 ms
+Bytes sent: 11744
+sending time: 0.141 ms
+overall time: 0.154 ms
+ 
+trial 8
+--------
+update time: 0.015 ms
+Bytes sent: 11744
+sending time: 0.145 ms
+overall time: 0.16 ms
+ 
+trial 9
+--------
+update time: 0.016 ms
+Bytes sent: 11744
+sending time: 0.139 ms
+overall time: 0.155 ms
+ 
+trial 10
+--------
+update time: 0.015 ms
+Bytes sent: 11744
+sending time: 0.143 ms
+overall time: 0.158 ms
+ 
+trial 11
+--------
+update time: 0.017 ms
+Bytes sent: 11744
+sending time: 0.144 ms
+overall time: 0.161 ms
+ 
+trial 12
+--------
+update time: 0.013 ms
+Bytes sent: 11744
+sending time: 0.146 ms
+overall time: 0.159 ms
+ 
+trial 13
+--------
+update time: 0.015 ms
+Bytes sent: 11744
+sending time: 0.149 ms
+overall time: 0.164 ms
+ 
+trial 14
+--------
+update time: 0.013 ms
+Bytes sent: 11744
+sending time: 0.15 ms
+overall time: 0.163 ms
+ 
+trial 15
+--------
+update time: 0.018 ms
+Bytes sent: 11744
+sending time: 0.145 ms
+overall time: 0.163 ms
+ 
+trial 16
+--------
+update time: 0.013 ms
+Bytes sent: 11744
+sending time: 0.149 ms
+overall time: 0.162 ms
+ 
+trial 17
+--------
+update time: 0.013 ms
+Bytes sent: 11744
+sending time: 0.138 ms
+overall time: 0.151 ms
+ 
+trial 18
+--------
+update time: 0.017 ms
+Bytes sent: 11744
+sending time: 0.139 ms
+overall time: 0.156 ms
+ 
+trial 19
+--------
+update time: 0.013 ms
+Bytes sent: 11744
+sending time: 0.144 ms
+overall time: 0.157 ms
+ 
+trial 20
+--------
+update time: 0.017 ms
+Bytes sent: 11744
+sending time: 0.133 ms
+overall time: 0.15 ms
+ 
+trial 21
+--------
+update time: 0.014 ms
+Bytes sent: 11744
+sending time: 0.148 ms
+overall time: 0.162 ms
+ 
+trial 22
+--------
+update time: 0.015 ms
+Bytes sent: 11744
+sending time: 0.142 ms
+overall time: 0.157 ms
+ 
+trial 23
+--------
+update time: 0.013 ms
+Bytes sent: 11744
+sending time: 0.135 ms
+overall time: 0.148 ms
+ 
+trial 24
+--------
+update time: 0.019 ms
+Bytes sent: 11744
+sending time: 0.148 ms
+overall time: 0.167 ms
+ 
+trial 25
+--------
+update time: 0.015 ms
+Bytes sent: 11744
+sending time: 0.145 ms
+overall time: 0.16 ms
+ 
+trial 26
+--------
+update time: 0.015 ms
+Bytes sent: 11744
+sending time: 0.136 ms
+overall time: 0.151 ms
+ 
+trial 27
+--------
+update time: 0.015 ms
+Bytes sent: 11744
+sending time: 0.145 ms
+overall time: 0.16 ms
+ 
+trial 28
+--------
+update time: 0.013 ms
+Bytes sent: 11744
+sending time: 0.135 ms
+overall time: 0.148 ms
+ 
+trial 29
+--------
+update time: 0.015 ms
+Bytes sent: 11744
+sending time: 0.138 ms
+overall time: 0.153 ms
+ 
+trial 30
+--------
+update time: 0.013 ms
+Bytes sent: 11744
+sending time: 0.149 ms
+overall time: 0.162 ms
+ 
+average update time: 0.0151 ms 
+average sending time: 0.142833 ms
+average overall time: 0.157933 ms
+ 

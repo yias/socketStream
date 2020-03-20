@@ -5,6 +5,113 @@
     "tasks": [
         {
             "type": "shell",
+            "label": "build run diagnostics in linux",
+            "command": "g++",
+            "args": [
+                "-g", "${workspaceFolder}/source/runDiagnostics.cpp",
+                "${workspaceFolder}/source/socketStream.cpp",
+                "${workspaceFolder}/source/md5.cpp",
+                "-o", "${workspaceFolder}/build/runDiagnostics.exe",
+                "-O3",
+                "-lpthread",
+                "-I", "/home/iasonpc/cpp_ws/dependencies/rapidjson/include",
+                "-I", "${workspaceFolder}/include",
+                "-I", "${workspaceFolder}/source"
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "type": "shell",
+            "label": "g++ build example in linux",
+            "command": "g++",
+            "args": [
+                "-g", "${workspaceFolder}/source/example.cpp",
+                "${workspaceFolder}/source/socketStream.cpp",
+                "${workspaceFolder}/source/md5.cpp",
+                "-o", "${workspaceFolder}/build/client_example.exe",
+                "-O3",
+                "-lpthread",
+                "-I", "/home/iasonpc/cpp_ws/dependencies/rapidjson/include",
+                "-I", "${workspaceFolder}/include",
+                "-I", "${workspaceFolder}/source"
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "type": "shell",
+            "label": "g++ build sendingWithTime linux",
+            "command": "g++",
+            "args": [
+                "-g", "${workspaceFolder}/source/sendingWithTime.cpp",
+                "${workspaceFolder}/source/socketStream.cpp",
+                "${workspaceFolder}/source/md5.cpp",
+                "-o", "${workspaceFolder}/build/sendWithTime.exe",
+                "-O3",
+                "-lpthread",
+                "-I", "/home/iasonpc/cpp_ws/dependencies/rapidjson/include",
+                "-I", "${workspaceFolder}/include",
+                "-I", "${workspaceFolder}/source"
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "type": "shell",
+            "label": "echo env variable",
+            "command": "echo",
+            "args": [
+                "${workspaceFolder}"
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "type": "shell",
+            "label": "g++ build of the server example on linux",
+            "command": "/usr/bin/g++",
+            "args": [
+                "-g", "${workspaceFolder}/source/serverExample.cpp",
+                "${workspaceFolder}/source/socketStream.cpp",
+                "${workspaceFolder}/source/md5.cpp",
+                "-o", "${workspaceFolder}/build/serverExample.exe",
+                "-O3",
+                "-lpthread",
+                "-I", "/home/iasonpc/cpp_ws/dependencies/rapidjson/include",
+                "-I", "${workspaceFolder}/include",
+                "-I", "${workspaceFolder}/source"
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "type": "shell",
             "label": "g++.exe build sendingWithTime file",
             "command": "g++.exe",
             "args": [

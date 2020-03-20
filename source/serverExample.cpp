@@ -42,7 +42,7 @@ int main(int argc, char **argv){
                 if(getch()=='q')
                     break;
             #endif
-            #ifdef linux
+            #ifdef __linux__
                 if(getch()=='q')
                     break;
             #endif

@@ -29,13 +29,30 @@
     #include <arpa/inet.h>
     #include <netdb.h>
     #include <unistd.h>
+    #include <stdio.h>
+    #include <termios.h>
+    #include <stropts.h>
+    #include <stdio.h>
+    #include <sys/select.h>
+    #include <sys/ioctl.h>
+    #include <errno.h>
+    typedef int SOCKET;
+    typedef fd_set FD_SET;
+
+    #define INVALID_SOCKET      ((SOCKET)(~0))
+    #define SOCKET_ERROR        (-1)
+
+    #define SD_RECEIVE          SHUT_RD
+    #define SD_SEND             SHUT_WR
+    #define SD_BOTH             SHUT_RDWR
 #endif
 
-
-// Need to link with Ws2_32.lib, Mswsock.lib, and Advapi32.lib
-#pragma comment (lib, "Ws2_32.lib")
-#pragma comment (lib, "Mswsock.lib")
-#pragma comment (lib, "AdvApi32.lib")
+#ifdef _WIN32
+    // Need to link with Ws2_32.lib, Mswsock.lib, and Advapi32.lib
+    #pragma comment (lib, "Ws2_32.lib")
+    #pragma comment (lib, "Mswsock.lib")
+    #pragma comment (lib, "AdvApi32.lib")
+#endif
 
 // include rapidjson for message structure
 #include "rapidjson/document.h"
@@ -56,16 +73,24 @@
 
 class socketStream{
 
+    // define socket object
+
     #ifdef _WIN32
         // define a struct for storing infor regarding the socket
         WSADATA wsaData;
+        SOCKET ConnectSocket; // = INVALID_SOCKET;
+
+        SOCKET ListenSocket;                            // for the server
+        std::vector <SOCKET> clientsSockets;
+    #else
+        SOCKET ConnectSocket, ListenSocket;                            // for the server
+        // int ConnectSocket, ListenSocket;
+        std::vector <SOCKET> clientsSockets;
     #endif
 
-    // define socket object
-    SOCKET ConnectSocket; // = INVALID_SOCKET;
-
-    SOCKET ListenSocket;                            // for the server
-    std::vector <SOCKET> clientsSockets;
+    
+    
+    
     std::vector <std::string> clientsAddresses;
     std::vector <bool> firstMsgReceived;
     std::vector <bool> isNewMsgReceived;
@@ -132,7 +157,13 @@ class socketStream{
 
     int findEmptySlot();
 
-    bool handshake_client(SOCKET conc, int strlength, int slotNb);
+    #ifdef _WIN32
+
+        bool handshake_client(SOCKET conc, int strlength, int slotNb);
+
+    #else
+        bool handshake_client(int conc, int strlength, int slotNb);
+    #endif
 
     bool handshake_server(int strlength);
 
@@ -194,7 +225,9 @@ public:
     
 };
 
-
-
+#ifdef __linux__
+int kbhit();
+int getch();
+#endif
 
 #endif

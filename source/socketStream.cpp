@@ -1,13 +1,11 @@
 
 #include "socketStream.h"
 
-#ifdef linux
-#include <stdio.h>
-#include <sys/select.h>
-#include <termios.h>
-#include <stropts.h>
+#ifdef __linux__
 
-int _kbhit() {
+
+
+int kbhit() {
     static const int STDIN = 0;
     static bool initialized = false;
 
@@ -25,6 +23,20 @@ int _kbhit() {
     ioctl(STDIN, FIONREAD, &bytesWaiting);
     return bytesWaiting;
 }
+
+int getch(void)
+{
+    struct termios oldattr, newattr;
+    int ch;
+    tcgetattr( STDIN_FILENO, &oldattr );
+    newattr = oldattr;
+    newattr.c_lflag &= ~( ICANON | ECHO );
+    tcsetattr( STDIN_FILENO, TCSANOW, &newattr );
+    ch = getchar();
+    tcsetattr( STDIN_FILENO, TCSANOW, &oldattr );
+    return ch;
+}
+
 
 #endif
 
@@ -254,7 +266,11 @@ int socketStream::initialize_socketStream(){
                 WSACleanup();
             #endif
             std::cerr << std::endl;
-            closesocket(ListenSocket);
+            #ifdef _WIN32
+                closesocket(ListenSocket);
+            #else
+                close(ListenSocket);
+            #endif
             freeaddrinfo(result);
             return -4;
         }
@@ -267,7 +283,11 @@ int socketStream::initialize_socketStream(){
                 WSACleanup();
             #endif
             std::cerr << std::endl;
-            closesocket(ListenSocket);
+            #ifdef _WIN32
+                closesocket(ListenSocket);
+            #else
+                close(ListenSocket);
+            #endif
             return -2;
         }
 
@@ -333,7 +353,11 @@ int socketStream::initialize_socketStream(const char* svrIPAddress, int srvPosrt
                 WSACleanup();
             #endif
             std::cerr << std::endl;
-            closesocket(ListenSocket);
+            #ifdef _WIN32
+                closesocket(ListenSocket);
+            #else
+                close(ListenSocket);
+            #endif
             freeaddrinfo(result);
             return -4;
         }
@@ -346,7 +370,11 @@ int socketStream::initialize_socketStream(const char* svrIPAddress, int srvPosrt
                 WSACleanup();
             #endif
             std::cerr << std::endl;
-            closesocket(ListenSocket);
+            #ifdef _WIN32
+                closesocket(ListenSocket);
+            #else
+                close(ListenSocket);
+            #endif
             return -2;
         }
 
@@ -387,17 +415,26 @@ int socketStream::make_connection(){
         // Create a SOCKET for connecting to server
         ConnectSocket = socket(ptr->ai_family, ptr->ai_socktype, ptr->ai_protocol);
         if (ConnectSocket == INVALID_SOCKET) {
-            std::cerr << "[socketStream] socket failed with error: " <<  WSAGetLastError() << std::endl;
+            std::cerr << "[socketStream] socket failed with error: "; 
             #ifdef _WIN32
+                std::cerr <<  WSAGetLastError();
                 WSACleanup();
+            #else
+                std::cerr << strerror(errno);
             #endif
+            std::cerr << std::endl;
             return -1;
         }
 
+        
         // Connect to server.
         iResult = connect(ConnectSocket, ptr->ai_addr, (int)ptr->ai_addrlen);
         if (iResult == SOCKET_ERROR) {
-            closesocket(ConnectSocket);
+            #ifdef _WIN32
+                closesocket(ConnectSocket);
+            #else
+                close(ConnectSocket);
+            #endif
             ConnectSocket = INVALID_SOCKET;
             continue;
         }
@@ -417,7 +454,11 @@ int socketStream::make_connection(){
     bool validConnection = handshake_server(10);
     if(!validConnection){
         std::cout << "[socketStream] Handshake protocol failed! Closing connection with the server" << std::endl;
-        closesocket(ConnectSocket);
+        #ifdef _WIN32
+            closesocket(ConnectSocket);
+        #else
+            close(ConnectSocket);
+        #endif
         ConnectSocket = INVALID_SOCKET;
         #ifdef _WIN32
             WSACleanup();
@@ -839,8 +880,18 @@ int socketStream::sendMSg(){
             // if the communication is active, send message
             iResult = send( ConnectSocket, final_msg.c_str(), (int)final_msg.size(), 0 );
             if (iResult == SOCKET_ERROR) {
-                std::cerr << "[socketStream] Send message failed with error: " << WSAGetLastError() << std::endl;
-                closesocket(ConnectSocket);
+                std::cerr << "[socketStream] Send message failed with error: ";
+                #ifdef _WIN32
+                    std::cerr << WSAGetLastError();
+                #else
+                    std::cerr << strerror(errno);
+                #endif
+                std::cerr << std::endl;
+                #ifdef _WIN32
+                    closesocket(ConnectSocket);
+                #else
+                    close(ConnectSocket);
+                #endif
                 #ifdef _WIN32
                     WSACleanup();
                 #endif
@@ -862,6 +913,9 @@ int socketStream::sendMSg(){
 
 int socketStream::closeCommunication(){
 
+    // std::cout << "inside clcoseCommunication" << std::endl;
+    // std::cout << int(isServer) << std::endl;
+
 
     // cleanup
     if(isServer){
@@ -873,15 +927,30 @@ int socketStream::closeCommunication(){
             if(connetionSlots[i]){
                 iResult = shutdown(clientsSockets[i], SD_SEND);
                 if (iResult == SOCKET_ERROR) {
-                    std::cerr << "[socketStream] Shutting-down socket client " << i << " failed with error:" << WSAGetLastError() << std::endl;
-                    WSACleanup();
+                    std::cerr << "[socketStream] Send message failed with error: ";
+                    #ifdef _WIN32
+                        std::cerr << WSAGetLastError();
+                        WSACleanup();
+                    #else
+                        std::cerr << strerror(errno);
+                    #endif
+                    std::cerr << std::endl;
+                    
                     return -3;
                 }
-            closesocket(clientsSockets[i]);
+            #ifdef _WIN32
+                closesocket(clientsSockets[i]);
+            #else
+                close(clientsSockets[i]);
+            #endif
             }
         }
 
-        closesocket(ListenSocket);
+        #ifdef _WIN32
+            closesocket(ListenSocket);
+        #else
+            close(ListenSocket);
+        #endif
         
         threadMutex.lock();
         std::cout << "[socketStream] All sockets are successfully closed" << std::endl;
@@ -889,15 +958,24 @@ int socketStream::closeCommunication(){
         threadMutex.unlock();
     }
     else{
-
         std::cout<<"[socketStream] Ending connection ..."<<std::endl;
 
-        iResult = send( ConnectSocket, ec_id, (int)strlen(ec_id), 0 );
+        iResult = send(ConnectSocket, ec_id, (int)strlen(ec_id), 0 );
         if (iResult == SOCKET_ERROR) {
-            std::cerr << "[socketStream] Send failed with error: " << WSAGetLastError() << std::endl;
-            closesocket(ConnectSocket);
+            std::cerr << "[socketStream] Send message failed with error: ";
             #ifdef _WIN32
+                std::cerr << WSAGetLastError();
                 WSACleanup();
+            #else
+                std::cerr << strerror(errno);
+            #endif
+            std::cerr << std::endl;
+            
+            #ifdef _WIN32
+                closesocket(ConnectSocket);
+                WSACleanup();
+            #else
+                close(ConnectSocket);
             #endif
             return -1;
         }
@@ -911,8 +989,9 @@ int socketStream::closeCommunication(){
                 return -2;
             }
         #else
-            iResult = shutdown(ConnectSocket, SHUT_RDWR);
-            if (iResult == 0){
+            iResult = shutdown(ConnectSocket, SD_SEND);
+            if (iResult < 0){
+                std::cerr << "[socketStream] Shutdown failed with error: " << strerror(errno) << std::endl;
                 iResult = close(ConnectSocket);
                 return -2;
             }
@@ -920,8 +999,14 @@ int socketStream::closeCommunication(){
 
         isComActive = false;
 
-    
-        closesocket(ConnectSocket);
+        // std::cout << "isComActive: " << int(isComActive) << std::endl; 
+
+
+        #ifdef _WIN32
+            closesocket(ConnectSocket);
+        #else
+            close(ConnectSocket);
+        #endif
     }
     
     #ifdef _WIN32
@@ -949,13 +1034,9 @@ std::string socketStream::getFullmsg(){
 
 int socketStream::checkKeyPressed(std::string key){
 
-    // char keyHit;
-    // std::cout << "test\n";
     std::lock_guard<std::mutex> guard(threadMutex);
     while(true){
-        // keyHit=std::cin.get();
-        if(_kbhit()){
-            // keyHit = ;
+        if(kbhit()){
             if(key[0]==getchar()){
                 serverRunning = false;
                 break;
@@ -1002,6 +1083,8 @@ int socketStream::wait_connections(){
         return -2;
     }
 
+    socklen_t cli_addr_size;
+
     int slotNumber = -1;
     int nbConnections = 0;
     std::cout << "[socketStream] Server initialized. Waiting for connections ... " << std::endl;
@@ -1009,7 +1092,7 @@ int socketStream::wait_connections(){
         struct sockaddr_in clientAddress;
 
         // Accept a client socket
-        SOCKET ClientSocket = accept(ListenSocket, (struct sockaddr *)&clientAddress, NULL);
+        SOCKET ClientSocket = accept(ListenSocket, (struct sockaddr *)&clientAddress, &cli_addr_size);
         if (ClientSocket == INVALID_SOCKET) {
             
             threadMutex.lock();
@@ -1021,9 +1104,18 @@ int socketStream::wait_connections(){
                     WSACleanup();
                     std::cerr << std::endl;
                 }
+            #else
+                // if(strerror(errno)!=10004){
+                if(errno!=EINTR){
+                    std::cerr << "[socketStream] Accept failed with error: " << strerror(errno) << std::endl;
+                }
             #endif
             threadMutex.unlock();
-            closesocket(ListenSocket);
+            #ifdef _WIN32
+                closesocket(ListenSocket);
+            #else
+                close(ListenSocket);
+            #endif
             return -2;
         }
         std::string clAddStr = inet_ntoa(clientAddress.sin_addr);
@@ -1037,7 +1129,11 @@ int socketStream::wait_connections(){
                     WSACleanup();
                 #endif
                 std::cerr << std::endl;
-                closesocket(ClientSocket);
+                #ifdef _WIN32
+                    closesocket(ClientSocket);
+                #else
+                    close(ClientSocket);
+                #endif
             }
             threadMutex.lock();
             std::cout << "[socketStream] Connection from " << clAddStr << " is rejected due to maximum connections capacity reached" << std::endl; 
@@ -1054,9 +1150,15 @@ int socketStream::wait_connections(){
                     #ifdef _WIN32
                         std::cerr << WSAGetLastError();
                         WSACleanup();
+                    #else
+                        std::cerr << strerror(errno);
                     #endif
                     std::cerr << std::endl;
-                    closesocket(ClientSocket);
+                    #ifdef _WIN32
+                        closesocket(ClientSocket);
+                    #else
+                        close(ClientSocket);
+                    #endif
                 }
             }else{
                 threadMutex.lock();
@@ -1157,9 +1259,15 @@ int socketStream::runReceiver(int connectionID){
                 #ifdef _WIN32
                     std::cerr << WSAGetLastError();
                     WSACleanup();
+                #else
+                    std::cerr << strerror(errno);
                 #endif
                 std::cerr << std::endl;
-                closesocket(clntSocket);
+                #ifdef _WIN32
+                    closesocket(clntSocket);
+                #else
+                    close(clntSocket);
+                #endif
                 return -1;
             }
             
@@ -1190,9 +1298,15 @@ int socketStream::runReceiver(int connectionID){
             #ifdef _WIN32
                 std::cerr << WSAGetLastError();
                 WSACleanup();
+            #else
+                std::cerr << strerror(errno);
             #endif
             std::cerr << std::endl;
-            closesocket(clientsSockets[connectionID]);
+            #ifdef _WIN32
+                closesocket(clientsSockets[connectionID]);
+            #else
+                close(clientsSockets[connectionID]);
+            #endif
             connectionExists = false;
             return -1;
         }
@@ -1357,10 +1471,20 @@ bool socketStream::handshake_client(SOCKET conc, int strlength, int slotNb){
         start_ping = std::chrono::steady_clock::now();
         iResutlReceiver = send(conc, final_msg.c_str(), (int)final_msg.size(), 0 );
         if (iResutlReceiver == SOCKET_ERROR) {
-            std::cerr << "[socketStream] Send message failed with error: " << WSAGetLastError() << std::endl;
-            closesocket(conc);
+            std::cerr << "[socketStream] Send message failed with error: ";
             #ifdef _WIN32
+                std::cerr << WSAGetLastError();
                 WSACleanup();
+            #else
+                std::cerr << strerror(errno);
+            #endif
+            std::cerr << std::endl;
+            
+            #ifdef _WIN32
+                closesocket(conc);
+                WSACleanup();
+            #else
+                close(conc);
             #endif
             return false;
         }
@@ -1424,6 +1548,7 @@ bool socketStream::handshake_client(SOCKET conc, int strlength, int slotNb){
 
 bool socketStream::handshake_server(int strlength){
 
+    // std::cout << "inside handshake server" << std::endl;
 
     int iResutlReceiver = 0;
     int uHsKey = 1;
@@ -1468,10 +1593,20 @@ bool socketStream::handshake_server(int strlength){
         start_ping = std::chrono::steady_clock::now();
         iResutlReceiver = send(ConnectSocket, final_msg.c_str(), (int)final_msg.size(), 0 );
         if (iResutlReceiver == SOCKET_ERROR) {
-            std::cerr << "[socketStream] Send message failed with error: " << WSAGetLastError() << std::endl;
-            closesocket(ConnectSocket);
+            std::cerr << "[socketStream] Send message failed with error: ";
             #ifdef _WIN32
+                std::cerr << WSAGetLastError();
                 WSACleanup();
+            #else
+                std::cerr << strerror(errno);
+            #endif
+            std::cerr << std::endl;
+            
+            #ifdef _WIN32
+                closesocket(ConnectSocket);
+                WSACleanup();
+            #else
+                close(ConnectSocket);
             #endif
             return false;
         }
@@ -1542,10 +1677,20 @@ bool socketStream::handshake_server(int strlength){
         final_msg = msg_idf + msgHeader + std::to_string(uHsKey) + msgOHstring + ranString + std::string(msgOverhead, ' ') + endMSG;  
         iResutlReceiver = send(ConnectSocket, final_msg.c_str(), (int)final_msg.size(), 0 );
         if (iResutlReceiver == SOCKET_ERROR) {
-            std::cerr << "[socketStream] Send message failed with error: " << WSAGetLastError() << std::endl;
-            closesocket(ConnectSocket);
+            std::cerr << "[socketStream] Send message failed with error: ";
             #ifdef _WIN32
+                std::cerr << WSAGetLastError();
                 WSACleanup();
+            #else
+                std::cerr << strerror(errno);
+            #endif
+            std::cerr << std::endl;
+            
+            #ifdef _WIN32
+                closesocket(ConnectSocket);
+                WSACleanup();
+            #else
+                close(ConnectSocket);
             #endif
             return false;
         }
@@ -1568,15 +1713,29 @@ socketStream::~socketStream(){
 
     if(isServer){
         if(serverRunning){
-            closesocket(ListenSocket);
+            #ifdef _WIN32
+                closesocket(ListenSocket);
+            #else
+                close(ListenSocket);
+            #endif
             // shutdown the connection since we're done
             for(int i = 0; i < (int)clientsSockets.size(); i++){
                 iResult = shutdown(clientsSockets[i], SD_SEND);
                 if (iResult == SOCKET_ERROR) {
-                    std::cerr << "[socketStream] Shutting-down socket client " << i << " failed with error:" << WSAGetLastError() << std::endl;
-                    WSACleanup();
+                    std::cerr << "[socketStream] Shutting-down socket client " << i << " failed with error:";
+                    #ifdef _WIN32
+                        std::cerr << WSAGetLastError();
+                        WSACleanup();
+                    #else
+                        std::cerr << strerror(errno);
+                    #endif
+                    std::cerr << std::endl;
                 }
-                closesocket(clientsSockets[i]);
+                #ifdef _WIN32
+                    closesocket(clientsSockets[i]);
+                #else
+                    close(clientsSockets[i]);
+                #endif
             }
             serverRunning = false;
             std::cout << "[socketStream] All sockets are successfully closed" << std::endl;

@@ -4,7 +4,7 @@
 int main(int argc, char **argv){
 
     // define the variable that holds the server IP. In this case, the server would be a local server.
-    char *srvIP = "localhost";
+    const char *srvIP = "localhost";
 
     // if no new server IP is defined from the user, continue with the pre-defined server IP (localhost)
     if(argc!=2){
@@ -31,7 +31,7 @@ int main(int argc, char **argv){
 
     // define a which field will be updated and with which value
     std::string sfield("name");
-    char *svalue = {"Tom"};
+    const char *svalue = {"Tom"};
 
     if(socketHdlr.updateMSG(sfield, svalue)){
         std::cerr << "Unable to update the message" << std::endl;
@@ -68,12 +68,14 @@ int main(int argc, char **argv){
         std::cerr << "Unable to connect to " << srvIP << std::endl;
         return -5;
     }
+
     
     // send the message to the server
     if(socketHdlr.sendMSg()<0){
         std::cerr << "unable to send message " << std::endl;
         return -6;
     }
+
 
     // close communication with the server
     socketHdlr.closeCommunication();

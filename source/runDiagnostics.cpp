@@ -7,6 +7,11 @@
 #include <random>
 #include <codecvt>
 
+#ifdef __linux__
+#include <sys/stat.h>
+#include <sys/types.h>
+#endif
+
 // function to read a matrix from a text file
 std::vector< std::vector<double> > txt2matrix(std::string filename);
 
@@ -16,6 +21,10 @@ std::vector< std::vector<double> > random2Dmatrix(unsigned int rows, unsigned in
 // function to run the diagnostics
 int cTimings(int samples_window, int nb_channels, std::string sfield, socketStream& socketHdlr, std::ofstream& wfile); 
 
+#ifdef __linux__
+    int dirExists(std::string tpath);
+#endif
+
 
 int main(int argc, char **argv){
 
@@ -23,12 +32,25 @@ int main(int argc, char **argv){
         if(CreateDirectory("logfiles",NULL) || ERROR_ALREADY_EXISTS == GetLastError()){
             std::cout << "A folder logfiles is created" << std::endl;
         }
-    #endif
+    #else
+        std::string curent_path=get_current_dir_name();
+        std::string dir_path = curent_path + "/logfiles";
+        if (!dirExists(dir_path)){
+            if(mkdir(dir_path.c_str(),0777)==0){
+                dir_path+="//raw";
+                if(mkdir(dir_path.c_str(),0777)==0){
+                    std::cout << "A folder logfiles is created" << std::endl;
+                }
+            }else{
+                std::cout<<"Unable to create the folder:\n"<<dir_path<<"\n";
+            }
 
-    #ifdef linux
-        if(mkdir("logfiles")){
-            std::cout << "A folder logfiles is created" << std::endl;
-        }
+            dir_path.clear();
+    }
+
+        // if(mkdir("logfiles")){
+        //     std::cout << "A folder logfiles is created" << std::endl;
+        // }
     #endif
 
 
@@ -409,3 +431,26 @@ int cTimings(int samples_window, int nb_channels, std::string sfield, socketStre
 
     return 0;
 }
+
+#ifdef __linux__
+    int dirExists(std::string tpath){
+        /*	This function checks if the directory 'tpath' exists
+            if it exists the function returns 0
+        */
+
+        struct stat info;
+
+        if (stat(tpath.c_str(), &info) != 0){
+            // could not have access in the folder
+            return 0;
+        }else if (info.st_mode & S_IFDIR){
+            // the folder exists
+            return 1;
+        }
+        else{
+            // the folder doesn't exist
+            return 1;
+        }
+    }
+
+#endif
