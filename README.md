@@ -2,7 +2,7 @@
 
 A cros-platform C++ library and Python module for exchanging packets over a TCP/IP communication. The socketSteam class supports both client and server implementations on C++ and python. The packets follow the json structure, making them compatible with other languages too. The C++ library supports multi-client server, whilst the server of the python class services only one client. 
 
-The C++ implementaion of md5 checksum is borrowed from zedwood in this link http://www.zedwood.com/article/cpp-md5-function
+The C++ implementaion of md5 checksum is borrowed from zedwood in this [link](http://www.zedwood.com/article/cpp-md5-function).
 
 ## Set-up
 1) Open a terminal or command prompt (on Windows) and navigate to your workspace. In your workspace folder, create a folder called "dependencies" to contain the cpp dependencies (if it doesn't already exist)
@@ -11,7 +11,7 @@ The C++ implementaion of md5 checksum is borrowed from zedwood in this link http
 $ mkdir dependencies
 ```
 
-2) go inside the folder dependencies and clone the rapidjson library from https://github.com/Tencent/rapidjson/
+2) go inside the folder dependencies and clone the rapidjson library from their [github repo](https://github.com/Tencent/rapidjson/)
 
 ```bash
 $ cd dependencies
