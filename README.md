@@ -1,4 +1,4 @@
-# socketStream
+![](docs/pics/windows_env_variables_directions.png)
 
 A cros-platform C++ library and Python module for exchanging packets over a TCP/IP communication. The socketSteam class supports both client and server implementations on C++ and python. The packets follow the json structure, making them compatible with other languages too. The C++ library supports multi-client server, whilst the server of the python class services only one client. 
 
