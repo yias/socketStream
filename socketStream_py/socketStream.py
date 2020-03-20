@@ -31,7 +31,7 @@ class socketStream():
         # Bind the socket to the port
         self.server_address = (IPaddress, port)
 
-        print('starting up on %s port %s' % self.server_address)
+        print('[socketStream] Starting up on %s port %s' % self.server_address)
 
         self.isServer = isServer
 
@@ -70,8 +70,10 @@ class socketStream():
         self.isComActive = False
 
         if self.isServer:
+            print("[socketStream] Server mode")
             self.sock.bind(self.server_address)
             # listen for new connections
+            self.sock.settimeout(5)
             self.sock.listen(1)
             self.serverRunnig = True
             self.serverThread = threading.Thread(target = self.wait_connections, args = ())
@@ -82,6 +84,7 @@ class socketStream():
             self.lock = threading.Lock()
             self.firstValueReceived = False
         else:
+            print("[socketStream] Client mode")
             self.serverRunnig = False
 
         self.hc_check=hashlib.md5()
@@ -152,7 +155,7 @@ class socketStream():
                 msg_full+=dataT.decode('utf-8')
                 if msg_full[-4:]==self.endMSG:
                     break
-            # print(msg_full)
+
             msg_validity, tr_msg = self.msgExtractor(msg_full[len(self.msg_idf):])
             self.clientName = tr_msg
             print('[socketStream] Compute times: %s %s %s s' %(compute_times.mean(), u'\u00b1', compute_times.std()))
@@ -184,11 +187,9 @@ class socketStream():
             overheadStr = " " * msgOverhead
             compute_times[i]=time.time()-t_time0
             msgOverheadSize = ('{:<'+str(self.bfrDigits)+'}').format(str(msgOverhead))
-            # print(self.BUFFER_SIZE)
-            # print(self.bfrDigits)
-            # print(msgOverheadSize)
+
             msg2send = self.msg_idf+msg_len+str(int(self.useHashKey))+msgOverheadSize+(test_msg)+chSum+overheadStr+self.endMSG
-            # print(msg2send)
+
             self.sock.sendall(msg2send.encode('utf-8'))
             t_time0=time.time()
             
@@ -231,7 +232,7 @@ class socketStream():
             return False
 
     def run(self):
-        print('waiting for a connections ... ')
+        print('[socketStream] Waiting for a connections ... ')
         counter = 0
         while(not self.connection_exist):
             # print(counter)
@@ -290,14 +291,19 @@ class socketStream():
         # close communications
         if not self.isServer:
             self.sock.sendall(self.ec_id.encode('utf-8'))
+        else:
+            self.lock.acquire()
+            self.serverRunnig = False
+            self.lock.release()
+            self.serverThread.join()
+            
+
         if self.connection_exist:
             self.lock.acquire()
             self.connection.close()
             self.connection_exist = False
             self.lock.release()
-            self.lock.acquire()
-            self.serverRunnig = False
-            self.lock.release()
+
         self.sock.close()
         print('[socketStream] All connections killed')
 
@@ -410,19 +416,23 @@ class socketStream():
     def wait_connections(self):
         print('[socketStream] Waiting for connections ... ')
         while(self.serverRunnig):
-            # check if any connection inquire exists and accept it
-            self.connection, self.client_address = self.sock.accept()
-            conn_validity = self.handShake_client(self.connection, 10)
-            if conn_validity:
-                print("[socketStream] Connection from " + self.client_address[0] + " with ID: " + self.clientName)
-                testThrd = threading.Thread(target=self.runReceiver, args = ())
-                testThrd.daemon = True
-                self.connection_exist = True
-                testThrd.start()
-                testThrd.join()
-            else:
-                 print("[socketStream] Handshake protocol failed! Connection from " + self.client_address[0] + " with ID: " + self.clientName + "is rejected.")
-    
+            try:
+                # check if any connection inquire exists and accept it
+                self.connection, self.client_address = self.sock.accept()
+                conn_validity = self.handShake_client(self.connection, 10)
+                if conn_validity:
+                    print("[socketStream] Connection from " + self.client_address[0] + " with ID: " + self.clientName)
+                    testThrd = threading.Thread(target=self.runReceiver, args = ())
+                    testThrd.daemon = True
+                    self.connection_exist = True
+                    testThrd.start()
+                    testThrd.join()
+                else:
+                    print("[socketStream] Handshake protocol failed! Connection from " + self.client_address[0] + " with ID: " + self.clientName + "is rejected.")
+            except socket.timeout:
+                pass
+
+
     def isConnected(self):
         return self.isComActive
 

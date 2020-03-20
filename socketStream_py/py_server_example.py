@@ -23,7 +23,7 @@ def main(args):
                 print(tt.get("name"))
                 test=tt.get("data")
                 rt=np.array(test, dtype=np.float32)
-                print(rt)
+                # print(rt)
 
         except KeyboardInterrupt:
             break
