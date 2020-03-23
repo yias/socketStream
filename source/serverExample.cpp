@@ -17,7 +17,7 @@ int main(int argc, char **argv){
     }
 
     // create an sockectStream object with the selected server IP address and set it up as a server
-    socketStream svrHdlr(srvIP, svrPort, SOCKETSTREAM_SERVER);
+    socketStream svrHdlr(srvIP, svrPort, SOCKETSTREAM::SOCKETSTREAM_SERVER);
 
     // initialize socketStream
     svrHdlr.initialize_socketStream();

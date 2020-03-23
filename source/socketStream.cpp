@@ -1,6 +1,10 @@
 
 #include "socketStream.h"
 
+namespace SOCKETSTREAM{
+    const char *DEFAULT_HOST_IP = "localhost"; 
+}
+
 #ifdef __linux__
 
 
@@ -61,9 +65,9 @@ socketStream::socketStream(void){
 
     ec_id = "\ne@c";
 
-    headerSize=8;
+    headerSize = 8;
 
-    bufferSize=16;
+    bufferSize = 16;
 
     msgOverhead = 0;
 
@@ -73,9 +77,9 @@ socketStream::socketStream(void){
 
     clientName = randomString(5);
 
-    Host_IP = DEFAULT_HOST_IP;
+    Host_IP = SOCKETSTREAM::DEFAULT_HOST_IP;
 
-    Host_Port = DEFAULT_PORT;
+    Host_Port = SOCKETSTREAM::DEFAULT_PORT;
 
     memset(&hints, 0, sizeof hints);
 
@@ -127,7 +131,7 @@ socketStream::socketStream(const char* svrIPAddress){
 
     Host_IP = svrIPAddress;
 
-    Host_Port = DEFAULT_PORT;
+    Host_Port = SOCKETSTREAM::DEFAULT_PORT;
 
     memset(&hints, 0, sizeof hints);
 
@@ -156,7 +160,7 @@ socketStream::socketStream(const char* svrIPAddress, int srvPosrt, const int soc
     
     ptr = NULL;
 
-    if(socketStreamMode==SOCKETSTREAM_SERVER){
+    if(socketStreamMode==SOCKETSTREAM::SOCKETSTREAM_SERVER){
         isServer = true;
     }else{
         isServer = false;
@@ -193,13 +197,13 @@ socketStream::socketStream(const char* svrIPAddress, int srvPosrt, const int soc
     if(isServer){
         hints.ai_flags = AI_PASSIVE;                   // for the server
         serverRunning = false;
-        clientsSockets = std::vector <SOCKET> (MAX_NB_CONNECTIONS);
-        clientsAddresses = std::vector <std::string> (MAX_NB_CONNECTIONS);
-        firstMsgReceived = std::vector <bool> (MAX_NB_CONNECTIONS, false);
-        isNewMsgReceived = std::vector <bool> (MAX_NB_CONNECTIONS, false);
-        connetionSlots = std::vector <bool> (MAX_NB_CONNECTIONS, false);
-        clientIDs = std::vector <std::string> (MAX_NB_CONNECTIONS);
-        clientMsgs = std::vector <std::string> (MAX_NB_CONNECTIONS);
+        clientsSockets = std::vector <SOCKET> (SOCKETSTREAM::MAX_NB_CONNECTIONS);
+        clientsAddresses = std::vector <std::string> (SOCKETSTREAM::MAX_NB_CONNECTIONS);
+        firstMsgReceived = std::vector <bool> (SOCKETSTREAM::MAX_NB_CONNECTIONS, false);
+        isNewMsgReceived = std::vector <bool> (SOCKETSTREAM::MAX_NB_CONNECTIONS, false);
+        connetionSlots = std::vector <bool> (SOCKETSTREAM::MAX_NB_CONNECTIONS, false);
+        clientIDs = std::vector <std::string> (SOCKETSTREAM::MAX_NB_CONNECTIONS);
+        clientMsgs = std::vector <std::string> (SOCKETSTREAM::MAX_NB_CONNECTIONS);
     } 
 
     isComActive = false;
@@ -1192,10 +1196,10 @@ int socketStream::wait_connections(){
 int socketStream::runReceiver(int connectionID){
 
     int iResutlReceiver = 0;
-    char tmp_buf[DEFAULT_BUFLEN];
+    char tmp_buf[SOCKETSTREAM::DEFAULT_BUFLEN];
     std::string fullmsg;
     bool connectionExists = true;
-    char clientRecvbuf[DEFAULT_BUFLEN];
+    char clientRecvbuf[SOCKETSTREAM::DEFAULT_BUFLEN];
     std::string validMsg;
     bool msgValidity = false;
 
@@ -1414,7 +1418,7 @@ bool socketStream::handshake_client(SOCKET conc, int strlength, int slotNb){
 
     int iResutlReceiver = 0;
     int uHsKey = 1;
-    char clientRecvbuf[DEFAULT_BUFLEN];
+    char clientRecvbuf[SOCKETSTREAM::DEFAULT_BUFLEN];
     bool msgValidity = false;
     std::vector <double> ping_times(10,0);
     std::vector <double> compute_times(10,0);
@@ -1552,7 +1556,7 @@ bool socketStream::handshake_server(int strlength){
 
     int iResutlReceiver = 0;
     int uHsKey = 1;
-    char clientRecvbuf[DEFAULT_BUFLEN];
+    char clientRecvbuf[SOCKETSTREAM::DEFAULT_BUFLEN];
     bool msgValidity = false;
     std::vector <double> ping_times(10,0);
     std::vector <double> compute_times(10,0);

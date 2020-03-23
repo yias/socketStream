@@ -1,7 +1,17 @@
 /**
-    Header file for the class socketStream
-
-
+ *  
+ *  socketStream C++ class
+ *  
+ *  socketStream is a cross-platform C++ library (the corresponding Python module exists in the folder socketStream_py)
+ *  for exchanging packets over a TCP/IP communication. The socketSteam class supports both client and multi-client server 
+ *  implementations. 
+ * 
+ *  The packets follow the json structure, making them compatible with other languages.
+ * 
+ *  Developer:  Iason Batzianoulis
+ *  email:      iasonbatz@gmail.com
+ *  Lisence:     
+ * 
 **/
 
 #ifndef SOCKETSTREAM_H
@@ -63,12 +73,25 @@
 #include <thread>
 #include <mutex>
 
-#define DEFAULT_BUFLEN 2048
-#define DEFAULT_PORT 10352
-#define DEFAULT_HOST_IP "localhost"
-#define SOCKETSTREAM_SERVER 1
-#define SOCKETSTREAM_CLIENT 0
-#define MAX_NB_CONNECTIONS 10
+namespace SOCKETSTREAM{
+    // #define DEFAULT_BUFLEN 2048
+    // #define DEFAULT_PORT 10352
+    // #define DEFAULT_HOST_IP "localhost"
+    // #define SOCKETSTREAM_SERVER 1
+    // #define SOCKETSTREAM_CLIENT 0
+    // #define MAX_NB_CONNECTIONS 10
+    
+    const unsigned int DEFAULT_BUFLEN = 2048;
+    const unsigned int DEFAULT_PORT = 10352;
+    // const char *DEFAULT_HOST_IP;// = "localhost"; 
+    const int SOCKETSTREAM_SERVER = 1;
+    const int SOCKETSTREAM_CLIENT = 0;
+    const int MAX_NB_CONNECTIONS = 10;
+
+    
+    
+}
+
 
 
 class socketStream{
@@ -78,18 +101,19 @@ class socketStream{
     #ifdef _WIN32
         // define a struct for storing infor regarding the socket
         WSADATA wsaData;
-        SOCKET ConnectSocket; // = INVALID_SOCKET;
+        // SOCKET ConnectSocket; // = INVALID_SOCKET;
 
-        SOCKET ListenSocket;                            // for the server
-        std::vector <SOCKET> clientsSockets;
+        // SOCKET ListenSocket;                            // for the server
+        // std::vector <SOCKET> clientsSockets;
     #else
-        SOCKET ConnectSocket, ListenSocket;                            // for the server
-        // int ConnectSocket, ListenSocket;
-        std::vector <SOCKET> clientsSockets;
+        // SOCKET ConnectSocket, ListenSocket;                            // for the server
+        // // int ConnectSocket, ListenSocket;
+        // std::vector <SOCKET> clientsSockets;
     #endif
 
     
-    
+    SOCKET ConnectSocket, ListenSocket;
+    std::vector <SOCKET> clientsSockets;
     
     std::vector <std::string> clientsAddresses;
     std::vector <bool> firstMsgReceived;
@@ -102,11 +126,11 @@ class socketStream{
 
     struct addrinfo *result, *ptr, hints;
 
-    char recvbuf[DEFAULT_BUFLEN];
+    char recvbuf[SOCKETSTREAM::DEFAULT_BUFLEN];
 
     int iResult;
 
-    int recvbuflen = DEFAULT_BUFLEN;
+    int recvbuflen = SOCKETSTREAM::DEFAULT_BUFLEN;
 
     bool isServer;
     bool serverRunning;
@@ -175,7 +199,7 @@ public:
 
     socketStream(const char* scrIPAdress);                    // constructor with setting the server IP address
 
-    socketStream(const char* svrIPAddress, int srvPosrt, const int socketStreamMode = SOCKETSTREAM_CLIENT);     // constructor with setting the server IP address and port
+    socketStream(const char* svrIPAddress, int srvPosrt, const int socketStreamMode = SOCKETSTREAM::SOCKETSTREAM_CLIENT);     // constructor with setting the server IP address and port
 
     int initialize_socketStream();                                                                              // initialize the socketStream object
 

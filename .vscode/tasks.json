@@ -5,6 +5,30 @@
     "tasks": [
         {
             "type": "shell",
+            "label": "g++ build jsonWrapper example on Windows",
+            "command": "g++.exe",
+            "args": [
+                "-g", "${workspaceFolder}\\source\\jsonWrapper_example.cpp",
+                "${workspaceFolder}\\source\\jsonWrapper.cpp",
+                // "${workspaceFolder}\\source\\socketStream.cpp",
+                // "${workspaceFolder}\\source\\md5.cpp",
+                "-o", "${workspaceFolder}\\build\\jsonWrapper_example.exe",
+                "-O3",
+                "-lws2_32",
+                "-I", "${env:CPP_DEPENDENCIES}\\rapidjson\\include",
+                "-I", "${workspaceFolder}\\include",
+                "-I", "${workspaceFolder}\\source"
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "type": "shell",
             "label": "build run diagnostics in linux",
             "command": "g++",
             "args": [
