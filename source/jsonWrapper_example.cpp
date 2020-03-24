@@ -1,6 +1,7 @@
 /**
  * 
- *  Example for using the jsonWrapper class
+ *  Examples on how to use the jsonWrapper class
+ * 
  *  Developer:  Iason Batzianoulis
  *  email:      iasonbatz@gmail.com
  *  Lisence:     
@@ -57,11 +58,11 @@ int main(int argc, char **argv){
     int int_nb = testObj.getField<rapidJson_types::Int>(std::string("anInt"));
     std::cout << "The value of " << std::string("anInt") << " is: " << int_nb << std::endl;
 
-    // get the value of a specific field, which contains an integer, and print it
+    // get the value of a specific field, which contains a float, and print it
     float float_nb = testObj.getField<rapidJson_types::Float>(std::string("aFloat"));
     std::cout << "The value of " << std::string("aFloat") << " is: " << float_nb << std::endl;
 
-    // get the value of a specific field, which contains an integer, and print it
+    // get the value of a specific field, which contains a float but it will be converted to a double, and print it
     double double_nb = testObj.getField<rapidJson_types::Double>(std::string("aFloat"));
     std::cout << "The value of " << std::string("aFloat") << " is: " << double_nb << " (returned as a double)" << std::endl;
     
@@ -74,7 +75,7 @@ int main(int argc, char **argv){
     }
 
 
-    // get the value of a specific field, which contains a vector of doubles, and print it
+    // get the value of a specific field, which contains a vector of integers, and print it
     std::vector<int> tr_int = testObj.getField<rapidJson_types::VecInt>(std::string("anIntArray"));
     std::cout << "The value of " << std::string("anIntArray") << " is: " << std::endl;
     for (int i= 0; i< (int)tr_int.size(); i++){
@@ -89,14 +90,7 @@ int main(int argc, char **argv){
             std::cout << mat_double[i][j] << ((j== ((int)mat_double[i].size()-1)) ? "\n": ", " );
         }
     }
-
-    
-    
-    testObj.printValue(std::string("aString"));
-
     
     
     return 0;
-
-
 }

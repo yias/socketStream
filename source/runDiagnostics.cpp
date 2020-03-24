@@ -1,4 +1,12 @@
-
+/**
+ * 
+ *  source file for running diagnostics for the client performance
+ * 
+ *  Developer:  Iason Batzianoulis
+ *  email:      iasonbatz@gmail.com
+ *  Lisence:     
+ *  
+*/
 
 #include "socketStream.h"
 #include <chrono>

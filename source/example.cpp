@@ -1,3 +1,12 @@
+/**
+ * 
+ *  Examples on how to use the socketStream class for implementing a TCP client
+ * 
+ *  Developer:  Iason Batzianoulis
+ *  email:      iasonbatz@gmail.com
+ *  Lisence:     
+ *  
+*/
 
 #include "socketStream.h"
 

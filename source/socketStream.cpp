@@ -1,3 +1,13 @@
+/**
+ *  
+ *  socketStream source file
+ *  
+ * 
+ *  Developer:  Iason Batzianoulis
+ *  email:      iasonbatz@gmail.com
+ *  Lisence:     
+ * 
+**/
 
 #include "socketStream.h"
 

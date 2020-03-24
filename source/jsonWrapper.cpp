@@ -1,4 +1,15 @@
-
+/**
+ * 
+ * 
+ *  jsonWrapper source file
+ *  
+ *  [description]
+ *  
+ *  Developer:  Iason Batzianoulis
+ *  email:      iasonbatz@gmail.com
+ *  Lisence:     
+ * 
+**/
 
 #include "jsonWrapper.h"
 
@@ -49,12 +60,6 @@ int jsonWrapper::parseValue(std::string field, std::string value){
             const char *t_value = value.c_str();
             rapidjson::Value a;
             a.SetString(t_value, std::strlen(t_value), this->jsonDoc.GetAllocator());
-            // std::cout << "-------------------" << std::endl;
-            // std::cout << a.GetString() <<std::endl;
-            // std::cout << this->jsonDoc[field.c_str()].GetString() << std::endl;
-            // std::cout << value << std::endl;
-            // this->jsonDoc[field.c_str()].SetString(t_value, std::strlen(t_value)+1);
-            // std::cout << this->jsonDoc[field.c_str()].GetString() << std::endl;
             jsonDoc[field.c_str()] = a;
         }else{
             std::cerr << "[jsonWrapper] Not valid field name" << std::endl;
@@ -65,7 +70,6 @@ int jsonWrapper::parseValue(std::string field, std::string value){
         return -2;
     }
 
-    // std::cout << "inside parseValue: " << jsonDoc[field.c_str()].GetString() << std::endl;
 
     return 0;
 

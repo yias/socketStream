@@ -74,22 +74,12 @@
 #include <mutex>
 
 namespace SOCKETSTREAM{
-    // #define DEFAULT_BUFLEN 2048
-    // #define DEFAULT_PORT 10352
-    // #define DEFAULT_HOST_IP "localhost"
-    // #define SOCKETSTREAM_SERVER 1
-    // #define SOCKETSTREAM_CLIENT 0
-    // #define MAX_NB_CONNECTIONS 10
     
     const unsigned int DEFAULT_BUFLEN = 2048;
     const unsigned int DEFAULT_PORT = 10352;
-    // const char *DEFAULT_HOST_IP;// = "localhost"; 
     const int SOCKETSTREAM_SERVER = 1;
     const int SOCKETSTREAM_CLIENT = 0;
-    const int MAX_NB_CONNECTIONS = 10;
-
-    
-    
+    const int MAX_NB_CONNECTIONS = 10;   
 }
 
 
@@ -152,9 +142,9 @@ class socketStream{
     rapidjson::Writer<rapidjson::StringBuffer> writer;                              // writer to stringify the json object
     
     // variables used in the communication protocol
-    const char *msg_idf;                                                                  // the new packet identifier  
-    const char *endMSG;                                                                   // the end-of-message identifier
-    const char *ec_id;                                                                    // the end-of-connection identifier
+    const char *msg_idf;                                                            // the new packet identifier  
+    const char *endMSG;                                                             // the end-of-message identifier
+    const char *ec_id;                                                              // the end-of-connection identifier
     unsigned int headerSize;                                                        // the header of the packet containing the number of bytes to be streamed
     unsigned int minMsgSize;                                                        // the size of the packet if it doesn't include the message
     unsigned int msgOverhead;
@@ -195,45 +185,45 @@ class socketStream{
 
 public:
 
-    socketStream(void);                                                                                         // empty constructor, setting the default values, default: TCP client
+    socketStream(void);                                                                                                         // empty constructor, setting the default values, default: TCP client
 
-    socketStream(const char* scrIPAdress);                    // constructor with setting the server IP address
+    socketStream(const char* scrIPAdress);                                                                                      // constructor with setting the server IP address
 
-    socketStream(const char* svrIPAddress, int srvPosrt, const int socketStreamMode = SOCKETSTREAM::SOCKETSTREAM_CLIENT);     // constructor with setting the server IP address and port
+    socketStream(const char* svrIPAddress, int srvPosrt, const int socketStreamMode = SOCKETSTREAM::SOCKETSTREAM_CLIENT);       // constructor with setting the server IP address and port
 
-    int initialize_socketStream();                                                                              // initialize the socketStream object
+    int initialize_socketStream();                                                                                              // initialize the socketStream object
 
-    int initialize_socketStream(const char* svrIPAddress, int srvPosrt);                                        // initialize the socketStream object re-setting the server IP address and port
+    int initialize_socketStream(const char* svrIPAddress, int srvPosrt);                                                        // initialize the socketStream object re-setting the server IP address and port
 
-    int make_connection();                                                                                      // connect with the server
+    int make_connection();                                                                                                      // connect with the server
 
-    int initialize_msgStruct(std::vector<std::string> fields);                                                  // setting the fields of the message 
+    int initialize_msgStruct(std::vector<std::string> fields);                                                                  // setting the fields of the message 
 
-    int printMSGcontents();                                                                                     // print the contents of the message
+    int printMSGcontents();                                                                                                     // print the contents of the message
 
-    int printMSGcontentsTypes();                                                    // print everything that is contained in the message
+    int printMSGcontentsTypes();                                                                                                // print everything that is contained in the message
 
-    int printMSGString();                                                           // get the message contents as strins
+    int printMSGString();                                                                                                       // get the message contents as strins
 
     int set_clientName(std::string cID);
 
-    int updateMSG(std::string field, const char *value);                                  // update the specific field of the message (for strings)
-    int updateMSG(std::string field, int *value, int arraylength);                  // update the specific field of the message (for array of integers)
-    int updateMSG(std::string field, double *value, int arraylength);               // update the specific field of the message (for array of doubles)
-    int updateMSG(std::string field, std::vector <int> value);                      // update the specific field of the message (for vector of integers)
-    int updateMSG(std::string field, std::vector <double> value);                   // update the specific field of the message (for vector of doubles)
-    int updateMSG(std::string field, std::vector <std::vector <int>> value);        // update the specific field of the message (for 2D matrix of integers)
-    int updateMSG(std::string field, std::vector <std::vector <double>> value);     // update the specific field of the message (for 2D matrix of doubles)
+    int updateMSG(std::string field, const char *value);                                                                        // update the specific field of the message (for strings)
+    int updateMSG(std::string field, int *value, int arraylength);                                                              // update the specific field of the message (for array of integers)
+    int updateMSG(std::string field, double *value, int arraylength);                                                           // update the specific field of the message (for array of doubles)
+    int updateMSG(std::string field, std::vector <int> value);                                                                  // update the specific field of the message (for vector of integers)
+    int updateMSG(std::string field, std::vector <double> value);                                                               // update the specific field of the message (for vector of doubles)
+    int updateMSG(std::string field, std::vector <std::vector <int>> value);                                                    // update the specific field of the message (for 2D matrix of integers)
+    int updateMSG(std::string field, std::vector <std::vector <double>> value);                                                 // update the specific field of the message (for 2D matrix of doubles)
 
-    int sendMSg();                                                                  // send message to the server
+    int sendMSg();                                                                                                              // send message to the server
 
-    int closeCommunication();                                                       // close the communication with the server
+    int closeCommunication();                                                                                                   // close the communication with the server
 
-    int setHashKey(bool hKey);                                                      // setting the value of useHashKey
+    int setHashKey(bool hKey);                                                                                                  // setting the value of useHashKey
 
-    int setHeaderSize(unsigned int hSize);                                          // setting the header size
+    int setHeaderSize(unsigned int hSize);                                                                                      // setting the header size
 
-    std::string getFullmsg();                                                       // returning the full message as a string
+    std::string getFullmsg();                                                                                                   // returning the full message as a string
 
     int wait_connections();
 
