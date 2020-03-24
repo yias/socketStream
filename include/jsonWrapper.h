@@ -1,7 +1,14 @@
 /**
-    Header file for the class socketStream
-
-
+ * 
+ * 
+ *  jsonWrapper C++ class
+ *  
+ *  [description]
+ *  
+ *  Developer:  Iason Batzianoulis
+ *  email:      iasonbatz@gmail.com
+ *  Lisence:     
+ * 
 **/
 
 #ifndef JSONWRAPPER_H_
@@ -16,7 +23,22 @@
 #include <vector>
 #include <algorithm>
 
-enum rapdJson_types{
+
+
+namespace rapdJson_types{
+    typedef int                                 Int;
+    typedef float                               Float;
+    typedef double                              Double;           
+    typedef std::vector<double>                 VecD;
+    typedef std::vector< std::vector<double> >  Vec2DD;
+    typedef std::vector<float>                  VecFt;
+    typedef std::vector< std::vector<float> >   Vec2DF;
+    typedef std::vector<int>                    VecI;
+    typedef std::vector< std::vector<int> >     Vec2DI;
+    typedef std::string                         String;
+    typedef std::vector< std::string >          VecString;
+
+    enum rapdJson_types{
     RAPIDJSON_NULL,
     RAPIDJSON_FALSE,
     RAPIDJSON_TRUE,
@@ -24,49 +46,10 @@ enum rapdJson_types{
     RAPIDJSON_ARRAY,
     RAPIDJSON_STRING,
     RAPIDJSON_NUMBER
-};
 
-typedef std::vector<double> VecOfD;
+    };
+}
 
-// #define RAPIDJSON_NULL   0
-// #define RAPIDJSON_FALSE  1
-// #define RAPIDJSON_TRUE   2
-// #define RAPIDJSON_OBJECT 3
-// #define RAPIDJSON_ARRAY  4
-// #define RAPIDJSON_STRING 5
-// #define RAPIDJSON_NUMBER 6
-
-// class jsonWrapper;
-
-// template<class T>
-// struct getValueHelper;
-
-// template<>
-// struct getValueHelper<std::string>{
-//     std::string getVal(jsonWrapper *tmp, std::string fldName){
-//         return tmp->jsonDoc[fldName.c_str()].GetString();
-//     }
-// };
-
-// template<>
-// struct getValueHelper<std::string>{
-//     static std::string getVal(rapidjson::Document tmpDoc, std::string fldName){
-//         return tmpDoc[fldName.c_str()].GetString();
-//     }
-// };
-
-
-// template<>
-// struct getValueHelper<VecOfD>{
-//     static VecOfD getVal(rapidjson::Document tmp_doc, std::string fldName){
-//         VecOfD trm;
-//         const rapidjson::Value& a = tmp_doc[fldName.c_str()];
-//         std::transform(a.Begin(),a.End(),std::back_inserter(trm),[](const rapidjson::Value &tt){return tt.GetDouble();});
-//         return trm;
-//     }
-// };
-
-// template<>
 
 
 class jsonWrapper{
@@ -96,13 +79,13 @@ class jsonWrapper{
 
         template<class T>
         T getField(std::string fieldName);
-        // auto& getField(std::string fieldName);
+        auto& getField(std::string fieldName);
 
 
 };
 
 template<>
-struct jsonWrapper::getValueHelper<std::string>{
+struct jsonWrapper::getValueHelper<rapdJson_types::String>{
     static std::string getVal(void *usrPtr, std::string fldName){
         jsonWrapper *tmp = static_cast<jsonWrapper *>(usrPtr);
         return tmp->jsonDoc[fldName.c_str()].GetString();
@@ -111,10 +94,10 @@ struct jsonWrapper::getValueHelper<std::string>{
 
 
 template<>
-struct jsonWrapper::getValueHelper<VecOfD>{
-    static VecOfD getVal(void *usrPtr, std::string fldName){
+struct jsonWrapper::getValueHelper<rapdJson_types::VecD>{
+    static rapdJson_types::VecD getVal(void *usrPtr, std::string fldName){
         jsonWrapper *tmp = static_cast<jsonWrapper *>(usrPtr);
-        VecOfD trm;
+        rapdJson_types::VecD trm;
         const rapidjson::Value& a = tmp->jsonDoc[fldName.c_str()];
         std::transform(a.Begin(),a.End(),std::back_inserter(trm),[](const rapidjson::Value &tt){return tt.GetDouble();});
         return trm;
@@ -124,16 +107,19 @@ struct jsonWrapper::getValueHelper<VecOfD>{
 
 template<class T>
 T jsonWrapper::getField(std::string fieldName){
-    // jsonWrapper::getValueHelper<T> tmoobj;
-    // T rtr = tmoobj.getVal(jsonDoc,fieldName);
-    if(jsonDoc.HasMember(fieldName.c_str())){
-        std::cout << "Yes it has \n";
-    }
-    // std::cout<< fieldName << std::endl;
-    // std::cout<< "inside getField: " << jsonDoc[fieldName.c_str()].GetString() << std::endl;
-    T rtr = jsonWrapper::getValueHelper<T>::getVal(this, fieldName); 
-    return rtr;
+    // if(jsonDoc.HasMember(fieldName.c_str())){
+    //     std::cout << "Yes it has \n";
+    // }
+    
+    // T rtr = jsonWrapper::getValueHelper<T>::getVal(this, fieldName); 
+    return jsonWrapper::getValueHelper<T>::getVal(this, fieldName);
 }
+
+
+// ------------------------------------------------------------------------------------------------ //
+// ------------------------------------------------------------------------------------------------ //
+// ------------------------------------------------------------------------------------------------ //
+
 
 // inline auto& jsonWrapper::getField(std::string fieldName){
 //     // T returnObj;

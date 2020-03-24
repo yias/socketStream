@@ -43,10 +43,19 @@ int jsonWrapper::updateDoc(std::string jsonString){
 }
 
 int jsonWrapper::parseValue(std::string field, std::string value){
-
     if(isobjectok){
+        
         if(jsonDoc.HasMember(field.c_str())){
-            jsonDoc[field.c_str()].SetString(value.c_str(), strlen(value.c_str()));
+            const char *t_value = value.c_str();
+            rapidjson::Value a;
+            a.SetString(t_value, std::strlen(t_value), this->jsonDoc.GetAllocator());
+            // std::cout << "-------------------" << std::endl;
+            // std::cout << a.GetString() <<std::endl;
+            // std::cout << this->jsonDoc[field.c_str()].GetString() << std::endl;
+            // std::cout << value << std::endl;
+            // this->jsonDoc[field.c_str()].SetString(t_value, std::strlen(t_value)+1);
+            // std::cout << this->jsonDoc[field.c_str()].GetString() << std::endl;
+            jsonDoc[field.c_str()] = a;
         }else{
             std::cerr << "[jsonWrapper] Not valid field name" << std::endl;
             return -1;
@@ -56,7 +65,7 @@ int jsonWrapper::parseValue(std::string field, std::string value){
         return -2;
     }
 
-    std::cout << "inside parseValue: " << jsonDoc[field.c_str()].GetString() << std::endl;
+    // std::cout << "inside parseValue: " << jsonDoc[field.c_str()].GetString() << std::endl;
 
     return 0;
 

@@ -6,7 +6,7 @@
  *  for exchanging packets over a TCP/IP communication. The socketSteam class supports both client and multi-client server 
  *  implementations. 
  * 
- *  The packets follow the json structure, making them compatible with other languages.
+ *  The packets follow the json structure, making them compatible with other programming languages.
  * 
  *  Developer:  Iason Batzianoulis
  *  email:      iasonbatz@gmail.com
