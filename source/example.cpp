@@ -53,6 +53,8 @@ int main(int argc, char **argv){
         return -3;
     }
 
+    socketHdlr.printMSGString();
+
 
     // initialize the socket
     if(socketHdlr.initialize_socketStream()<0){

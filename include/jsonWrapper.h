@@ -25,16 +25,16 @@
 
 
 
-namespace rapdJson_types{
+namespace rapidJson_types{
     typedef int                                 Int;
     typedef float                               Float;
     typedef double                              Double;           
     typedef std::vector<double>                 VecD;
-    typedef std::vector< std::vector<double> >  Vec2DD;
+    typedef std::vector< std::vector<double> >  Mat2DD;
     typedef std::vector<float>                  VecFt;
-    typedef std::vector< std::vector<float> >   Vec2DF;
-    typedef std::vector<int>                    VecI;
-    typedef std::vector< std::vector<int> >     Vec2DI;
+    typedef std::vector< std::vector<float> >   Mat2DFt;
+    typedef std::vector<int>                    VecInt;
+    typedef std::vector< std::vector<int> >     Mat2DInt;
     typedef std::string                         String;
     typedef std::vector< std::string >          VecString;
 
@@ -85,8 +85,33 @@ class jsonWrapper{
 };
 
 template<>
-struct jsonWrapper::getValueHelper<rapdJson_types::String>{
-    static std::string getVal(void *usrPtr, std::string fldName){
+struct jsonWrapper::getValueHelper<rapidJson_types::Int>{
+    static rapidJson_types::Int getVal(void *usrPtr, std::string fldName){
+        jsonWrapper *tmp = static_cast<jsonWrapper *>(usrPtr);
+        return (int)(tmp->jsonDoc[fldName.c_str()].GetDouble());
+    }
+};
+
+template<>
+struct jsonWrapper::getValueHelper<rapidJson_types::Float>{
+    static rapidJson_types::Float getVal(void *usrPtr, std::string fldName){
+        jsonWrapper *tmp = static_cast<jsonWrapper *>(usrPtr);
+        return (tmp->jsonDoc[fldName.c_str()].GetFloat());
+    }
+};
+
+template<>
+struct jsonWrapper::getValueHelper<rapidJson_types::Double>{
+    static rapidJson_types::Double getVal(void *usrPtr, std::string fldName){
+        jsonWrapper *tmp = static_cast<jsonWrapper *>(usrPtr);
+        return (tmp->jsonDoc[fldName.c_str()].GetDouble());
+    }
+};
+
+
+template<>
+struct jsonWrapper::getValueHelper<rapidJson_types::String>{
+    static rapidJson_types::String getVal(void *usrPtr, std::string fldName){
         jsonWrapper *tmp = static_cast<jsonWrapper *>(usrPtr);
         return tmp->jsonDoc[fldName.c_str()].GetString();
     }
@@ -94,12 +119,73 @@ struct jsonWrapper::getValueHelper<rapdJson_types::String>{
 
 
 template<>
-struct jsonWrapper::getValueHelper<rapdJson_types::VecD>{
-    static rapdJson_types::VecD getVal(void *usrPtr, std::string fldName){
+struct jsonWrapper::getValueHelper<rapidJson_types::VecD>{
+    static rapidJson_types::VecD getVal(void *usrPtr, std::string fldName){
         jsonWrapper *tmp = static_cast<jsonWrapper *>(usrPtr);
-        rapdJson_types::VecD trm;
+        rapidJson_types::VecD trm;
         const rapidjson::Value& a = tmp->jsonDoc[fldName.c_str()];
         std::transform(a.Begin(),a.End(),std::back_inserter(trm),[](const rapidjson::Value &tt){return tt.GetDouble();});
+        return trm;
+    }
+};
+
+template<>
+struct jsonWrapper::getValueHelper<rapidJson_types::VecFt>{
+    static rapidJson_types::VecFt getVal(void *usrPtr, std::string fldName){
+        jsonWrapper *tmp = static_cast<jsonWrapper *>(usrPtr);
+        rapidJson_types::VecFt trm;
+        const rapidjson::Value& a = tmp->jsonDoc[fldName.c_str()];
+        std::transform(a.Begin(),a.End(),std::back_inserter(trm),[](const rapidjson::Value &tt){return tt.GetFloat();});
+        return trm;
+    }
+};
+
+template<>
+struct jsonWrapper::getValueHelper<rapidJson_types::VecInt>{
+    static rapidJson_types::VecInt getVal(void *usrPtr, std::string fldName){
+        jsonWrapper *tmp = static_cast<jsonWrapper *>(usrPtr);
+        rapidJson_types::VecInt trm;
+        const rapidjson::Value& a = tmp->jsonDoc[fldName.c_str()];
+        std::transform(a.Begin(),a.End(),std::back_inserter(trm),[](const rapidjson::Value &tt){return (int)tt.GetDouble();});
+        return trm;
+    }
+};
+
+template<>
+struct jsonWrapper::getValueHelper<rapidJson_types::Mat2DD>{
+    static rapidJson_types::Mat2DD getVal(void *usrPtr, std::string fldName){
+        jsonWrapper *tmp = static_cast<jsonWrapper *>(usrPtr);
+        const rapidjson::Value& a = tmp->jsonDoc[fldName.c_str()];
+        rapidJson_types::Mat2DD trm(a.Size());
+        for (int count = 0; count < (int)trm.size(); count++){
+            std::transform(a[count].Begin(),a[count].End(),std::back_inserter(trm[count]),[](const rapidjson::Value &tt) { return tt.GetDouble(); } );
+        }
+        return trm;
+    }
+};
+
+template<>
+struct jsonWrapper::getValueHelper<rapidJson_types::Mat2DFt>{
+    static rapidJson_types::Mat2DFt getVal(void *usrPtr, std::string fldName){
+        jsonWrapper *tmp = static_cast<jsonWrapper *>(usrPtr);
+        const rapidjson::Value& a = tmp->jsonDoc[fldName.c_str()];
+        rapidJson_types::Mat2DFt trm(a.Size());
+        for (int count = 0; count < (int)trm.size(); count++){
+            std::transform(a[count].Begin(),a[count].End(),std::back_inserter(trm[count]),[](const rapidjson::Value &tt) { return tt.GetFloat(); } );
+        }
+        return trm;
+    }
+};
+
+template<>
+struct jsonWrapper::getValueHelper<rapidJson_types::Mat2DInt>{
+    static rapidJson_types::Mat2DInt getVal(void *usrPtr, std::string fldName){
+        jsonWrapper *tmp = static_cast<jsonWrapper *>(usrPtr);
+        const rapidjson::Value& a = tmp->jsonDoc[fldName.c_str()];
+        rapidJson_types::Mat2DInt trm(a.Size());
+        for (int count = 0; count < (int)trm.size(); count++){
+            std::transform(a[count].Begin(),a[count].End(),std::back_inserter(trm[count]),[](const rapidjson::Value &tt) { return (int)tt.GetDouble(); } );
+        }
         return trm;
     }
 };
@@ -107,65 +193,12 @@ struct jsonWrapper::getValueHelper<rapdJson_types::VecD>{
 
 template<class T>
 T jsonWrapper::getField(std::string fieldName){
-    // if(jsonDoc.HasMember(fieldName.c_str())){
-    //     std::cout << "Yes it has \n";
-    // }
-    
-    // T rtr = jsonWrapper::getValueHelper<T>::getVal(this, fieldName); 
+    if(!jsonDoc.HasMember(fieldName.c_str())){
+        std::cerr << "[jsonWrapper] The json document doesn't contain a field with the name \"" << fieldName << "\"" << std::endl;
+        abort();
+    }
     return jsonWrapper::getValueHelper<T>::getVal(this, fieldName);
 }
-
-
-// ------------------------------------------------------------------------------------------------ //
-// ------------------------------------------------------------------------------------------------ //
-// ------------------------------------------------------------------------------------------------ //
-
-
-// inline auto& jsonWrapper::getField(std::string fieldName){
-//     // T returnObj;
-//     // auto returnObj;
-
-//     std::vector<double> trm;
-
-//     if(isobjectok){
-//         if(jsonDoc.HasMember(fieldName.c_str())){
-//             int memberType = jsonDoc[fieldName.c_str()].GetType();
-//             std::cout << memberType << std::endl;
-//             // if(memberType == RAPIDJSON_STRING){
-//             //     return jsonDoc[fieldName.c_str()].GetString();
-//             // }
-//             if(memberType == RAPIDJSON_ARRAY){
-                
-//                 const rapidjson::Value& a = jsonDoc[fieldName.c_str()];
-//                 jsonDoc[fieldName.c_str()].GetArray().Begin();
-                
-//                 // auto tre=std::vector <decltype(a[0])> (a.Size());
-//                 // auto ert = a[0];
-//                 std::transform(a.Begin(),a.End(),std::back_inserter(trm),[](const rapidjson::Value &tt){return tt.GetDouble();});
-                
-                
-//                 for (int i = 0; i < (int)trm.size(); i++){
-//                     std::cout << trm[i]<< ", ";
-//                     std::cout << typeid(trm[i]).name() << std::endl;
-//                 }
-                
-//             }
-//         //}else{
-//         //     std::cerr << "[jsonWrapper] Not valid field name" << std::endl;
-//         //     return -1;
-//         }
-//     // }else{
-//     //     std::cerr << "[jsonWrapper] The json document is NOT initialized" << std::endl;
-//     //     return -2;
-//     }
-
-//     // std::cout << "T   (array):           " <<  std::is_array<decltype(T)>::value << '\n';
-//     // std::cout << "T   (arithmetic):      " <<  std::is_arithmetic<T>::value << '\n';
-
-//     // std::cout << "vA   (arithmetic):           " <<  std::is_arithmetic<T>::value << '\n';
-//     std::cout <<"testnnnnnnnnnnnnnn\n";
-//     return trm;
-// }
 
 
 
