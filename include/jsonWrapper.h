@@ -1,5 +1,5 @@
 /**
- * 
+ *  Copyright (C) 2020 Iason Batzianoulis
  * 
  *  jsonWrapper C++ class
  *  

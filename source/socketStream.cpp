@@ -1,4 +1,5 @@
-/**
+/** 
+ *  Copyright (C) 2020 Iason Batzianoulis
  *  
  *  socketStream source file
  *  

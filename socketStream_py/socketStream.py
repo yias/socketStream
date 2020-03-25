@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 """
+    Copyright (C) 2020 Iason Batzianoulis
+    
 	Developer: Iason Batzianoulis
 	Maintaner: Iason Batzianoulis
 	email: iasonbatz@gmail.com
