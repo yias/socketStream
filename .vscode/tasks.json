@@ -136,7 +136,7 @@
         },
         {
             "type": "shell",
-            "label": "g++.exe build sendingWithTime file",
+            "label": "g++ build sendingWithTime file",
             "command": "g++.exe",
             "args": [
                 "-g", "${workspaceFolder}\\source\\sendingWithTime.cpp",
@@ -159,7 +159,7 @@
         },
         {
             "type": "shell",
-            "label": "g++.exe build diagnostics file",
+            "label": "g++ build diagnostics file",
             "command": "g++.exe",
             "args": [
                 "-g", "${workspaceFolder}\\source\\runDiagnostics.cpp",
@@ -194,6 +194,7 @@
                 "${workspaceFolder}\\build\\serverExample.exe",
                 "${workspaceFolder}\\source\\serverExample.cpp",
                 "${workspaceFolder}\\source\\socketStream.cpp",
+                "${workspaceFolder}\\source\\jsonWrapper.cpp",
                 "${workspaceFolder}\\source\\md5.cpp"
             ],
             "problemMatcher": [

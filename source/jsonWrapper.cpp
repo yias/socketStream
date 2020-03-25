@@ -2,12 +2,10 @@
  * 
  * 
  *  jsonWrapper source file
- *  
- *  [description]
- *  
+ *    
  *  Developer:  Iason Batzianoulis
  *  email:      iasonbatz@gmail.com
- *  Lisence:     
+ *  License:    GNU GPLv3
  * 
 **/
 

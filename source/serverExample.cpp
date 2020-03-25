@@ -1,15 +1,15 @@
-
 /**
  * 
  *  Examples on how to use the socketStream class for implementing a TCP server
  * 
  *  Developer:  Iason Batzianoulis
  *  email:      iasonbatz@gmail.com
- *  Lisence:     
+ *  
  *  
 */
 
 #include "socketStream.h"
+#include "jsonWrapper.h"
 
 int main(int argc, char **argv){
     
@@ -40,18 +40,31 @@ int main(int argc, char **argv){
 
     //  define a boolean variable for checking if the message is new or not
     bool isNew = false;
-    
-    int counter = 0;
+
+    // a 2D matrix of doubles to store the received data
+    std::vector< std::vector<double> > mat_double;
     
     // run until the key "q" is pressed in the keyboard
     while(true){
 
         if(svrHdlr.socketStream_ok()){
             // if the socketStream server is active, receive a message from the client with the name "py_example"
-            msg = svrHdlr.get_latest("py_example", &isNew);
+            msg = svrHdlr.get_latest("sendWtime", &isNew);
             if(isNew){
-                // if the message is new, print the message to the console
-                std::cout << msg << std::endl;
+                // parse the json string in a json document
+                jsonWrapper testObj(msg);
+
+                // get the contains of the field "data"
+                mat_double = testObj.getField<rapidJson_types::Mat2DD>(std::string("data"));
+
+                // if the message is new, print the message to the console (uncomment the folling lines to print to the console)
+                // std::cout << "The value of " << std::string("data") << " is: " << std::endl;
+                // for (int i= 0; i< (int)mat_double.size(); i++){
+                //     for (int j=0; j< (int)mat_double[i].size(); j++){
+                //         std::cout << mat_double[i][j] << ((j== ((int)mat_double[i].size()-1)) ? "\n": ", " );
+                //     }
+                // }
+                // std::cout << msg << std::endl;
             }
         }
 
@@ -69,7 +82,7 @@ int main(int argc, char **argv){
             #endif
         }
     } 
-
+    
     // kill all the communications and the socket
     svrHdlr.closeCommunication();
 

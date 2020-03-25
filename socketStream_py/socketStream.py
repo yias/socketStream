@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 """
-	developer: Iason Batzianoulis
-	maintaner: Iason Batzianoulis
+	Developer: Iason Batzianoulis
+	Maintaner: Iason Batzianoulis
 	email: iasonbatz@gmail.com
-	description: 
+	Description: 
 	This scripts defines a class that handles a TCP/IP server for listening to inputs from a client
+
+    License:    GNU GPLv3
 """
 
 # import standard modules 
