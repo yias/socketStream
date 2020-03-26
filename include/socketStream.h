@@ -90,16 +90,9 @@ class socketStream{
     // define socket object
 
     #ifdef _WIN32
-        // define a struct for storing infor regarding the socket
+        // define a struct for storing info regarding the socket
         WSADATA wsaData;
-        // SOCKET ConnectSocket; // = INVALID_SOCKET;
-
-        // SOCKET ListenSocket;                            // for the server
-        // std::vector <SOCKET> clientsSockets;
-    #else
-        // SOCKET ConnectSocket, ListenSocket;                            // for the server
-        // // int ConnectSocket, ListenSocket;
-        // std::vector <SOCKET> clientsSockets;
+       
     #endif
 
     
@@ -197,6 +190,8 @@ public:
     int initialize_socketStream(const char* svrIPAddress, int srvPosrt);                                                        // initialize the socketStream object re-setting the server IP address and port
 
     int make_connection();                                                                                                      // connect with the server
+
+    int setBufferSize(unsigned int bufferSize);
 
     int initialize_msgStruct(std::vector<std::string> fields);                                                                  // setting the fields of the message 
 

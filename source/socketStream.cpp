@@ -489,6 +489,17 @@ int socketStream::make_connection(){
 
 }
 
+int setBufferSize(unsigned int newBufferSize){
+
+    bufferSize = newBufferSize;
+
+    msgOHstring = std::string(std::to_string(bufferSize).length(), ' ');
+
+    minMsgSize = std::strlen(msg_idf) + headerSize + std::strlen(endMSG) + std::to_string(bufferSize).length()+1;
+
+    return 0;
+}
+
 int socketStream::set_clientName(std::string cID){
 
     clientName = cID;
