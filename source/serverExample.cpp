@@ -9,7 +9,7 @@
 */
 
 #include "socketStream.h"
-#include "jsonWrapper.h"
+#include "jsonWrapper.hpp"
 
 int main(int argc, char **argv){
     
@@ -51,19 +51,22 @@ int main(int argc, char **argv){
             // if the socketStream server is active, receive a message from the client with the name "py_example"
             msg = svrHdlr.get_latest("sendWtime", &isNew);
             if(isNew){
+                // if the message is new:
                 // parse the json string in a json document
                 jsonWrapper testObj(msg);
 
                 // get the contains of the field "data"
                 mat_double = testObj.getField<rapidJson_types::Mat2DD>(std::string("data"));
 
-                // if the message is new, print the message to the console (uncomment the folling lines to print to the console)
+                // print the message to the console (uncomment the folling lines to print to the console)
                 // std::cout << "The value of " << std::string("data") << " is: " << std::endl;
                 // for (int i= 0; i< (int)mat_double.size(); i++){
                 //     for (int j=0; j< (int)mat_double[i].size(); j++){
                 //         std::cout << mat_double[i][j] << ((j== ((int)mat_double[i].size()-1)) ? "\n": ", " );
                 //     }
                 // }
+
+                // // the message in a raw (string) format
                 // std::cout << msg << std::endl;
             }
         }

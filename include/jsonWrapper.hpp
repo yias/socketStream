@@ -79,7 +79,7 @@ class jsonWrapper{
 
         template<class T>
         T getField(std::string fieldName);
-        auto& getField(std::string fieldName);
+        // auto& getField(std::string fieldName);
 
 
 };

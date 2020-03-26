@@ -45,10 +45,7 @@ int main(int argc, char **argv){
         std::string dir_path = curent_path + "/logfiles";
         if (!dirExists(dir_path)){
             if(mkdir(dir_path.c_str(),0777)==0){
-                dir_path+="//raw";
-                if(mkdir(dir_path.c_str(),0777)==0){
-                    std::cout << "A folder logfiles is created" << std::endl;
-                }
+                std::cout << "A folder logfiles is created" << std::endl;
             }else{
                 std::cout<<"Unable to create the folder:\n"<<dir_path<<"\n";
             }
@@ -56,9 +53,6 @@ int main(int argc, char **argv){
             dir_path.clear();
     }
 
-        // if(mkdir("logfiles")){
-        //     std::cout << "A folder logfiles is created" << std::endl;
-        // }
     #endif
 
 
@@ -73,7 +67,11 @@ int main(int argc, char **argv){
     std::strftime(time_buffer, sizeof(time_buffer), "%Y%m%d_%H_%M_%S", timeinfo);
     
     std::string covString(time_buffer);
-    std::string logfileName = "logfiles\\diagnostics_logfile_" + covString +".txt";
+    #ifdef _WIN32
+        std::string logfileName = "logfiles\\diagnostics_logfile_" + covString +".txt";
+    #else
+        std::string logfileName = "logfiles/diagnostics_logfile_" + covString +".txt";
+    #endif
 
     // declase an ofstream object for writing to file
     std::ofstream wfile;

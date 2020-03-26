@@ -5,13 +5,32 @@
     "tasks": [
         {
             "type": "shell",
+            "label": "g++ build jsonWrapper example on Linux",
+            "command": "g++",
+            "args": [
+                "-g", "${workspaceFolder}/source/jsonWrapper_example.cpp",
+                "${workspaceFolder}/source/jsonWrapper.cpp",
+                "-o", "${workspaceFolder}//build/jsonWrapper_example.exe",
+                "-O3",
+                "-I", "${env:CPP_DEPENDENCIES}/rapidjson/include",
+                "-I", "${workspaceFolder}/include",
+                "-I", "${workspaceFolder}/source"
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "type": "shell",
             "label": "g++ build jsonWrapper example on Windows",
             "command": "g++.exe",
             "args": [
                 "-g", "${workspaceFolder}\\source\\jsonWrapper_example.cpp",
                 "${workspaceFolder}\\source\\jsonWrapper.cpp",
-                // "${workspaceFolder}\\source\\socketStream.cpp",
-                // "${workspaceFolder}\\source\\md5.cpp",
                 "-o", "${workspaceFolder}\\build\\jsonWrapper_example.exe",
                 "-O3",
                 "-lws2_32",
@@ -29,7 +48,7 @@
         },
         {
             "type": "shell",
-            "label": "build run diagnostics in linux",
+            "label": "build run diagnostics on Linux",
             "command": "g++",
             "args": [
                 "-g", "${workspaceFolder}/source/runDiagnostics.cpp",
@@ -52,7 +71,7 @@
         },
         {
             "type": "shell",
-            "label": "g++ build example in linux",
+            "label": "g++ build example on Linux",
             "command": "g++",
             "args": [
                 "-g", "${workspaceFolder}/source/example.cpp",
@@ -75,7 +94,7 @@
         },
         {
             "type": "shell",
-            "label": "g++ build sendingWithTime linux",
+            "label": "g++ build sendingWithTime on Linux",
             "command": "g++",
             "args": [
                 "-g", "${workspaceFolder}/source/sendingWithTime.cpp",
@@ -118,6 +137,7 @@
             "args": [
                 "-g", "${workspaceFolder}/source/serverExample.cpp",
                 "${workspaceFolder}/source/socketStream.cpp",
+                "${workspaceFolder}/source/jsonWrapper.cpp",
                 "${workspaceFolder}/source/md5.cpp",
                 "-o", "${workspaceFolder}/build/serverExample.exe",
                 "-O3",
@@ -136,7 +156,7 @@
         },
         {
             "type": "shell",
-            "label": "g++ build sendingWithTime file",
+            "label": "g++ build sendingWithTime file on Windows",
             "command": "g++.exe",
             "args": [
                 "-g", "${workspaceFolder}\\source\\sendingWithTime.cpp",
@@ -159,7 +179,7 @@
         },
         {
             "type": "shell",
-            "label": "g++ build diagnostics file",
+            "label": "g++ build diagnostics file on Windows",
             "command": "g++.exe",
             "args": [
                 "-g", "${workspaceFolder}\\source\\runDiagnostics.cpp",
@@ -182,7 +202,7 @@
         },
         {
             "type": "shell",
-            "label": "cl.exe build server example",
+            "label": "cl.exe build server example (Windows)",
             "command": "cl.exe",
             "args": [
                 "-I", "${env:CPP_DEPENDENCIES}\\rapidjson\\include",
@@ -207,7 +227,7 @@
         },
         {
             "type": "shell",
-            "label": "cl.exe build example file",
+            "label": "cl build example file (Windows)",
             "command": "cl.exe",
             "args": [
                 "-I", "${env:CPP_DEPENDENCIES}\\rapidjson\\include",
@@ -231,7 +251,7 @@
         },
         {
             "type": "shell",
-            "label": "cl.exe build diagnostics file",
+            "label": "cl build diagnostics file (Windows)",
             "command": "cl.exe",
             "args": [
                 "-I", "${env:CPP_DEPENDENCIES}\\rapidjson\\include",

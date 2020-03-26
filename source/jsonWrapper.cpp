@@ -9,7 +9,7 @@
  * 
 **/
 
-#include "jsonWrapper.h"
+#include "jsonWrapper.hpp"
 
 
 jsonWrapper::jsonWrapper(){

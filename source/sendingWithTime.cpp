@@ -90,9 +90,9 @@ int main(int argc, char **argv){
     auto start = std::chrono::steady_clock::now();
     auto end = std::chrono::steady_clock::now();
 
-    double time2run = 180000;
+    double time2run = 120000;
 
-    std::chrono::milliseconds timespan(1);
+    std::chrono::milliseconds timespan(10);
     
     while((double)(std::chrono::duration_cast<std::chrono::microseconds>(end-start).count())/1000.0 < time2run){
         // send the message to the server
@@ -101,7 +101,7 @@ int main(int argc, char **argv){
             return -6;
         }
         end = std::chrono::steady_clock::now();
-        std::this_thread::sleep_for(timespan/2.0);
+        std::this_thread::sleep_for(timespan);
     }
     
 
