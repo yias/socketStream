@@ -440,7 +440,7 @@ class socketStream():
         self.clientName = cID
 
     def make_connection(self):
-        print("[socketStream] Attempting to connect to server with address " + self.server_address[0] +" in the port %s" , str(self.server_address[1]))
+        print("[socketStream] Attempting to connect to server with address" + self.server_address[0] +" in the port %s" , str(self.server_address[1]))
         self.sock.connect(self.server_address)
         conValidity = self.handShake_server(10)
         if conValidity:

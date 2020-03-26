@@ -22,7 +22,7 @@ import numpy as np
 
 def talker():
       # define ros publisher
-      pub = rospy.Publisher('socketStreamer', Float32MultiArray, queue_size = 2)
+      pub = rospy.Publisher('socketStreamer/MultiArray', Float32MultiArray, queue_size = 2)
 
       # define ros node
       rospy.init_node('socketStream_node', anonymous = True)
@@ -68,6 +68,7 @@ def talker():
 
                   # publish the message 
                   pub.publish(rosmsg)
+
       sockHndlr.close_communication()
 
 

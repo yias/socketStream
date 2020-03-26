@@ -14,7 +14,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES socketstream_node
-#  CATKIN_DEPENDS roscpp rospy std_msgs
+ CATKIN_DEPENDS roscpp rospy std_msgs
 #  DEPENDS system_lib
 )
 
@@ -28,6 +28,6 @@ include_directories(
   $ENV{CPP_DEPENDENCIES}/rapidjson/include
 )
 
-add_executable(socketStream src/socketStream_node.cpp src/socketStream.cpp src/md5.cpp)
+add_executable(socketStream src/socketStream_node.cpp src/socketStream.cpp src/jsonWrapper.cpp src/md5.cpp)
 target_link_libraries(socketStream ${catkin_LIBRARIES})
 #add_dependencies(socketStream beginner_tutorials_generate_messages_cpp)
