@@ -10,20 +10,22 @@
 import socketStream
 import argparse
 import numpy as np
+import sys
 
 
 def main(args):
     sockHndlr = socketStream.socketStream(IPaddress = args.host, port = args.port, bufferSize = args.buffersize)
+    print(sys.version_info)
 
     counter=0
     while(True):
         try:
             if sockHndlr.sockectStream_ok():
                 tt=sockHndlr.get_latest()
-                # print(tt.get("name"))
+                # print(tt)
                 test=tt.get("data")
                 rt=np.array(test, dtype=np.float32)
-                print(rt)
+                # print(rt)
 
         except KeyboardInterrupt:
             break

@@ -101,10 +101,11 @@ class socketStream():
         msgSize=int(msg[:self.HEADERSIZE])
         msgOverhead = int(msg[self.HEADERSIZE+1:self.HEADERSIZE+1+self.bfrDigits])
         tmp_msg=msg[self.HEADERSIZE+1+self.bfrDigits:self.HEADERSIZE+1+self.bfrDigits+msgSize]
-        if(msg[self.HEADERSIZE+1]==1):
-            hashcode=msg[self.HEADERSIZE+msgSize:-msgOverhead-len(self.endMSG)]
-            self.hc_check.update(tmp_msg)
-            if self.hc_check.hexdigest()==hashcode:
+        if(int(msg[self.HEADERSIZE])==1):
+            hashcode=msg[self.HEADERSIZE+1+self.bfrDigits+msgSize:-msgOverhead-len(self.endMSG)]
+            checksum=hashlib.md5()
+            checksum.update(tmp_msg)
+            if checksum.hexdigest()==hashcode:
                 return True, tmp_msg
             else:
                 return False, ''
@@ -142,6 +143,7 @@ class socketStream():
             dcdr.update(test_msg.encode('utf-8'))
             chSum=dcdr.hexdigest()
             msg_len=('{:<'+str(self.HEADERSIZE)+'}').format(str(len(test_msg)))
+
             # compute the overhead of the message
             ranString = test_msg + chSum
             msgOverhead = (int((len(ranString)+self.minMsgSize)/self.BUFFER_SIZE)+1)*self.BUFFER_SIZE - (len(ranString)+self.minMsgSize)
@@ -316,16 +318,17 @@ class socketStream():
         while(self.connection_exist):
             # retrieve the message identifier. once it is received, compose the message
             data=self.connection.recv(self.BUFFER_SIZE)
+            
             data_check = data[:self.msg_idf_len]
-            counter+=1
-            # print("messages received",counter)
+            
             if data_check.decode('utf-8')==self.msg_idf:
+                counter+=1
                 # receive bytes until the full message is received
-                full_msg=data[self.msg_idf_len:].decode("utf-8")
+                full_msg=data[self.msg_idf_len:]#.decode("utf-8")
                 while (True):
                     dataT=self.connection.recv(self.BUFFER_SIZE)
-                    full_msg+=dataT.decode("utf-8") 
-                    if full_msg[-4:]==self.endMSG:
+                    full_msg+=dataT.decode("utf-8")
+                    if full_msg[-len(self.endMSG):]==self.endMSG:
                         break
 
                 # extract message
@@ -424,8 +427,6 @@ class socketStream():
 
     def updateMSG(self, field, value):
         if field in list(self.msg_data):
-            # tmp={field: value}
-            # self.msg_data.update(tmp)
             self.msg_data[field] = value
         else:
             print("[socketStream] Not valid field name")
@@ -435,19 +436,20 @@ class socketStream():
             tmp_msg = json.dumps(self.msg_data)
         else:
             tmp_msg = msgData
-        dcdr=hashlib.md5()
-        dcdr.update(tmp_msg.encode('utf-8'))
-        chSum=dcdr.hexdigest()
+        
         msg_len=('{:<'+str(self.HEADERSIZE)+'}').format(str(len(tmp_msg)))
 
         # compute the overhead of the message
-        ranString = tmp_msg + chSum
-        # print(self.bfrDigits)
+        if self.useHashKey:
+            dcdr=hashlib.md5()
+            dcdr.update(tmp_msg.encode('utf-8'))
+            chSum=dcdr.hexdigest()
+            ranString = tmp_msg + chSum
 
         msgOverhead = (int((len(ranString)+self.minMsgSize)/self.BUFFER_SIZE)+1)*self.BUFFER_SIZE - (len(ranString)+self.minMsgSize)
         msgOverheadSize = ('{:<'+str(self.bfrDigits)+'}').format(str(msgOverhead))
         overheadStr = " " * msgOverhead
-        msg2send = self.msg_idf+msg_len+str(int(self.useHashKey))+msgOverheadSize+ranString+chSum+overheadStr+self.endMSG
+        msg2send = self.msg_idf+msg_len+str(int(self.useHashKey))+msgOverheadSize+ranString+overheadStr+self.endMSG
         self.sock.sendall(msg2send.encode('utf-8'))
 
   

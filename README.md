@@ -57,12 +57,20 @@ $ git clone https://github.com/yias/socket_jsonCpp.git
 -- for runnng the C++ rosnode:
 
 ```bash
-$ git clone https://github.com/yias/socket_jsonCpp.git
+$ rosrun socketstream_node socketStream
 ```
 
 -- for runnng the Python rosnode:
 
+To launch the python node with rosrun, first, make executable the socketStream_rosnode.py by navigating in the folder "scripts" and type the command:
+
 ```bash
-$ git clone https://github.com/yias/socket_jsonCpp.git
+$ chmod +x socketStream_rosnode.py
+```
+
+Then, run command:
+
+```bash
+$ rosrun socketstream_node socketStream_rosnode.py
 ```
 

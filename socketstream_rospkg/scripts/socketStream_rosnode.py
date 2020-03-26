@@ -14,6 +14,8 @@ import rospy
 from std_msgs.msg import Float32MultiArray
 from std_msgs.msg import MultiArrayDimension
 
+import sys
+
 # import socketStream to handl the socket communication
 import socketStream
 
@@ -40,7 +42,7 @@ def talker():
 
       # define a socketStram object to handle the communication, setting the IP address of the machine that this program is running and the port to be open. 
       # the port should be the same on the client side too
-      sockHndlr = socketStream.socketStream(IPaddress = "localhost", port = 10352)
+      sockHndlr = socketStream.socketStream(IPaddress = "localhost", port = 10352, bufferSize=16)
 
       while not rospy.is_shutdown():
             if sockHndlr.sockectStream_ok():
