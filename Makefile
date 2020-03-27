@@ -33,6 +33,8 @@ LIBS = -lpthread
 
 test: makeOutDir serverExample sendWithTime
 
+all: makeOutDir serverExample sendWithTime clientExample runDiagnostics jsonWrapperExample
+
 # build a socketStream client for sending packets for specific time
 serverExample:
 	$(info $(greenC)$(boldT) --> building socketStream server example $(yellowC)==>$(reset))
@@ -40,7 +42,9 @@ serverExample:
 	-o ${OUTPUT_DIR}/serverExample.exe \
 	$(INCLUDE_PARAMS) \
 	$(LIBS)
-	$(info $(blueC)$(boldT) OK$(reset))
+	@if test $$? -eq 0;\
+	then tput setaf 4; tput bold; echo " --> OK"; tput sgr0; \
+	fi
 
 
 # build a socketStream client for sending packets for specific time
@@ -50,6 +54,9 @@ sendWithTime:
 	-o ${OUTPUT_DIR}/sendWithTime.exe \
 	$(INCLUDE_PARAMS) \
 	$(LIBS)
+	@if test $$? -eq 0;\
+	then tput setaf 4; tput bold; echo " --> OK"; tput sgr0; \
+	fi
 
 
 # build the client example of the socketStream
@@ -59,6 +66,9 @@ clientExample:
 	-o ${OUTPUT_DIR}/clientExample.exe \
 	$(INCLUDE_PARAMS) \
 	$(LIBS)
+	@if test $$? -eq 0;\
+	then tput setaf 4; tput bold; echo " --> OK"; tput sgr0; \
+	fi
 
 
 # build the run diagnostics example
@@ -68,6 +78,9 @@ runDiagnostics:
 	-o ${OUTPUT_DIR}/runDiagnostics.exe \
 	$(INCLUDE_PARAMS) \
 	$(LIBS)
+	@if test $$? -eq 0;\
+	then tput setaf 4; tput bold; echo " --> OK"; tput sgr0; \
+	fi
 
 
 # build the example of the jsonWrapper
@@ -77,6 +90,9 @@ jsonWrapperExample:
 	-o ${OUTPUT_DIR}/jsonWrapperExample.exe \
 	$(INCLUDE_PARAMS) \
 	$(LIBS)
+	@if test $$? -eq 0;\
+	then tput setaf 4; tput bold; echo " --> OK"; tput sgr0; \
+	fi
 
 
 # echo the path of the cpp dependencies
@@ -88,7 +104,7 @@ echoEvnVariable:
 makeOutDir:
 	@if test -d ${OUTPUT_DIR}; \
 	then \
-		tput setaf 2; tput bold; printf " --> output folder "${OUTPUT_DIR}" alread exists"; tput setaf 3; printf " ==>\n";\
+		tput setaf 4; tput bold; printf " --> output folder "${OUTPUT_DIR}" alread exists"; tput setaf 3; printf " ==>\n";\
 		tput sgr0;\
 	else \
 		tput setaf 2; printf " -->"; tput bold; printf " creating output folder ${OUTPUT_DIR} " ; tput setaf 3; printf " ==>\n"; tput sgr0;\
@@ -99,4 +115,7 @@ makeOutDir:
 .PHONY: clean
 
 clean:
-	rm ${OUTPUT_DIR}/*
+	@tput setaf 2; printf " -->"; tput bold; printf " cleaning up ${OUTPUT_DIR} folder\n"; tput sgr0;
+	@rm ${OUTPUT_DIR}/*
+	@tput setaf 4; printf " -->"; tput bold; printf " output folder ${OUTPUT_DIR} is empty\n"; tput sgr0;\
+
