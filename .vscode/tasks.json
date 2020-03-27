@@ -14,7 +14,7 @@
                 "-O3",
                 "-I", "${env:CPP_DEPENDENCIES}/rapidjson/include",
                 "-I", "${workspaceFolder}/include",
-                "-I", "${workspaceFolder}/source"
+                // "-I", "${workspaceFolder}/source"
             ],
             "problemMatcher": [
                 "$gcc"
