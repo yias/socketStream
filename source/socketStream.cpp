@@ -489,7 +489,7 @@ int socketStream::make_connection(){
 
 }
 
-int setBufferSize(unsigned int newBufferSize){
+int socketStream::setBufferSize(unsigned int newBufferSize){
 
     bufferSize = newBufferSize;
 
