@@ -77,12 +77,11 @@
                 "-g", "${workspaceFolder}/source/example.cpp",
                 "${workspaceFolder}/source/socketStream.cpp",
                 "${workspaceFolder}/source/md5.cpp",
-                "-o", "${workspaceFolder}/build/client_example.exe",
+                "-o", "${workspaceFolder}/build/clientExample.exe",
                 "-O3",
                 "-lpthread",
                 "-I", "${CPP_DEPENDENCIES}/rapidjson/include",
                 "-I", "${workspaceFolder}/include",
-                // "-I", "${workspaceFolder}/source"
             ],
             "problemMatcher": [
                 "$gcc"
