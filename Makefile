@@ -1,4 +1,4 @@
-# makefile of the socketStream package
+# 	makefile of the socketStream package
 # 
 #	Developer:  Iason Batzianoulis
 #	email:      iasonbatz@gmail.com
@@ -35,17 +35,18 @@ test: makeOutDir serverExample sendWithTime
 
 # build a socketStream client for sending packets for specific time
 serverExample:
-	$(info $(greenC)$(boldT)--> building socketStream server example $(yellowC)==>$(reset))
-	$(CXX) $(CXXFLAGS) $(SRC_DIR)/serverExample.cpp $(SRC_DIR)/socketStream.cpp $(SRC_DIR)/jsonWrapper.cpp $(SRC_DIR)/md5.cpp \
+	$(info $(greenC)$(boldT) --> building socketStream server example $(yellowC)==>$(reset))
+	@$(CXX) $(CXXFLAGS) $(SRC_DIR)/serverExample.cpp $(SRC_DIR)/socketStream.cpp $(SRC_DIR)/jsonWrapper.cpp $(SRC_DIR)/md5.cpp \
 	-o ${OUTPUT_DIR}/serverExample.exe \
 	$(INCLUDE_PARAMS) \
 	$(LIBS)
+	$(info $(blueC)$(boldT) OK$(reset))
 
 
 # build a socketStream client for sending packets for specific time
 sendWithTime:
-	$(info $(greenC)$(boldT)--> building socketStream client sendWithTime $(yellowC)==>$(reset))
-	$(CXX) $(CXXFLAGS) $(SRC_DIR)/sendingWithTime.cpp $(SRC_DIR)/socketStream.cpp $(SRC_DIR)/md5.cpp \
+	$(info $(greenC)$(boldT) --> building socketStream client sendWithTime $(yellowC)==>$(reset))
+	@$(CXX) $(CXXFLAGS) $(SRC_DIR)/sendingWithTime.cpp $(SRC_DIR)/socketStream.cpp $(SRC_DIR)/md5.cpp \
 	-o ${OUTPUT_DIR}/sendWithTime.exe \
 	$(INCLUDE_PARAMS) \
 	$(LIBS)
@@ -53,8 +54,8 @@ sendWithTime:
 
 # build the client example of the socketStream
 clientExample:
-	$(info $(greenC)$(boldT)--> building socketStream client example $(yellowC)==>$(reset))
-	$(CXX) $(CXXFLAGS) $(SRC_DIR)/example.cpp $(SRC_DIR)/socketStream.cpp $(SRC_DIR)/md5.cpp \
+	$(info $(greenC)$(boldT) --> building socketStream client example $(yellowC)==>$(reset))
+	@$(CXX) $(CXXFLAGS) $(SRC_DIR)/example.cpp $(SRC_DIR)/socketStream.cpp $(SRC_DIR)/md5.cpp \
 	-o ${OUTPUT_DIR}/clientExample.exe \
 	$(INCLUDE_PARAMS) \
 	$(LIBS)
@@ -62,8 +63,8 @@ clientExample:
 
 # build the run diagnostics example
 runDiagnostics:
-	$(info $(greenC)$(boldT)--> building jsonWrapper example $(yellowC)==>$(reset))
-	$(CXX) $(CXXFLAGS) $(SRC_DIR)/runDiagnostics.cpp $(SRC_DIR)/socketStream.cpp $(SRC_DIR)/jsonWrapper.cpp $(SRC_DIR)/md5.cpp \
+	$(info $(greenC)$(boldT) --> building runDiagnostics client $(yellowC)==>$(reset))
+	@$(CXX) $(CXXFLAGS) $(SRC_DIR)/runDiagnostics.cpp $(SRC_DIR)/socketStream.cpp $(SRC_DIR)/jsonWrapper.cpp $(SRC_DIR)/md5.cpp \
 	-o ${OUTPUT_DIR}/runDiagnostics.exe \
 	$(INCLUDE_PARAMS) \
 	$(LIBS)
@@ -71,24 +72,28 @@ runDiagnostics:
 
 # build the example of the jsonWrapper
 jsonWrapperExample:
-	$(info $(greenC)$(boldT)--> building jsonWrapper example $(yellowC)==>$(reset))
-	$(CXX) $(CXXFLAGS) $(SRC_DIR)/jsonWrapper_example.cpp $(SRC_DIR)/socketStream.cpp $(SRC_DIR)/jsonWrapper.cpp $(SRC_DIR)/md5.cpp \
+	$(info $(greenC)$(boldT) --> building jsonWrapper example $(yellowC)==>$(reset))
+	@$(CXX) $(CXXFLAGS) $(SRC_DIR)/jsonWrapper_example.cpp $(SRC_DIR)/socketStream.cpp $(SRC_DIR)/jsonWrapper.cpp $(SRC_DIR)/md5.cpp \
 	-o ${OUTPUT_DIR}/jsonWrapperExample.exe \
 	$(INCLUDE_PARAMS) \
 	$(LIBS)
 
 
-
-
-
-
+# echo the path of the cpp dependencies
 echoEvnVariable:
 	@echo ${CPP_DEPENDENCIES}
 
 
+# create a directory for the builts, if it doesn't exist
 makeOutDir:
-	$(info $(greenC)$(boldT)--> creating output folder ${OUTPUT_DIR} $(reset)$(yellowC)==>$(reset))
-	mkdir -p ${OUTPUT_DIR}
+	@if test -d ${OUTPUT_DIR}; \
+	then \
+		tput setaf 2; tput bold; printf " --> output folder "${OUTPUT_DIR}" alread exists"; tput setaf 3; printf " ==>\n";\
+		tput sgr0;\
+	else \
+		tput setaf 2; printf " -->"; tput bold; printf " creating output folder ${OUTPUT_DIR} " ; tput setaf 3; printf " ==>\n"; tput sgr0;\
+		mkdir -p ${OUTPUT_DIR}; \
+	fi
 
 
 .PHONY: clean
