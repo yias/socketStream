@@ -10,7 +10,7 @@
             "args": [
                 "-g", "${workspaceFolder}/source/jsonWrapper_example.cpp",
                 "${workspaceFolder}/source/jsonWrapper.cpp",
-                "-o", "${workspaceFolder}//build/jsonWrapper_example.exe",
+                "-o", "${workspaceFolder}//build/jsonWrapperExample.exe",
                 "-O3",
                 "-I", "${env:CPP_DEPENDENCIES}/rapidjson/include",
                 "-I", "${workspaceFolder}/include",
@@ -31,12 +31,12 @@
             "args": [
                 "-g", "${workspaceFolder}\\source\\jsonWrapper_example.cpp",
                 "${workspaceFolder}\\source\\jsonWrapper.cpp",
-                "-o", "${workspaceFolder}\\build\\jsonWrapper_example.exe",
+                "-o", "${workspaceFolder}\\build\\jsonWrapperExample.exe",
                 "-O3",
                 "-lws2_32",
                 "-I", "${env:CPP_DEPENDENCIES}\\rapidjson\\include",
                 "-I", "${workspaceFolder}\\include",
-                "-I", "${workspaceFolder}\\source"
+                // "-I", "${workspaceFolder}\\source"
             ],
             "problemMatcher": [
                 "$gcc"
@@ -59,7 +59,7 @@
                 "-lpthread",
                 "-I", "${CPP_DEPENDENCIES}/rapidjson/include",
                 "-I", "${workspaceFolder}/include",
-                "-I", "${workspaceFolder}/source"
+                // "-I", "${workspaceFolder}/source"
             ],
             "problemMatcher": [
                 "$gcc"
@@ -82,7 +82,7 @@
                 "-lpthread",
                 "-I", "${CPP_DEPENDENCIES}/rapidjson/include",
                 "-I", "${workspaceFolder}/include",
-                "-I", "${workspaceFolder}/source"
+                // "-I", "${workspaceFolder}/source"
             ],
             "problemMatcher": [
                 "$gcc"
@@ -105,7 +105,7 @@
                 "-lpthread",
                 "-I", "${CPP_DEPENDENCIES}/rapidjson/include",
                 "-I", "${workspaceFolder}/include",
-                "-I", "${workspaceFolder}/source"
+                // "-I", "${workspaceFolder}/source"
             ],
             "problemMatcher": [
                 "$gcc"
@@ -132,7 +132,7 @@
         },
         {
             "type": "shell",
-            "label": "g++ build of the server example on linux",
+            "label": "g++ build of the server example on Linux",
             "command": "/usr/bin/g++",
             "args": [
                 "-g", "${workspaceFolder}/source/serverExample.cpp",
@@ -144,7 +144,7 @@
                 "-lpthread",
                 "-I", "${CPP_DEPENDENCIES}/rapidjson/include",
                 "-I", "${workspaceFolder}/include",
-                "-I", "${workspaceFolder}/source"
+                // "-I", "${workspaceFolder}/source"
             ],
             "problemMatcher": [
                 "$gcc"
@@ -167,7 +167,7 @@
                 "-lws2_32",
                 "-I", "${env:CPP_DEPENDENCIES}\\rapidjson\\include",
                 "-I", "${workspaceFolder}\\include",
-                "-I", "${workspaceFolder}\\source"
+                // "-I", "${workspaceFolder}\\source"
             ],
             "problemMatcher": [
                 "$gcc"
@@ -190,7 +190,7 @@
                 "-lws2_32",
                 "-I", "${env:CPP_DEPENDENCIES}\\rapidjson\\include",
                 "-I", "${workspaceFolder}\\include",
-                "-I", "${workspaceFolder}\\source"
+                // "-I", "${workspaceFolder}\\source"
             ],
             "problemMatcher": [
                 "$gcc"
@@ -207,7 +207,7 @@
             "args": [
                 "-I", "${env:CPP_DEPENDENCIES}\\rapidjson\\include",
                 "-I", "${workspaceFolder}\\include",
-                "-I", "${workspaceFolder}\\source",
+                // "-I", "${workspaceFolder}\\source",
                 "/Zi",
                 "/EHsc",
                 "/Fe:",
@@ -236,7 +236,7 @@
                 "/Zi",
                 "/EHsc",
                 "/Fe:",
-                "${workspaceFolder}\\build\\example.exe",
+                "${workspaceFolder}\\build\\clientExample.exe",
                 "${workspaceFolder}\\source\\example.cpp",
                 "${workspaceFolder}\\source\\socketStream.cpp",
                 "${workspaceFolder}\\source\\md5.cpp"

@@ -393,9 +393,9 @@ int socketStream::initialize_socketStream(const char* svrIPAddress, int srvPosrt
             return -2;
         }
 
-        struct timeval timeout;
-        timeout.tv_sec = 5;
-        timeout.tv_usec = 0;
+        // struct timeval timeout;
+        // timeout.tv_sec = 5;
+        // timeout.tv_usec = 0;
 
         int val = 5;
 
@@ -515,7 +515,7 @@ int socketStream::initialize_msgStruct(std::vector <std::string> fields){
     // construct the string with a proper syntax
     initial_rjson_obj += "{\"";
 
-    for (int i=0; i<fields.size(); i++){
+    for (unsigned int i=0; i< fields.size(); i++){
         initial_rjson_obj += fields[i];
         initial_rjson_obj += "\" : null, \"";
     }
@@ -532,7 +532,7 @@ int socketStream::initialize_msgStruct(std::vector <std::string> fields){
     assert(dDoc.IsObject());
 
     // check if a fields are properly defined
-    for(int i = 0; i < fields.size(); i++ ){
+    for(unsigned int i = 0; i < fields.size(); i++ ){
         if(!dDoc.HasMember(fields[i].c_str())){
             std::cout << "dDoc doesn't have a member " << fields[i] << std::endl;
         }
@@ -1199,6 +1199,7 @@ int socketStream::wait_connections(){
 
                 std::thread receiverThread(&socketStream::runReceiver, this, slotNumber);
                 receiverThread.detach();
+                nbConnections++;
             }
         }
         
@@ -1356,7 +1357,7 @@ std::string socketStream::messageExtractor(std::string fullmsg, bool* msgValidit
     
     int bfrDigits = std::strlen(std::to_string(bufferSize).c_str());
     int msgSize = std::stoi(fullmsg.substr(0, headerSize).c_str());
-    int msgOverhead = std::stoi(fullmsg.substr(headerSize + 1, headerSize + 1 + bfrDigits));
+    // int msgOverhead = std::stoi(fullmsg.substr(headerSize + 1, headerSize + 1 + bfrDigits));
     std::string tmp_msg = fullmsg.substr(headerSize+1+bfrDigits,msgSize);
     if(((char)fullmsg[headerSize+1]-'0')==1){
         std::string md5_key = md5(tmp_msg.c_str());
@@ -1535,7 +1536,7 @@ bool socketStream::handshake_client(SOCKET conc, int strlength, int slotNb){
     double avPing = sumVec2/(double)ping_times.size();
 
     double validityAverage = 0;
-    for(int i = 0; i<validity_counter.size(); i++){
+    for(unsigned int i = 0; i<validity_counter.size(); i++){
         validityAverage += double(validity_counter[i]);
     }
     validityAverage = validityAverage/(double)validity_counter.size();
@@ -1673,7 +1674,7 @@ bool socketStream::handshake_server(int strlength){
     double avPing = sumVec2/(double)ping_times.size();
 
     double validityAverage = 0;
-    for(int i = 0; i<validity_counter.size(); i++){
+    for(unsigned int i = 0; i<validity_counter.size(); i++){
         validityAverage += double(validity_counter[i]);
     }
     validityAverage = validityAverage/(double)validity_counter.size();
