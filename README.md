@@ -64,6 +64,8 @@ $ code .
 
 to launch VSCode. The IDE recognizes automatically the "tasks.json" file and you can build the examples by clicking CTLR+SHIFT+B and select the programm you would like to build by selecting the task on the menu. Each task indicates the OS that can generate the executables (see the picture below). As a test, you can build the server example (serverExample) and the client sendWithTime on the operating system.
 
+![](docs/pics/VSCode_build_tasks_pic.png)
+
 -- For Linux, there is an option to build the examples by using the Makefile. For doing so, open a terminal, navigate inside the project's folder, and run the command:
 
 ```bash
@@ -105,6 +107,7 @@ $ .\\build\\sendWithTime.exe
 
 Once both the programs are running, the terminal on the server side should print something similar to the following picture. The server receives the packets from the sendWithTime program and prints the frequency that it receives the packets.
 
+![](docs/pics/examples_terminal_outputs.png)
 
 Information on the socketStream and jsonWrapper classes and their methods are included in the folder docs. [TO DO]
 
