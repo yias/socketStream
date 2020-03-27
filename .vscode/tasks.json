@@ -13,8 +13,7 @@
                 "-o", "${workspaceFolder}//build/jsonWrapperExample.exe",
                 "-O3",
                 "-I", "${env:CPP_DEPENDENCIES}/rapidjson/include",
-                "-I", "${workspaceFolder}/include",
-                // "-I", "${workspaceFolder}/source"
+                "-I", "${workspaceFolder}/include"
             ],
             "problemMatcher": [
                 "$gcc"
@@ -35,8 +34,7 @@
                 "-O3",
                 "-lws2_32",
                 "-I", "${env:CPP_DEPENDENCIES}\\rapidjson\\include",
-                "-I", "${workspaceFolder}\\include",
-                // "-I", "${workspaceFolder}\\source"
+                "-I", "${workspaceFolder}\\include"
             ],
             "problemMatcher": [
                 "$gcc"
@@ -58,8 +56,7 @@
                 "-O3",
                 "-lpthread",
                 "-I", "${CPP_DEPENDENCIES}/rapidjson/include",
-                "-I", "${workspaceFolder}/include",
-                // "-I", "${workspaceFolder}/source"
+                "-I", "${workspaceFolder}/include"
             ],
             "problemMatcher": [
                 "$gcc"
@@ -81,7 +78,7 @@
                 "-O3",
                 "-lpthread",
                 "-I", "${CPP_DEPENDENCIES}/rapidjson/include",
-                "-I", "${workspaceFolder}/include",
+                "-I", "${workspaceFolder}/include"
             ],
             "problemMatcher": [
                 "$gcc"
@@ -103,8 +100,7 @@
                 "-O3",
                 "-lpthread",
                 "-I", "${CPP_DEPENDENCIES}/rapidjson/include",
-                "-I", "${workspaceFolder}/include",
-                // "-I", "${workspaceFolder}/source"
+                "-I", "${workspaceFolder}/include"
             ],
             "problemMatcher": [
                 "$gcc"
@@ -142,8 +138,7 @@
                 "-O3",
                 "-lpthread",
                 "-I", "${CPP_DEPENDENCIES}/rapidjson/include",
-                "-I", "${workspaceFolder}/include",
-                // "-I", "${workspaceFolder}/source"
+                "-I", "${workspaceFolder}/include"
             ],
             "problemMatcher": [
                 "$gcc"
@@ -165,8 +160,7 @@
                 "-O3",
                 "-lws2_32",
                 "-I", "${env:CPP_DEPENDENCIES}\\rapidjson\\include",
-                "-I", "${workspaceFolder}\\include",
-                // "-I", "${workspaceFolder}\\source"
+                "-I", "${workspaceFolder}\\include"
             ],
             "problemMatcher": [
                 "$gcc"
@@ -188,8 +182,7 @@
                 "-O3",
                 "-lws2_32",
                 "-I", "${env:CPP_DEPENDENCIES}\\rapidjson\\include",
-                "-I", "${workspaceFolder}\\include",
-                // "-I", "${workspaceFolder}\\source"
+                "-I", "${workspaceFolder}\\include"
             ],
             "problemMatcher": [
                 "$gcc"
@@ -206,7 +199,6 @@
             "args": [
                 "-I", "${env:CPP_DEPENDENCIES}\\rapidjson\\include",
                 "-I", "${workspaceFolder}\\include",
-                // "-I", "${workspaceFolder}\\source",
                 "/Zi",
                 "/EHsc",
                 "/Fe:",
@@ -231,7 +223,6 @@
             "args": [
                 "-I", "${env:CPP_DEPENDENCIES}\\rapidjson\\include",
                 "-I", "${workspaceFolder}\\include",
-                "-I", "${workspaceFolder}\\source",
                 "/Zi",
                 "/EHsc",
                 "/Fe:",
@@ -255,7 +246,6 @@
             "args": [
                 "-I", "${env:CPP_DEPENDENCIES}\\rapidjson\\include",
                 "-I", "${workspaceFolder}\\include",
-                "-I", "${workspaceFolder}\\source",
                 "/Zi",
                 "/EHsc",
                 "/Fe:",

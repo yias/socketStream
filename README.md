@@ -88,7 +88,7 @@ $ ./build/serverExample.exe
 - on Windows:
 
 ```bash
-$ .\build\serverExample.exe
+> .\build\serverExample.exe
 ```
 
 -- For running the sendWithTime example, open another terminal, navigate inside the project's folder, and type the command:
@@ -102,7 +102,7 @@ $ ./build/sendWithTime.exe
 - on Windows:
 
 ```bash
-$ .\build\sendWithTime.exe 
+> .\build\sendWithTime.exe 
 ```
 
 Once both the programs are running, the terminal on the server side should print something similar to the following picture. The server receives the packets from the sendWithTime program and prints the frequency that it receives the packets.

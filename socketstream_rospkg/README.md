@@ -1,4 +1,4 @@
-![](../docs/pics/socketStream_logo.png)
+![](../docs/pics/socketStream_ros_logo.png)
 
 A ros package wrapped around the socketStream. It receives packet from remote client over a TCP/IP connection and publishes the data to a ros topic. The package contains a roscpp and rospy node. The package has the same dependency on the rapidjson as the C++ library and it requires to introduce the path in the environemnt variables as it is described in readme file of the main folder.
 
