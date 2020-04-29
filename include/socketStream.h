@@ -78,8 +78,10 @@ namespace SOCKETSTREAM{
     
     const unsigned int DEFAULT_BUFLEN = 2048;
     const unsigned int DEFAULT_PORT = 10352;
+    const int SOCKETSTREAM_SERVER_SENDER = 2;
     const int SOCKETSTREAM_SERVER = 1;
     const int SOCKETSTREAM_CLIENT = 0;
+    const int SOCKETSTREAM_CLIENT_LISTENER = -1;
     const int MAX_NB_CONNECTIONS = 10;   
 }
 
@@ -94,6 +96,8 @@ class socketStream{
         WSADATA wsaData;
        
     #endif
+
+    int mode;
 
     
     SOCKET ConnectSocket, ListenSocket;
@@ -211,7 +215,11 @@ public:
     int updateMSG(std::string field, std::vector <std::vector <int>> value);                                                    // update the specific field of the message (for 2D matrix of integers)
     int updateMSG(std::string field, std::vector <std::vector <double>> value);                                                 // update the specific field of the message (for 2D matrix of doubles)
 
-    int sendMSg();                                                                                                              // send message to the server
+    int sendMSg();                                                                                                              // send message to the server (in client mode)
+    int sendMSg2Client(unsigned int clID);                                                                                      // send message to a client taking a number as ID (in server mode)
+    int sendMSg2Client(std::string clID);                                                                                       // send message to a client taking a string as ID (in server mode)
+    int sendMSg2All();                                                                                                          // send the same message to all the clients (in server mode)
+    
 
     int closeCommunication();                                                                                                   // close the communication with the server
 

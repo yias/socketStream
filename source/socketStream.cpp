@@ -1,7 +1,7 @@
 /** 
  *  Copyright (C) 2020 Iason Batzianoulis
  *  
- *  socketStream source file
+ *  Acquisition source file
  *  
  * 
  *  Developer:  Iason Batzianoulis
@@ -59,6 +59,8 @@ int getch(void)
 
 socketStream::socketStream(void){
 
+    mode = SOCKETSTREAM::SOCKETSTREAM_CLIENT;
+
     ConnectSocket = INVALID_SOCKET;
 
     ListenSocket = INVALID_SOCKET;                      // for the server
@@ -114,6 +116,8 @@ socketStream::socketStream(void){
 
 socketStream::socketStream(const char* svrIPAddress){
 
+    mode = SOCKETSTREAM::SOCKETSTREAM_CLIENT;
+
     ConnectSocket = INVALID_SOCKET;
 
     result = NULL;
@@ -165,13 +169,15 @@ socketStream::socketStream(const char* svrIPAddress){
 
 socketStream::socketStream(const char* svrIPAddress, int srvPosrt, const int socketStreamMode){
 
+    mode = socketStreamMode;
+
     ConnectSocket = INVALID_SOCKET;
 
     result = NULL;
     
     ptr = NULL;
 
-    if(socketStreamMode==SOCKETSTREAM::SOCKETSTREAM_SERVER){
+    if(socketStreamMode>0){
         isServer = true;
     }else{
         isServer = false;
@@ -323,7 +329,7 @@ int socketStream::initialize_socketStream(const char* svrIPAddress, int srvPosrt
 
     Host_Port = (unsigned int)srvPosrt;
 
-     #ifdef _WIN32
+    #ifdef _WIN32
         // Initialize Winsock
         iResult = WSAStartup(MAKEWORD(2,2), &wsaData);
         if (iResult != 0) {
@@ -937,6 +943,162 @@ int socketStream::sendMSg(){
     return iResult;
 }
 
+int socketStream::sendMSg2Client(unsigned int clID){
+    /** 
+     * 
+     * The function composes the message and sends it to the client with id number clID
+     * 
+     * Return:
+     *      the number of bytes sent, if completed correctly
+     *      the error type (negative integer), if not completed correctly
+     * 
+     */
+    
+
+    if(msgInitilized){
+
+        // clear the buffers
+        str_buffer.Clear();
+        final_msg.clear();
+        msg2send.clear();
+        msgHeader = std::string(headerSize, ' ');
+
+        // rapidjson::Writer<rapidjson::StringBuffer> writer(str_buffer);
+
+        // get the json object in a string format
+        writer.Reset(str_buffer);
+
+        dDoc.Accept(writer);
+
+        msg2send = str_buffer.GetString();
+
+        // introduce the lenght of the string in the header of the file
+        std::ostringstream i2s;
+        i2s << msg2send.length();
+
+        msgHeader.replace(msgHeader.begin(),msgHeader.end()+i2s.str().length()-msgHeader.length(),i2s.str());
+
+        // if a checksum is needed, create and introduce it to the message
+        if(useHashKey){
+            std::string md5_key = md5(msg2send.c_str());
+            msg2send += md5_key;
+        }
+        
+        // compute the overhead of the message
+        msgOverhead = (int((msg2send.length()+minMsgSize)/bufferSize)+1)*bufferSize - (msg2send.length()+minMsgSize);
+
+        std::ostringstream i2s2;
+        i2s2 << msgOverhead;        
+
+        msgOHstring.replace(msgOHstring.begin(),msgOHstring.end()+i2s2.str().length()-msgOHstring.length(),i2s2.str());
+
+
+        // compose the final message
+        final_msg = msg_idf + msgHeader + std::to_string(int(useHashKey)) + msgOHstring + msg2send + std::string(msgOverhead, ' ') + endMSG;
+
+        // send the message
+        if(connetionSlots[clID]){
+            // if the communication is active, send message
+            iResult = send( clientsSockets[clID], final_msg.c_str(), (int)final_msg.size(), 0 );
+            if (iResult == SOCKET_ERROR) {
+                std::cerr << "[socketStream] Send message failed with error: ";
+                #ifdef _WIN32
+                    std::cerr << WSAGetLastError();
+                #else
+                    std::cerr << strerror(errno);
+                #endif
+                std::cerr << std::endl;
+                #ifdef _WIN32
+                    closesocket(ConnectSocket);
+                #else
+                    close(ConnectSocket);
+                #endif
+                #ifdef _WIN32
+                    WSACleanup();
+                #endif
+                return -1;
+            }
+        }else{
+            std::cerr << "[socketStream] The communication with the server is not open. " << std::endl;
+            return -2;
+        }
+
+    }else{
+        std::cerr << "[socketStream] The message struct id NOT initialized. " << std::endl;
+        return -3;
+    }
+
+    // final_msg.clear();
+    return iResult;
+
+}
+
+int socketStream::sendMSg2Client(std::string clID){
+    /** 
+     * 
+     * The function search for a client id in the clients' ids and sends the message to this client
+     * 
+     * Return:
+     *      the number of clients to which the message was sent correctly
+     *      -1, if there is no client with the spefied ID
+     * 
+     */
+    
+    int nb_clients_found = 0;
+    int nb_clients = 0;
+    for (unsigned int i = 0; i < (unsigned int)clientIDs.size(); i++ ){
+        if(clientIDs[i].compare(clID)==0){
+            if(connetionSlots[i]){
+                if(sendMSg2Client(i)>0){
+                    nb_clients++;
+                }else{
+                    std::cerr << "[socketStream] A client with id \"" << clID << "\" found but the message did not sent. " << std::endl;
+                }
+                nb_clients_found++;
+            }
+        }
+    }
+
+    if(nb_clients_found==0){
+        std::cout << "[socketStream] No client with id \"" << clID << "\" was found. " << std::endl;
+    }
+    
+    if(nb_clients>0){
+        return nb_clients;
+    }else{
+        return -1;
+    }
+}
+
+int socketStream::sendMSg2All(){
+    /** 
+     * 
+     * The function sends the message to all the clients
+     * 
+     * Return:
+     *      the number of clients to which the message was sent correctly
+     *      -1, if there is no client with the spefied ID
+     * 
+     */
+
+    int nb_clients = 0;
+    for(unsigned int i = 0; i< (unsigned int)connetionSlots.size(); i++){
+        if(connetionSlots[i]){
+            if(sendMSg2Client(i)>0){
+                nb_clients++;
+            }else{
+                std::cerr << "[socketStream] The message was not sent correctly to client with id \"" << clientIDs[i] << "\". " << std::endl;
+            }
+        }
+    }
+
+    if(nb_clients>0){
+        return nb_clients;
+    }else{
+        return -1;
+    }
+}
+
 int socketStream::closeCommunication(){
 
     // std::cout << "inside clcoseCommunication" << std::endl;
@@ -1197,8 +1359,10 @@ int socketStream::wait_connections(){
                 std::cout << "[socketStream] Accepted connection from client: " << clAddStr << " with id: " << clientIDs[slotNumber] << std::endl; 
                 threadMutex.unlock();          
 
-                std::thread receiverThread(&socketStream::runReceiver, this, slotNumber);
-                receiverThread.detach();
+                if(mode==SOCKETSTREAM::SOCKETSTREAM_SERVER){
+                    std::thread receiverThread(&socketStream::runReceiver, this, slotNumber);
+                    receiverThread.detach();
+                }    
                 nbConnections++;
             }
         }

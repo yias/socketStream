@@ -218,6 +218,30 @@
         },
         {
             "type": "shell",
+            "label": "cl.exe build send messages from server exampple (Windows)",
+            "command": "cl.exe",
+            "args": [
+                "-I", "${env:CPP_DEPENDENCIES}\\rapidjson\\include",
+                "-I", "${workspaceFolder}\\include",
+                "/Zi",
+                "/EHsc",
+                "/Fe:",
+                "${workspaceFolder}\\build\\serverExampleSendMsg.exe",
+                "${workspaceFolder}\\source\\serverExampleSendMsg.cpp",
+                "${workspaceFolder}\\source\\socketStream.cpp",
+                "${workspaceFolder}\\source\\jsonWrapper.cpp",
+                "${workspaceFolder}\\source\\md5.cpp"
+            ],
+            "problemMatcher": [
+                "$msCompile"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "type": "shell",
             "label": "cl build example file (Windows)",
             "command": "cl.exe",
             "args": [
