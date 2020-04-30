@@ -34,13 +34,24 @@ LIBS = -lpthread
 
 test: makeOutDir serverExample sendWithTime
 
-all: makeOutDir serverExample sendWithTime clientExample runDiagnostics jsonWrapperExample
+all: makeOutDir serverExample sendWithTime clientExample runDiagnostics jsonWrapperExample serverExampleSendMsg clientListener
 
-# build a socketStream client for sending packets for specific time
+# build a socketStream server for listening to clients and retrieve the signals of a client
 serverExample:
 	$(info $(greenC)$(boldT) --> building socketStream server example $(yellowC)==>$(reset))
 	@$(CXX) $(CXXFLAGS) $(EXAMPLES_DIR)/serverExample.cpp $(SRC_DIR)/socketStream.cpp $(SRC_DIR)/jsonWrapper.cpp $(SRC_DIR)/md5.cpp \
 	-o ${OUTPUT_DIR}/serverExample.exe \
+	$(INCLUDE_PARAMS) \
+	$(LIBS)
+	@if test $$? -eq 0;\
+	then tput setaf 4; tput bold; echo " --> OK"; tput sgr0; \
+	fi
+
+# build a socketStream client for sending packets for specific time
+serverExampleSendMsg:
+	$(info $(greenC)$(boldT) --> building socketStream serverSendMsg example $(yellowC)==>$(reset))
+	@$(CXX) $(CXXFLAGS) $(EXAMPLES_DIR)/serverExampleSendMsg.cpp $(SRC_DIR)/socketStream.cpp $(SRC_DIR)/jsonWrapper.cpp $(SRC_DIR)/md5.cpp \
+	-o ${OUTPUT_DIR}/serverExampleSendMsg.exe \
 	$(INCLUDE_PARAMS) \
 	$(LIBS)
 	@if test $$? -eq 0;\
@@ -77,6 +88,17 @@ runDiagnostics:
 	$(info $(greenC)$(boldT) --> building runDiagnostics client $(yellowC)==>$(reset))
 	@$(CXX) $(CXXFLAGS) $(EXAMPLES_DIR)/runDiagnostics.cpp $(SRC_DIR)/socketStream.cpp $(SRC_DIR)/jsonWrapper.cpp $(SRC_DIR)/md5.cpp \
 	-o ${OUTPUT_DIR}/runDiagnostics.exe \
+	$(INCLUDE_PARAMS) \
+	$(LIBS)
+	@if test $$? -eq 0;\
+	then tput setaf 4; tput bold; echo " --> OK"; tput sgr0; \
+	fi
+
+# build a socketStream client for sending packets for specific time
+clientListener:
+	$(info $(greenC)$(boldT) --> building socketStream clientListener example $(yellowC)==>$(reset))
+	@$(CXX) $(CXXFLAGS) $(EXAMPLES_DIR)/clientListenerExample.cpp $(SRC_DIR)/socketStream.cpp $(SRC_DIR)/jsonWrapper.cpp $(SRC_DIR)/md5.cpp \
+	-o ${OUTPUT_DIR}/clientListener.exe \
 	$(INCLUDE_PARAMS) \
 	$(LIBS)
 	@if test $$? -eq 0;\
