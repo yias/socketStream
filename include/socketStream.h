@@ -78,10 +78,10 @@ namespace SOCKETSTREAM{
     
     const unsigned int DEFAULT_BUFLEN = 2048;
     const unsigned int DEFAULT_PORT = 10352;
-    const int SOCKETSTREAM_SERVER_SENDER = 2;
+    // const int SOCKETSTREAM_SERVER_SENDER = 2;
     const int SOCKETSTREAM_SERVER = 1;
     const int SOCKETSTREAM_CLIENT = 0;
-    const int SOCKETSTREAM_CLIENT_LISTENER = -1;
+    // const int SOCKETSTREAM_CLIENT_LISTENER = -1;
     const int MAX_NB_CONNECTIONS = 100;   
 }
 
@@ -169,6 +169,8 @@ class socketStream{
     int runReceiver(int connectionID);
 
     int findEmptySlot();
+
+    int sendEndCommMsg(unsigned int clID);
 
     #ifdef _WIN32
 

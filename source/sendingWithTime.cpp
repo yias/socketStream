@@ -101,7 +101,7 @@ int main(int argc, char **argv){
         // send the message to the server
         if(socketHdlr.sendMSg()<0){
             std::cerr << "unable to send message " << std::endl;
-            return -6;
+            break;
         }
         end = std::chrono::steady_clock::now();
         std::this_thread::sleep_for(timespan);
