@@ -1067,9 +1067,9 @@ int socketStream::sendMSg2Client(unsigned int clID){
                     #else
                         close(clientsSockets[clID]);
                     #endif
-                    #ifdef _WIN32
-                        // WSACleanup();
-                    #endif
+                    // #ifdef _WIN32
+                    //     WSACleanup();
+                    // #endif
                     return -1;
                 }
             }
@@ -1406,7 +1406,7 @@ int socketStream::wait_connections(){
                 std::cerr << "[socketStream] Shutdown failed with error:" ;
                 #ifdef _WIN32
                     std::cerr << WSAGetLastError();
-                    WSACleanup();
+                    // WSACleanup();
                 #endif
                 std::cerr << std::endl;
                 #ifdef _WIN32
@@ -1559,7 +1559,7 @@ int socketStream::runReceiver(int connectionID){
                 std::cerr << "[socketStream] Shutdown failed with error:" ;
                 #ifdef _WIN32
                     std::cerr << WSAGetLastError();
-                    WSACleanup();
+                    // WSACleanup();
                 #else
                     std::cerr << strerror(errno);
                 #endif
@@ -1613,7 +1613,7 @@ int socketStream::runReceiver(int connectionID){
             std::cerr << "[socketStream] Shutdown failed with error:" ;
             #ifdef _WIN32
                 std::cerr << WSAGetLastError();
-                WSACleanup();
+                // WSACleanup();
             #else
                 std::cerr << strerror(errno);
             #endif
