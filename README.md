@@ -56,7 +56,7 @@ $ git clone https://github.com/yias/socket_jsonCpp.git
 ```
 
 ## Building and running the examples
-As the prokect has been developed on VSCode, the file "tasks.json" inside the folder ".vscode" contains the compiler's commands to build the examples in the "source" folder. If you have VSCode installed on your system, open a terminal on Linux or a command promt on Windows (preferably a [PowerShell](https://github.com/PowerShell/PowerShell)), navigate to the project's folder and rum the command:
+As the prokect has been developed on VSCode, the file "tasks.json" inside the folder ".vscode" contains the compiler's commands to build the examples in the "examples" folder. If you have VSCode installed on your system, open a terminal on Linux or a command promt on Windows (preferably a [PowerShell](https://github.com/PowerShell/PowerShell)), navigate to the project's folder and rum the command:
 
 ```bash
 $ code .
@@ -72,7 +72,7 @@ to launch VSCode. The IDE recognizes automatically the "tasks.json" file and you
 $ make
 ```
 
-(for building all the examples inside the "source", run the command make all)
+(for building all the examples inside the "examples", run the command make all)
 
 Either by building from VSCode or the Makefile, two executables will be generated inside the folder "build". The "serverExample" runs a socketStream server that waits for clients to connect and receives their packets. The "sendWithTime" runs a socksetStream client which sends packets to the server for a specific duration with a frequency of approximatelly 100Hz.
 
