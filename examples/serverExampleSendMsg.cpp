@@ -86,7 +86,7 @@ int main(int argc, char **argv){
     rapidjson::Document tmp_doc;
 
     //  define a boolean variable for checking if the message is new or not
-    bool isNew = false;
+    // bool isNew = false;
 
     // a 2D matrix of doubles to store the received data
     std::vector< std::vector<double> > mat_double;
@@ -95,9 +95,9 @@ int main(int argc, char **argv){
     while(true){
 
         if(svrHdlr.socketStream_ok()){
-            svrHdlr.sendMSg2Client(0);
+            svrHdlr.sendMSg2Client("listener");
         }
-        std::this_thread::sleep_for(std::chrono::microseconds(1));
+        std::this_thread::sleep_for(std::chrono::microseconds(1000));
         // check if a key is hit on the keyboard
         // if yes, check if this key is "q"
         // if yes, break the loob, otherwise continue

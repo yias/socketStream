@@ -291,6 +291,8 @@ int socketStream::initialize_socketStream(){
             #ifdef _WIN32
                 std::cerr << WSAGetLastError();
                 WSACleanup();
+            #else
+                std::cerr << strerror(errno);
             #endif
             std::cerr << std::endl;
             #ifdef _WIN32
@@ -1057,21 +1059,37 @@ int socketStream::sendMSg2Client(unsigned int clID){
                 int error_NB = 0;
                 #ifdef _WIN32
                     error_NB = WSAGetLastError();
+                    if (connetionSlots[clID] && error_NB!=10058){
+                        std::cerr << "[socketStream] Send message failed with error: " << error_NB << std::endl;
+                        closesocket(clientsSockets[clID]);
+                        
+                        // #ifdef _WIN32
+                        //     WSACleanup();
+                        // #endif
+                        return -1;
+                    }
                 #else
                     error_NB = errno;
-                #endif
-                if (connetionSlots[clID] && error_NB!=10058){
-                    std::cerr << "[socketStream] Send message failed with error: " << error_NB << std::endl;
-                    #ifdef _WIN32
-                        closesocket(clientsSockets[clID]);
-                    #else
-                        close(clientsSockets[clID]);
-                    #endif
-                    // #ifdef _WIN32
-                    //     WSACleanup();
-                    // #endif
+                    if (connetionSlots[clID] && error_NB!=9){
+                    std::cerr << "[socketStream] Send message failed with error: " << strerror(error_NB) << std::endl;
+                    close(clientsSockets[clID]);
+                    
                     return -1;
                 }
+                #endif
+                // std::cout << errno << std::endl;
+                // if (connetionSlots[clID] && error_NB!=10058){
+                //     std::cerr << "[socketStream] testSend message failed with error: " << error_NB << std::endl;
+                //     #ifdef _WIN32
+                //         closesocket(clientsSockets[clID]);
+                //     #else
+                //         close(clientsSockets[clID]);
+                //     #endif
+                //     // #ifdef _WIN32
+                //     //     WSACleanup();
+                //     // #endif
+                //     return -1;
+                // }
             }
         }else{
             if(mode==SOCKETSTREAM::SOCKETSTREAM_SERVER){
@@ -1218,6 +1236,7 @@ int socketStream::closeCommunication(){
             #else
                 close(clientsSockets[i]);
             #endif
+            connetionSlots[i] = false;
             }
         }
 
@@ -1256,24 +1275,26 @@ int socketStream::closeCommunication(){
                 #endif
                 return -1;
             }
+
+            #ifdef _WIN32
+                iResult = shutdown(ConnectSocket, SD_SEND);
+                if (iResult == SOCKET_ERROR) {
+                    std::cerr << "[socketStream] Shutdown failed with error: " << WSAGetLastError() << std::endl;
+                    closesocket(ConnectSocket);
+                    WSACleanup();
+                    return -2;
+                }
+            #else
+                iResult = shutdown(ConnectSocket, SD_SEND);
+                if (iResult < 0){
+                    std::cerr << "[socketStream] 5Shutdown failed with error: " << strerror(errno) << std::endl;
+                    iResult = close(ConnectSocket);
+                    return -2;
+                }
+            #endif
         }
 
-        #ifdef _WIN32
-            iResult = shutdown(ConnectSocket, SD_SEND);
-            if (iResult == SOCKET_ERROR) {
-                std::cerr << "[socketStream] Shutdown failed with error: " << WSAGetLastError() << std::endl;
-                closesocket(ConnectSocket);
-                WSACleanup();
-                return -2;
-            }
-        #else
-            iResult = shutdown(ConnectSocket, SD_SEND);
-            if (iResult < 0){
-                std::cerr << "[socketStream] Shutdown failed with error: " << strerror(errno) << std::endl;
-                iResult = close(ConnectSocket);
-                return -2;
-            }
-        #endif
+        
 
         isComActive = false;
         connetionSlots[0] = false;
@@ -1403,7 +1424,7 @@ int socketStream::wait_connections(){
         if(slotNumber < 0){
             iResult = shutdown(ClientSocket, SD_SEND);
             if (iResult == SOCKET_ERROR) {
-                std::cerr << "[socketStream] Shutdown failed with error:" ;
+                std::cerr << "[socketStream] 1Shutdown failed with error:" ;
                 #ifdef _WIN32
                     std::cerr << WSAGetLastError();
                     // WSACleanup();
@@ -1426,7 +1447,7 @@ int socketStream::wait_connections(){
                 threadMutex.unlock();
                 iResult = shutdown(ClientSocket, SD_SEND);
                 if (iResult == SOCKET_ERROR) {
-                    std::cerr << "[socketStream] Shutdown failed with error:" ;
+                    std::cerr << "[socketStream] 2Shutdown failed with error:" ;
                     #ifdef _WIN32
                         std::cerr << WSAGetLastError();
                         WSACleanup();
@@ -1494,7 +1515,7 @@ int socketStream::runReceiver(int connectionID){
         iResutlReceiver = recv(clntSocket, clientRecvbuf, bufferSize, 0);
         // threadMutex.unlock();
         if(iResutlReceiver<0){
-            std::cerr << "[socketStream] Unable to receive data" << std::endl;
+            std::cerr << "[socketStream] 1Unable to receive data" << std::endl;
         }
         memcpy(tmp_buf, clientRecvbuf, strlen(msg_idf));
         if(strcmp(tmp_buf, msg_idf)==0){
@@ -1505,13 +1526,19 @@ int socketStream::runReceiver(int connectionID){
                 iResutlReceiver = recv(clntSocket, clientRecvbuf, bufferSize, 0);
                 // threadMutex.unlock();
                 if(iResutlReceiver<0){
-                    std::cerr << "[socketStream] Unable to receive data" << std::endl;
+                    std::cerr << "[socketStream] 2Unable to receive data" << std::endl;
                 }
                 if(mode == SOCKETSTREAM::SOCKETSTREAM_CLIENT){
                     if(!isComActive){
                         break;
                     }
                 }
+                if(mode == SOCKETSTREAM::SOCKETSTREAM_SERVER){
+                    if(!connetionSlots[connectionID]){
+                        break;
+                    }
+                }
+                
                 
                 fullmsg += clientRecvbuf;
                 memset(clientRecvbuf, 0, sizeof(clientRecvbuf));
@@ -1556,7 +1583,7 @@ int socketStream::runReceiver(int connectionID){
             // the connection is terminated from the other end
             iResutlReceiver = shutdown(clntSocket, SD_SEND);
             if (iResutlReceiver == SOCKET_ERROR) {
-                std::cerr << "[socketStream] Shutdown failed with error:" ;
+                std::cerr << "[socketStream] 3Shutdown failed with error:" ;
                 #ifdef _WIN32
                     std::cerr << WSAGetLastError();
                     // WSACleanup();
@@ -1564,13 +1591,14 @@ int socketStream::runReceiver(int connectionID){
                     std::cerr << strerror(errno);
                 #endif
                 std::cerr << std::endl;
-                #ifdef _WIN32
-                    closesocket(clntSocket);
-                #else
-                    close(clntSocket);
-                #endif
-                return -1;
+                
+                // return -1;
             }
+            #ifdef _WIN32
+                closesocket(clntSocket);
+            #else
+                close(clntSocket);
+            #endif
             
             if(mode == SOCKETSTREAM::SOCKETSTREAM_SERVER){
                 std::cout << "[socketStream] Connection terminated by client (id: \"" << clientIDs[connectionID] << "\", address: " << clientsAddresses[connectionID] << ")" << std::endl;
@@ -1587,6 +1615,9 @@ int socketStream::runReceiver(int connectionID){
             connetionSlots[connectionID] = false;
             if(mode == SOCKETSTREAM::SOCKETSTREAM_SERVER){
                 clientIDs[connectionID] = " ";
+            }
+            if(mode == SOCKETSTREAM::SOCKETSTREAM_CLIENT){
+                isComActive = false;
             }
             clientMsgs[connectionID] = " ";
             threadMutex.unlock();
@@ -1610,7 +1641,7 @@ int socketStream::runReceiver(int connectionID){
     if(connectionExists && connetionSlots[connectionID]){
         iResutlReceiver = shutdown(clientsSockets[connectionID], SD_SEND);
         if (iResult == SOCKET_ERROR) {
-            std::cerr << "[socketStream] Shutdown failed with error:" ;
+            std::cerr << "[socketStream] 4Shutdown failed with error:" ;
             #ifdef _WIN32
                 std::cerr << WSAGetLastError();
                 // WSACleanup();

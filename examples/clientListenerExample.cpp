@@ -1,4 +1,4 @@
-/**
+    /**
  * 
  *  Examples on how to use the socketStream class for implementing 
  *  a TCP client and listen to server
@@ -96,7 +96,7 @@ int main(int argc, char **argv){
 
     // double time2run = 120000;
 
-    // std::chrono::milliseconds timespan(10);
+    std::chrono::milliseconds timespan(10);
 
     // a 2D matrix of doubles to store the received data
     std::vector< std::vector<double> > mat_double;
@@ -144,7 +144,7 @@ int main(int argc, char **argv){
             #endif
         }
         // end = std::chrono::steady_clock::now();
-        // std::this_thread::sleep_for(timespan);
+        std::this_thread::sleep_for(timespan);
     }
     
 
