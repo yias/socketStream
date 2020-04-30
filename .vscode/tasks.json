@@ -8,8 +8,8 @@
             "label": "g++ build jsonWrapper example on Linux",
             "command": "g++",
             "args": [
-                "-g", "${workspaceFolder}/source/jsonWrapper_example.cpp",
-                "${workspaceFolder}/source/jsonWrapper.cpp",
+                "-g", "${workspaceFolder}/examples/jsonWrapper_example.cpp",
+                "${workspaceFolder}/src/jsonWrapper.cpp",
                 "-o", "${workspaceFolder}//build/jsonWrapperExample.exe",
                 "-O3",
                 "-I", "${env:CPP_DEPENDENCIES}/rapidjson/include",
@@ -28,8 +28,8 @@
             "label": "g++ build jsonWrapper example on Windows",
             "command": "g++.exe",
             "args": [
-                "-g", "${workspaceFolder}\\source\\jsonWrapper_example.cpp",
-                "${workspaceFolder}\\source\\jsonWrapper.cpp",
+                "-g", "${workspaceFolder}\\examples\\jsonWrapper_example.cpp",
+                "${workspaceFolder}\\src\\jsonWrapper.cpp",
                 "-o", "${workspaceFolder}\\build\\jsonWrapperExample.exe",
                 "-O3",
                 "-lws2_32",
@@ -49,9 +49,9 @@
             "label": "build run diagnostics on Linux",
             "command": "g++",
             "args": [
-                "-g", "${workspaceFolder}/source/runDiagnostics.cpp",
-                "${workspaceFolder}/source/socketStream.cpp",
-                "${workspaceFolder}/source/md5.cpp",
+                "-g", "${workspaceFolder}/examples/runDiagnostics.cpp",
+                "${workspaceFolder}/src/socketStream.cpp",
+                "${workspaceFolder}/src/md5.cpp",
                 "-o", "${workspaceFolder}/build/runDiagnostics.exe",
                 "-O3",
                 "-lpthread",
@@ -71,9 +71,9 @@
             "label": "g++ build example on Linux",
             "command": "g++",
             "args": [
-                "-g", "${workspaceFolder}/source/example.cpp",
-                "${workspaceFolder}/source/socketStream.cpp",
-                "${workspaceFolder}/source/md5.cpp",
+                "-g", "${workspaceFolder}/examples/example.cpp",
+                "${workspaceFolder}/src/socketStream.cpp",
+                "${workspaceFolder}/src/md5.cpp",
                 "-o", "${workspaceFolder}/build/clientExample.exe",
                 "-O3",
                 "-lpthread",
@@ -93,9 +93,9 @@
             "label": "g++ build sendingWithTime on Linux",
             "command": "g++",
             "args": [
-                "-g", "${workspaceFolder}/source/sendingWithTime.cpp",
-                "${workspaceFolder}/source/socketStream.cpp",
-                "${workspaceFolder}/source/md5.cpp",
+                "-g", "${workspaceFolder}/examples/sendingWithTime.cpp",
+                "${workspaceFolder}/src/socketStream.cpp",
+                "${workspaceFolder}/src/md5.cpp",
                 "-o", "${workspaceFolder}/build/sendWithTime.exe",
                 "-O3",
                 "-lpthread",
@@ -130,10 +130,10 @@
             "label": "g++ build of the server example on Linux",
             "command": "/usr/bin/g++",
             "args": [
-                "-g", "${workspaceFolder}/source/serverExample.cpp",
-                "${workspaceFolder}/source/socketStream.cpp",
-                "${workspaceFolder}/source/jsonWrapper.cpp",
-                "${workspaceFolder}/source/md5.cpp",
+                "-g", "${workspaceFolder}/examples/serverExample.cpp",
+                "${workspaceFolder}/src/socketStream.cpp",
+                "${workspaceFolder}/src/jsonWrapper.cpp",
+                "${workspaceFolder}/src/md5.cpp",
                 "-o", "${workspaceFolder}/build/serverExample.exe",
                 "-O3",
                 "-lpthread",
@@ -153,9 +153,9 @@
             "label": "g++ build sendingWithTime file on Windows",
             "command": "g++.exe",
             "args": [
-                "-g", "${workspaceFolder}\\source\\sendingWithTime.cpp",
-                "${workspaceFolder}\\source\\socketStream.cpp",
-                "${workspaceFolder}\\source\\md5.cpp",
+                "-g", "${workspaceFolder}\\examples\\sendingWithTime.cpp",
+                "${workspaceFolder}\\src\\socketStream.cpp",
+                "${workspaceFolder}\\src\\md5.cpp",
                 "-o", "${workspaceFolder}\\build\\sendWithTime.exe",
                 "-O3",
                 "-lws2_32",
@@ -175,9 +175,9 @@
             "label": "g++ build diagnostics file on Windows",
             "command": "g++.exe",
             "args": [
-                "-g", "${workspaceFolder}\\source\\runDiagnostics.cpp",
-                "${workspaceFolder}\\source\\socketStream.cpp",
-                "${workspaceFolder}\\source\\md5.cpp",
+                "-g", "${workspaceFolder}\\examples\\runDiagnostics.cpp",
+                "${workspaceFolder}\\src\\socketStream.cpp",
+                "${workspaceFolder}\\src\\md5.cpp",
                 "-o", "${workspaceFolder}\\build\\testrunDiagnostics.exe",
                 "-O3",
                 "-lws2_32",
@@ -203,10 +203,10 @@
                 "/EHsc",
                 "/Fe:",
                 "${workspaceFolder}\\build\\serverExample.exe",
-                "${workspaceFolder}\\source\\serverExample.cpp",
-                "${workspaceFolder}\\source\\socketStream.cpp",
-                "${workspaceFolder}\\source\\jsonWrapper.cpp",
-                "${workspaceFolder}\\source\\md5.cpp"
+                "${workspaceFolder}\\examples\\serverExample.cpp",
+                "${workspaceFolder}\\src\\socketStream.cpp",
+                "${workspaceFolder}\\src\\jsonWrapper.cpp",
+                "${workspaceFolder}\\src\\md5.cpp"
             ],
             "problemMatcher": [
                 "$msCompile"
@@ -227,10 +227,10 @@
                 "/EHsc",
                 "/Fe:",
                 "${workspaceFolder}\\build\\serverExampleSendMsg.exe",
-                "${workspaceFolder}\\source\\serverExampleSendMsg.cpp",
-                "${workspaceFolder}\\source\\socketStream.cpp",
-                "${workspaceFolder}\\source\\jsonWrapper.cpp",
-                "${workspaceFolder}\\source\\md5.cpp"
+                "${workspaceFolder}\\examples\\serverExampleSendMsg.cpp",
+                "${workspaceFolder}\\src\\socketStream.cpp",
+                "${workspaceFolder}\\src\\jsonWrapper.cpp",
+                "${workspaceFolder}\\src\\md5.cpp"
             ],
             "problemMatcher": [
                 "$msCompile"
@@ -251,10 +251,10 @@
                 "/EHsc",
                 "/Fe:",
                 "${workspaceFolder}\\build\\clientListener.exe",
-                "${workspaceFolder}\\source\\clientListenerExample.cpp",
-                "${workspaceFolder}\\source\\socketStream.cpp",
-                "${workspaceFolder}\\source\\jsonWrapper.cpp",
-                "${workspaceFolder}\\source\\md5.cpp"
+                "${workspaceFolder}\\examples\\clientListenerExample.cpp",
+                "${workspaceFolder}\\src\\socketStream.cpp",
+                "${workspaceFolder}\\src\\jsonWrapper.cpp",
+                "${workspaceFolder}\\src\\md5.cpp"
             ],
             "problemMatcher": [
                 "$msCompile"
@@ -275,9 +275,9 @@
                 "/EHsc",
                 "/Fe:",
                 "${workspaceFolder}\\build\\clientExample.exe",
-                "${workspaceFolder}\\source\\example.cpp",
-                "${workspaceFolder}\\source\\socketStream.cpp",
-                "${workspaceFolder}\\source\\md5.cpp"
+                "${workspaceFolder}\\examples\\example.cpp",
+                "${workspaceFolder}\\src\\socketStream.cpp",
+                "${workspaceFolder}\\src\\md5.cpp"
             ],
             "problemMatcher": [
                 "$msCompile"
@@ -298,9 +298,9 @@
                 "/EHsc",
                 "/Fe:",
                 "${workspaceFolder}\\build\\runDiagnostcs.exe",
-                "${workspaceFolder}\\source\\runDiagnostics.cpp",
-                "${workspaceFolder}\\source\\socketStream.cpp",
-                "${workspaceFolder}\\source\\md5.cpp"
+                "${workspaceFolder}\\examples\\runDiagnostics.cpp",
+                "${workspaceFolder}\\src\\socketStream.cpp",
+                "${workspaceFolder}\\src\\md5.cpp"
             ],
             "problemMatcher": [
                 "$msCompile"

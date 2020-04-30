@@ -25,7 +25,8 @@ INCLUDE_DIR = ./include ${CPP_DEPENDENCIES}/rapidjson/include
 INCLUDE_PARAMS = $(foreach d, $(INCLUDE_DIR), -I $d)
 
 # set the source directory
-SRC_DIR = ./source
+SRC_DIR = ./src
+EXAMPLES_DIR = ./examples
 
 # set the libraries needed for compiling
 LIBS = -lpthread
@@ -38,7 +39,7 @@ all: makeOutDir serverExample sendWithTime clientExample runDiagnostics jsonWrap
 # build a socketStream client for sending packets for specific time
 serverExample:
 	$(info $(greenC)$(boldT) --> building socketStream server example $(yellowC)==>$(reset))
-	@$(CXX) $(CXXFLAGS) $(SRC_DIR)/serverExample.cpp $(SRC_DIR)/socketStream.cpp $(SRC_DIR)/jsonWrapper.cpp $(SRC_DIR)/md5.cpp \
+	@$(CXX) $(CXXFLAGS) $(EXAMPLES_DIR)/serverExample.cpp $(SRC_DIR)/socketStream.cpp $(SRC_DIR)/jsonWrapper.cpp $(SRC_DIR)/md5.cpp \
 	-o ${OUTPUT_DIR}/serverExample.exe \
 	$(INCLUDE_PARAMS) \
 	$(LIBS)
@@ -50,7 +51,7 @@ serverExample:
 # build a socketStream client for sending packets for specific time
 sendWithTime:
 	$(info $(greenC)$(boldT) --> building socketStream client sendWithTime $(yellowC)==>$(reset))
-	@$(CXX) $(CXXFLAGS) $(SRC_DIR)/sendingWithTime.cpp $(SRC_DIR)/socketStream.cpp $(SRC_DIR)/md5.cpp \
+	@$(CXX) $(CXXFLAGS) $(EXAMPLES_DIR)/sendingWithTime.cpp $(SRC_DIR)/socketStream.cpp $(SRC_DIR)/md5.cpp \
 	-o ${OUTPUT_DIR}/sendWithTime.exe \
 	$(INCLUDE_PARAMS) \
 	$(LIBS)
@@ -62,7 +63,7 @@ sendWithTime:
 # build the client example of the socketStream
 clientExample:
 	$(info $(greenC)$(boldT) --> building socketStream client example $(yellowC)==>$(reset))
-	@$(CXX) $(CXXFLAGS) $(SRC_DIR)/example.cpp $(SRC_DIR)/socketStream.cpp $(SRC_DIR)/md5.cpp \
+	@$(CXX) $(CXXFLAGS) $(EXAMPLES_DIR)/example.cpp $(SRC_DIR)/socketStream.cpp $(SRC_DIR)/md5.cpp \
 	-o ${OUTPUT_DIR}/clientExample.exe \
 	$(INCLUDE_PARAMS) \
 	$(LIBS)
@@ -74,7 +75,7 @@ clientExample:
 # build the run diagnostics example
 runDiagnostics:
 	$(info $(greenC)$(boldT) --> building runDiagnostics client $(yellowC)==>$(reset))
-	@$(CXX) $(CXXFLAGS) $(SRC_DIR)/runDiagnostics.cpp $(SRC_DIR)/socketStream.cpp $(SRC_DIR)/jsonWrapper.cpp $(SRC_DIR)/md5.cpp \
+	@$(CXX) $(CXXFLAGS) $(EXAMPLES_DIR)/runDiagnostics.cpp $(SRC_DIR)/socketStream.cpp $(SRC_DIR)/jsonWrapper.cpp $(SRC_DIR)/md5.cpp \
 	-o ${OUTPUT_DIR}/runDiagnostics.exe \
 	$(INCLUDE_PARAMS) \
 	$(LIBS)
@@ -86,7 +87,7 @@ runDiagnostics:
 # build the example of the jsonWrapper
 jsonWrapperExample:
 	$(info $(greenC)$(boldT) --> building jsonWrapper example $(yellowC)==>$(reset))
-	@$(CXX) $(CXXFLAGS) $(SRC_DIR)/jsonWrapper_example.cpp $(SRC_DIR)/socketStream.cpp $(SRC_DIR)/jsonWrapper.cpp $(SRC_DIR)/md5.cpp \
+	@$(CXX) $(CXXFLAGS) $(EXAMPLES_DIR)/jsonWrapper_example.cpp $(SRC_DIR)/socketStream.cpp $(SRC_DIR)/jsonWrapper.cpp $(SRC_DIR)/md5.cpp \
 	-o ${OUTPUT_DIR}/jsonWrapperExample.exe \
 	$(INCLUDE_PARAMS) \
 	$(LIBS)
