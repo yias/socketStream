@@ -28,6 +28,12 @@ int main(int argc, char **argv){
     // create an sockectStream object with the selected server IP address and set it up as a server
     socketStream svrHdlr(srvIP, svrPort, SOCKETSTREAM::SOCKETSTREAM_SERVER);
 
+    // set the size of the buffer
+    // svrHdlr.setBufferSize(64);
+
+    // set the number of connections
+    svrHdlr.setNumberOfConnections(5);
+
     // initialize socketStream
     svrHdlr.initialize_socketStream();
 
@@ -59,12 +65,12 @@ int main(int argc, char **argv){
                 mat_double = testObj.getField<rapidJson_types::Mat2DD>(std::string("data"));
 
                 // print the message to the console (uncomment the folling lines to print to the console)
-                // std::cout << "The value of " << std::string("data") << " is: " << std::endl;
-                // for (int i= 0; i< (int)mat_double.size(); i++){
-                //     for (int j=0; j< (int)mat_double[i].size(); j++){
-                //         std::cout << mat_double[i][j] << ((j== ((int)mat_double[i].size()-1)) ? "\n": ", " );
-                //     }
-                // }
+                std::cout << "The value of " << std::string("data") << " is: " << std::endl;
+                for (int i= 0; i< (int)mat_double.size(); i++){
+                    for (int j=0; j< (int)mat_double[i].size(); j++){
+                        std::cout << mat_double[i][j] << ((j== ((int)mat_double[i].size()-1)) ? "\n": ", " );
+                    }
+                }
 
                 // // the message in a raw (string) format
                 // std::cout << msg << std::endl;

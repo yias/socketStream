@@ -82,7 +82,7 @@ namespace SOCKETSTREAM{
     const int SOCKETSTREAM_SERVER = 1;
     const int SOCKETSTREAM_CLIENT = 0;
     const int SOCKETSTREAM_CLIENT_LISTENER = -1;
-    const int MAX_NB_CONNECTIONS = 10;   
+    const int MAX_NB_CONNECTIONS = 100;   
 }
 
 
@@ -98,6 +98,7 @@ class socketStream{
     #endif
 
     int mode;
+    unsigned int nb_connections;
 
     
     SOCKET ConnectSocket, ListenSocket;
@@ -196,6 +197,8 @@ public:
     int make_connection();                                                                                                      // connect with the server
 
     int setBufferSize(unsigned int bufferSize);
+
+    int setNumberOfConnections(unsigned int nbConnections);
 
     int initialize_msgStruct(std::vector<std::string> fields);                                                                  // setting the fields of the message 
 

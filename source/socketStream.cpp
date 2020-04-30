@@ -61,6 +61,8 @@ socketStream::socketStream(void){
 
     mode = SOCKETSTREAM::SOCKETSTREAM_CLIENT;
 
+    nb_connections = 10;
+
     ConnectSocket = INVALID_SOCKET;
 
     ListenSocket = INVALID_SOCKET;                      // for the server
@@ -116,6 +118,8 @@ socketStream::socketStream(void){
 
 socketStream::socketStream(const char* svrIPAddress){
 
+    nb_connections = 10;
+
     mode = SOCKETSTREAM::SOCKETSTREAM_CLIENT;
 
     ConnectSocket = INVALID_SOCKET;
@@ -169,6 +173,8 @@ socketStream::socketStream(const char* svrIPAddress){
 
 socketStream::socketStream(const char* svrIPAddress, int srvPosrt, const int socketStreamMode){
 
+    nb_connections = 10;
+
     mode = socketStreamMode;
 
     ConnectSocket = INVALID_SOCKET;
@@ -214,13 +220,13 @@ socketStream::socketStream(const char* svrIPAddress, int srvPosrt, const int soc
     if(isServer){
         hints.ai_flags = AI_PASSIVE;                   // for the server
         serverRunning = false;
-        clientsSockets = std::vector <SOCKET> (SOCKETSTREAM::MAX_NB_CONNECTIONS);
-        clientsAddresses = std::vector <std::string> (SOCKETSTREAM::MAX_NB_CONNECTIONS);
-        firstMsgReceived = std::vector <bool> (SOCKETSTREAM::MAX_NB_CONNECTIONS, false);
-        isNewMsgReceived = std::vector <bool> (SOCKETSTREAM::MAX_NB_CONNECTIONS, false);
-        connetionSlots = std::vector <bool> (SOCKETSTREAM::MAX_NB_CONNECTIONS, false);
-        clientIDs = std::vector <std::string> (SOCKETSTREAM::MAX_NB_CONNECTIONS);
-        clientMsgs = std::vector <std::string> (SOCKETSTREAM::MAX_NB_CONNECTIONS);
+        clientsSockets = std::vector <SOCKET> (nb_connections);
+        clientsAddresses = std::vector <std::string> (nb_connections);
+        firstMsgReceived = std::vector <bool> (nb_connections, false);
+        isNewMsgReceived = std::vector <bool> (nb_connections, false);
+        connetionSlots = std::vector <bool> (nb_connections, false);
+        clientIDs = std::vector <std::string> (nb_connections);
+        clientMsgs = std::vector <std::string> (nb_connections);
     } 
 
     isComActive = false;
@@ -495,6 +501,7 @@ int socketStream::make_connection(){
 
 }
 
+
 int socketStream::setBufferSize(unsigned int newBufferSize){
 
     bufferSize = newBufferSize;
@@ -503,7 +510,32 @@ int socketStream::setBufferSize(unsigned int newBufferSize){
 
     minMsgSize = std::strlen(msg_idf) + headerSize + std::strlen(endMSG) + std::to_string(bufferSize).length()+1;
 
+    std::cout << "[socketStream] Buffer size is set to " << bufferSize << std::endl;
+
     return 0;
+}
+
+
+int socketStream::setNumberOfConnections(unsigned int nbConnections){
+
+    if (nbConnections>SOCKETSTREAM::MAX_NB_CONNECTIONS){
+        std::cout << "[socketStream] The number of connections to set exceeds the maximum number of connections (" << SOCKETSTREAM::MAX_NB_CONNECTIONS << ")" << std::endl;
+        std::cout << "[socketStream] Continue with the default number of connections (" << nb_connections << ")" << std::endl;
+        return -1;
+    }else{
+        nb_connections = nbConnections;
+        clientsSockets = std::vector <SOCKET> (nb_connections);
+        clientsAddresses = std::vector <std::string> (nb_connections);
+        firstMsgReceived = std::vector <bool> (nb_connections, false);
+        isNewMsgReceived = std::vector <bool> (nb_connections, false);
+        connetionSlots = std::vector <bool> (nb_connections, false);
+        clientIDs = std::vector <std::string> (nb_connections);
+        clientMsgs = std::vector <std::string> (nb_connections);
+        std::cout << "[socketStream] Number of connections is set to " << nb_connections << std::endl;
+        return 0;
+    }
+
+    
 }
 
 int socketStream::set_clientName(std::string cID){
@@ -1551,6 +1583,7 @@ std::string socketStream::get_latest(){
     }
     return l_msg;
 }
+
 
 std::string socketStream::get_latest(std::string cltName, bool* newMSG){
     std::string l_msg = "";

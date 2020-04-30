@@ -27,6 +27,9 @@ int main(int argc, char **argv){
     // create an sockectStream object with the selected server IP address 
     socketStream socketHdlr(srvIP);
 
+    // set the size of the buffer
+    // socketHdlr.setBufferSize(64);
+
     // decalre a variable as a vector of strings for containing the fields of the message
     std::vector <std::string> test_fields;
 

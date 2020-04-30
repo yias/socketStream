@@ -73,7 +73,7 @@ int main(int argc, char **argv){
         std::string logfileName = "logfiles/diagnostics_logfile_" + covString +".txt";
     #endif
 
-    // declase an ofstream object for writing to file
+    // declare an ofstream object for writing to file
     std::ofstream wfile;
     wfile.open(logfileName);
     if(!wfile.is_open()){
@@ -97,6 +97,9 @@ int main(int argc, char **argv){
 
     // set client's name
     socketHdlr.set_clientName("diagnostics");
+
+    // set the size of the buffer
+    // socketHdlr.setBufferSize(64);
 
     // decalre a variable as a vector of strings for containing the fields of the message
     std::vector <std::string> test_rjson;
