@@ -12,6 +12,7 @@
 #include "socketStream.h"
 #include "jsonWrapper.hpp"
 
+
 int main(int argc, char **argv){
     
     // define the variable that holds the server IP. In this case, the server would be a local server.
@@ -96,7 +97,7 @@ int main(int argc, char **argv){
         if(svrHdlr.socketStream_ok()){
             svrHdlr.sendMSg2Client(0);
         }
-
+        std::this_thread::sleep_for(std::chrono::microseconds(1));
         // check if a key is hit on the keyboard
         // if yes, check if this key is "q"
         // if yes, break the loob, otherwise continue

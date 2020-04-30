@@ -238,7 +238,7 @@ public:
 
     int runServer();
 
-    std::string get_latest();
+    std::string get_latest(bool* newMSG);
     std::string get_latest(std::string cltName, bool* newMSG);
 
     bool socketStream_ok();
