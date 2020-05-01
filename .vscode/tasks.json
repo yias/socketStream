@@ -1,6 +1,4 @@
 {
-    // See https://go.microsoft.com/fwlink/?LinkId=733558 
-    // for the documentation about the tasks.json format
     "version": "2.0.0",
     "tasks": [
         {
@@ -8,12 +6,16 @@
             "label": "g++ build jsonWrapper example on Linux",
             "command": "g++",
             "args": [
-                "-g", "${workspaceFolder}/examples/jsonWrapper_example.cpp",
+                "-g",
+                "${workspaceFolder}/examples/jsonWrapper_example.cpp",
                 "${workspaceFolder}/src/jsonWrapper.cpp",
-                "-o", "${workspaceFolder}//build/jsonWrapperExample.exe",
+                "-o",
+                "${workspaceFolder}//build/jsonWrapperExample.exe",
                 "-O3",
-                "-I", "${env:CPP_DEPENDENCIES}/rapidjson/include",
-                "-I", "${workspaceFolder}/include"
+                "-I",
+                "${env:CPP_DEPENDENCIES}/rapidjson/include",
+                "-I",
+                "${workspaceFolder}/include"
             ],
             "problemMatcher": [
                 "$gcc"
@@ -28,13 +30,17 @@
             "label": "g++ build jsonWrapper example on Windows",
             "command": "g++.exe",
             "args": [
-                "-g", "${workspaceFolder}\\examples\\jsonWrapper_example.cpp",
+                "-g",
+                "${workspaceFolder}\\examples\\jsonWrapper_example.cpp",
                 "${workspaceFolder}\\src\\jsonWrapper.cpp",
-                "-o", "${workspaceFolder}\\build\\jsonWrapperExample.exe",
+                "-o",
+                "${workspaceFolder}\\build\\jsonWrapperExample.exe",
                 "-O3",
                 "-lws2_32",
-                "-I", "${env:CPP_DEPENDENCIES}\\rapidjson\\include",
-                "-I", "${workspaceFolder}\\include"
+                "-I",
+                "${env:CPP_DEPENDENCIES}\\rapidjson\\include",
+                "-I",
+                "${workspaceFolder}\\include"
             ],
             "problemMatcher": [
                 "$gcc"
@@ -49,14 +55,18 @@
             "label": "build run diagnostics on Linux",
             "command": "g++",
             "args": [
-                "-g", "${workspaceFolder}/examples/runDiagnostics.cpp",
+                "-g",
+                "${workspaceFolder}/examples/runDiagnostics.cpp",
                 "${workspaceFolder}/src/socketStream.cpp",
                 "${workspaceFolder}/src/md5.cpp",
-                "-o", "${workspaceFolder}/build/runDiagnostics.exe",
+                "-o",
+                "${workspaceFolder}/build/runDiagnostics.exe",
                 "-O3",
                 "-lpthread",
-                "-I", "${CPP_DEPENDENCIES}/rapidjson/include",
-                "-I", "${workspaceFolder}/include"
+                "-I",
+                "${CPP_DEPENDENCIES}/rapidjson/include",
+                "-I",
+                "${workspaceFolder}/include"
             ],
             "problemMatcher": [
                 "$gcc"
@@ -71,14 +81,18 @@
             "label": "g++ build example on Linux",
             "command": "g++",
             "args": [
-                "-g", "${workspaceFolder}/examples/example.cpp",
+                "-g",
+                "${workspaceFolder}/examples/example.cpp",
                 "${workspaceFolder}/src/socketStream.cpp",
                 "${workspaceFolder}/src/md5.cpp",
-                "-o", "${workspaceFolder}/build/clientExample.exe",
+                "-o",
+                "${workspaceFolder}/build/clientExample.exe",
                 "-O3",
                 "-lpthread",
-                "-I", "${CPP_DEPENDENCIES}/rapidjson/include",
-                "-I", "${workspaceFolder}/include"
+                "-I",
+                "${CPP_DEPENDENCIES}/rapidjson/include",
+                "-I",
+                "${workspaceFolder}/include"
             ],
             "problemMatcher": [
                 "$gcc"
@@ -93,14 +107,18 @@
             "label": "g++ build sendingWithTime on Linux",
             "command": "g++",
             "args": [
-                "-g", "${workspaceFolder}/examples/sendingWithTime.cpp",
+                "-g",
+                "${workspaceFolder}/examples/sendingWithTime.cpp",
                 "${workspaceFolder}/src/socketStream.cpp",
                 "${workspaceFolder}/src/md5.cpp",
-                "-o", "${workspaceFolder}/build/sendWithTime.exe",
+                "-o",
+                "${workspaceFolder}/build/sendWithTime.exe",
                 "-O3",
                 "-lpthread",
-                "-I", "${CPP_DEPENDENCIES}/rapidjson/include",
-                "-I", "${workspaceFolder}/include"
+                "-I",
+                "${CPP_DEPENDENCIES}/rapidjson/include",
+                "-I",
+                "${workspaceFolder}/include"
             ],
             "problemMatcher": [
                 "$gcc"
@@ -130,15 +148,46 @@
             "label": "g++ build of the server example on Linux",
             "command": "/usr/bin/g++",
             "args": [
-                "-g", "${workspaceFolder}/examples/serverExample.cpp",
+                "-g",
+                "${workspaceFolder}/examples/serverExample.cpp",
                 "${workspaceFolder}/src/socketStream.cpp",
                 "${workspaceFolder}/src/jsonWrapper.cpp",
                 "${workspaceFolder}/src/md5.cpp",
-                "-o", "${workspaceFolder}/build/serverExample.exe",
+                "-o",
+                "${workspaceFolder}/build/serverExample.exe",
                 "-O3",
                 "-lpthread",
-                "-I", "${CPP_DEPENDENCIES}/rapidjson/include",
-                "-I", "${workspaceFolder}/include"
+                "-I",
+                "${CPP_DEPENDENCIES}/rapidjson/include",
+                "-I",
+                "${workspaceFolder}/include"
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "type": "shell",
+            "label": "g++ build of the client listener example on Linux",
+            "command": "/usr/bin/g++",
+            "args": [
+                "-g",
+                "${workspaceFolder}/examples/clientListenerExample.cpp",
+                "${workspaceFolder}/src/socketStream.cpp",
+                "${workspaceFolder}/src/jsonWrapper.cpp",
+                "${workspaceFolder}/src/md5.cpp",
+                "-o",
+                "${workspaceFolder}/build/clientListener.exe",
+                "-O3",
+                "-lpthread",
+                "-I",
+                "${CPP_DEPENDENCIES}/rapidjson/include",
+                "-I",
+                "${workspaceFolder}/include"
             ],
             "problemMatcher": [
                 "$gcc"
@@ -153,14 +202,18 @@
             "label": "g++ build sendingWithTime file on Windows",
             "command": "g++.exe",
             "args": [
-                "-g", "${workspaceFolder}\\examples\\sendingWithTime.cpp",
+                "-g",
+                "${workspaceFolder}\\examples\\sendingWithTime.cpp",
                 "${workspaceFolder}\\src\\socketStream.cpp",
                 "${workspaceFolder}\\src\\md5.cpp",
-                "-o", "${workspaceFolder}\\build\\sendWithTime.exe",
+                "-o",
+                "${workspaceFolder}\\build\\sendWithTime.exe",
                 "-O3",
                 "-lws2_32",
-                "-I", "${env:CPP_DEPENDENCIES}\\rapidjson\\include",
-                "-I", "${workspaceFolder}\\include"
+                "-I",
+                "${env:CPP_DEPENDENCIES}\\rapidjson\\include",
+                "-I",
+                "${workspaceFolder}\\include"
             ],
             "problemMatcher": [
                 "$gcc"
@@ -175,14 +228,18 @@
             "label": "g++ build diagnostics file on Windows",
             "command": "g++.exe",
             "args": [
-                "-g", "${workspaceFolder}\\examples\\runDiagnostics.cpp",
+                "-g",
+                "${workspaceFolder}\\examples\\runDiagnostics.cpp",
                 "${workspaceFolder}\\src\\socketStream.cpp",
                 "${workspaceFolder}\\src\\md5.cpp",
-                "-o", "${workspaceFolder}\\build\\testrunDiagnostics.exe",
+                "-o",
+                "${workspaceFolder}\\build\\testrunDiagnostics.exe",
                 "-O3",
                 "-lws2_32",
-                "-I", "${env:CPP_DEPENDENCIES}\\rapidjson\\include",
-                "-I", "${workspaceFolder}\\include"
+                "-I",
+                "${env:CPP_DEPENDENCIES}\\rapidjson\\include",
+                "-I",
+                "${workspaceFolder}\\include"
             ],
             "problemMatcher": [
                 "$gcc"
@@ -197,8 +254,10 @@
             "label": "cl.exe build server example (Windows)",
             "command": "cl.exe",
             "args": [
-                "-I", "${env:CPP_DEPENDENCIES}\\rapidjson\\include",
-                "-I", "${workspaceFolder}\\include",
+                "-I",
+                "${env:CPP_DEPENDENCIES}\\rapidjson\\include",
+                "-I",
+                "${workspaceFolder}\\include",
                 "/Zi",
                 "/EHsc",
                 "/Fe:",
@@ -221,8 +280,10 @@
             "label": "cl.exe build send messages from server exampple (Windows)",
             "command": "cl.exe",
             "args": [
-                "-I", "${env:CPP_DEPENDENCIES}\\rapidjson\\include",
-                "-I", "${workspaceFolder}\\include",
+                "-I",
+                "${env:CPP_DEPENDENCIES}\\rapidjson\\include",
+                "-I",
+                "${workspaceFolder}\\include",
                 "/Zi",
                 "/EHsc",
                 "/Fe:",
@@ -245,8 +306,10 @@
             "label": "client listens messages from server exampple (Windows)",
             "command": "cl.exe",
             "args": [
-                "-I", "${env:CPP_DEPENDENCIES}\\rapidjson\\include",
-                "-I", "${workspaceFolder}\\include",
+                "-I",
+                "${env:CPP_DEPENDENCIES}\\rapidjson\\include",
+                "-I",
+                "${workspaceFolder}\\include",
                 "/Zi",
                 "/EHsc",
                 "/Fe:",
@@ -269,8 +332,10 @@
             "label": "cl build example file (Windows)",
             "command": "cl.exe",
             "args": [
-                "-I", "${env:CPP_DEPENDENCIES}\\rapidjson\\include",
-                "-I", "${workspaceFolder}\\include",
+                "-I",
+                "${env:CPP_DEPENDENCIES}\\rapidjson\\include",
+                "-I",
+                "${workspaceFolder}\\include",
                 "/Zi",
                 "/EHsc",
                 "/Fe:",
@@ -292,8 +357,10 @@
             "label": "cl build diagnostics file (Windows)",
             "command": "cl.exe",
             "args": [
-                "-I", "${env:CPP_DEPENDENCIES}\\rapidjson\\include",
-                "-I", "${workspaceFolder}\\include",
+                "-I",
+                "${env:CPP_DEPENDENCIES}\\rapidjson\\include",
+                "-I",
+                "${workspaceFolder}\\include",
                 "/Zi",
                 "/EHsc",
                 "/Fe:",
@@ -308,6 +375,20 @@
             "group": {
                 "kind": "build",
                 "isDefault": true
+            }
+        },
+        {
+            "type": "shell",
+            "label": "g++ build active file",
+            "command": "/usr/bin/g++",
+            "args": [
+                "-g",
+                "${file}",
+                "-o",
+                "${fileDirname}/${fileBasenameNoExtension}"
+            ],
+            "options": {
+                "cwd": "/usr/bin"
             }
         }
     ]

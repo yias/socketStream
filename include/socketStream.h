@@ -111,8 +111,16 @@ class socketStream{
     std::vector <std::string> clientIDs;
     std::vector <std::string> clientMsgs;
 
+    std::vector <std::thread> connectionThreads;
+    std::thread listenerThread;
+    std::thread watcherThread;
     std::mutex threadMutex;
+    // std::unique_lock threadMutex;
 
+    std::vector <bool> warningsWatcher;
+    bool giveWarning;
+
+    
     struct addrinfo *result, *ptr, hints;
 
     char recvbuf[SOCKETSTREAM::DEFAULT_BUFLEN];
@@ -171,6 +179,10 @@ class socketStream{
     int findEmptySlot();
 
     int sendEndCommMsg(unsigned int clID);
+
+    int connectionsWatcher();
+
+    int falseConnection();
 
     #ifdef _WIN32
 

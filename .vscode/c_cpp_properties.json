@@ -6,7 +6,7 @@
                 "${workspaceFolder}/**",
                 "${CPP_DEPENDENCIES}\\rapidjson\\include",
                 "${workspaceFolder}\\include",
-                "${workspaceFolder}\\source"
+                "${workspaceFolder}\\src"
             ],
             "defines": [
                 "_DEBUG",
@@ -25,7 +25,8 @@
                 "${workspaceFolder}/**",
                 "${CPP_DEPENDENCIES}/rapidjson/include",
                 "${workspaceFolder}/include",
-                "${workspaceFolder}/source"
+                "${workspaceFolder}/src",
+                "${workspaceFolder}/examples"
             ],
             "defines": [
                 "_DEBUG",

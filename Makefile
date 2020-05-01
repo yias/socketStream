@@ -32,7 +32,7 @@ EXAMPLES_DIR = ./examples
 LIBS = -lpthread
 
 
-test: makeOutDir serverExample sendWithTime
+test: makeOutDir serverExample sendWithTime serverExampleSendMsg clientListener
 
 all: makeOutDir serverExample sendWithTime clientExample runDiagnostics jsonWrapperExample serverExampleSendMsg clientListener
 

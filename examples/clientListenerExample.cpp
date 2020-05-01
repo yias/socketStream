@@ -128,8 +128,10 @@ int main(int argc, char **argv){
                 // }
             }
 
-            socketHdlr.sendMSg();
+            // socketHdlr.sendMSg();
             
+        }else{
+            break;
         }
 
 
