@@ -1296,7 +1296,7 @@ int socketStream::closeCommunication(){
             // }
             #ifdef _WIN32
                 iResult = shutdown(ListenSocket, SD_SEND);
-                if (iResult == SOCKET_ERROR) {
+                if ((iResult == SOCKET_ERROR) && (WSAGetLastError() != 10057)) {
                     std::cerr << "[socketStream] Shutdown failed with error: " << WSAGetLastError() << std::endl;
                     closesocket(ListenSocket);
                     WSACleanup();
@@ -1305,7 +1305,7 @@ int socketStream::closeCommunication(){
             #else
                 iResult = shutdown(ListenSocket, SD_SEND);
                 if (iResult < 0){
-                    std::cerr << "[socketStream] 5Shutdown failed with error: " << strerror(errno) << std::endl;
+                    std::cerr << "[socketStream] Shutdown failed with error: " << strerror(errno) << std::endl;
                     iResult = close(ListenSocket);
                     return -2;
                 }
@@ -1376,7 +1376,7 @@ int socketStream::closeCommunication(){
             #else
                 iResult = shutdown(ConnectSocket, SD_SEND);
                 if (iResult < 0){
-                    std::cerr << "[socketStream] 5Shutdown failed with error: " << strerror(errno) << std::endl;
+                    std::cerr << "[socketStream] Shutdown failed with error: " << strerror(errno) << std::endl;
                     iResult = close(ConnectSocket);
                     return -2;
                 }
@@ -1529,7 +1529,7 @@ int socketStream::wait_connections(){
         if(slotNumber < 0){
             iResult = shutdown(ClientSocket, SD_SEND);
             if (iResult == SOCKET_ERROR) {
-                std::cerr << "[socketStream] 1Shutdown failed with error:" ;
+                std::cerr << "[socketStream] Shutdown failed with error:" ;
                 #ifdef _WIN32
                     std::cerr << WSAGetLastError();
                     // WSACleanup();
@@ -1552,7 +1552,7 @@ int socketStream::wait_connections(){
                 threadMutex.unlock();
                 iResult = shutdown(ClientSocket, SD_SEND);
                 if (iResult == SOCKET_ERROR) {
-                    std::cerr << "[socketStream] 2Shutdown failed with error:" ;
+                    std::cerr << "[socketStream] Shutdown failed with error:" ;
                     #ifdef _WIN32
                         std::cerr << WSAGetLastError();
                         WSACleanup();
@@ -1700,7 +1700,7 @@ int socketStream::runReceiver(int connectionID){
             // the connection is terminated from the other end
             iResutlReceiver = shutdown(clntSocket, SD_SEND);
             if (iResutlReceiver == SOCKET_ERROR) {
-                std::cerr << "[socketStream] 3Shutdown failed with error:" ;
+                std::cerr << "[socketStream] Shutdown failed with error:" ;
                 #ifdef _WIN32
                     std::cerr << WSAGetLastError();
                     // WSACleanup();
@@ -1759,7 +1759,7 @@ int socketStream::runReceiver(int connectionID){
         // std::cout << "test 4 on receiver\n";
         iResutlReceiver = shutdown(clientsSockets[connectionID], SD_SEND);
         if (iResult == SOCKET_ERROR) {
-            std::cerr << "[socketStream] 4Shutdown failed with error:" ;
+            std::cerr << "[socketStream] Shutdown failed with error:" ;
             #ifdef _WIN32
                 std::cerr << WSAGetLastError();
                 // WSACleanup();
