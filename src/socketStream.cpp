@@ -918,7 +918,25 @@ int socketStream::printMSGcontents(){
                     if(itr->value.IsInt64()){
                         std::cout << itr->name.GetString() << " = " << itr->value.GetInt64() << std::endl;
                     }else{
-                        std::cout << itr->name.GetString() << " = " << itr->value.GetInt() << std::endl;
+                        if(itr->value.IsInt()){
+                            std::cout << itr->name.GetString() << " = " << itr->value.GetInt() << std::endl;
+                        }else{
+                            if(itr->value.IsUint()){
+                                std::cout << itr->name.GetString() << " = " << itr->value.GetUint() << std::endl;
+                            }else{
+                                if(itr->value.IsUint64()){
+                                    std::cout << itr->name.GetString() << " = " << itr->value.GetUint64() << std::endl;
+                                }else{
+                                    if(itr->value.IsDouble()){
+                                        std::cout << itr->name.GetString() << " = " << itr->value.GetDouble() << std::endl;
+                                    }else{
+                                        std::cout << "Unknown type of number" << std::endl;
+                                    }
+                                }
+                            }
+
+                        }
+                        
                     }
                 }
                 break;
