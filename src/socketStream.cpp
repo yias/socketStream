@@ -651,6 +651,39 @@ int socketStream::updateMSG(std::string field, const char *value){
     return 0;
 }
 
+int socketStream::updateMSG(std::string field, int value){
+
+    if(msgInitilized){
+        if(dDoc.HasMember(field.c_str())){
+            dDoc[field.c_str()].SetInt(value);
+        }else{
+            std::cerr << "[socketStream] Not valid field name" << std::endl;
+        }
+    }else{
+        std::cerr << "[socketStream] The message struct is NOT initialized" << std::endl;
+        return -1;
+    }
+
+    return 0;
+}
+
+
+int socketStream::updateMSG(std::string field, double value){
+
+    if(msgInitilized){
+        if(dDoc.HasMember(field.c_str())){
+            dDoc[field.c_str()].SetDouble(value);
+        }else{
+            std::cerr << "[socketStream] Not valid field name" << std::endl;
+        }
+    }else{
+        std::cerr << "[socketStream] The message struct is NOT initialized" << std::endl;
+        return -1;
+    }
+
+    return 0;
+}
+
 
 int socketStream::updateMSG(std::string field, int *value, int arraylength){
 

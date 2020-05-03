@@ -225,6 +225,8 @@ public:
     int set_clientName(std::string cID);
 
     int updateMSG(std::string field, const char *value);                                                                        // update the specific field of the message (for strings)
+    int updateMSG(std::string field, int value);
+    int updateMSG(std::string field, double value);
     int updateMSG(std::string field, int *value, int arraylength);                                                              // update the specific field of the message (for array of integers)
     int updateMSG(std::string field, double *value, int arraylength);                                                           // update the specific field of the message (for array of doubles)
     int updateMSG(std::string field, std::vector <int> value);                                                                  // update the specific field of the message (for vector of integers)
