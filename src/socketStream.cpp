@@ -1128,6 +1128,7 @@ int socketStream::sendMSg2Client(unsigned int clID){
         dDoc.Accept(writer);
 
         msg2send = str_buffer.GetString();
+        
 
         // introduce the lenght of the string in the header of the file
         std::ostringstream i2s;
@@ -1152,6 +1153,7 @@ int socketStream::sendMSg2Client(unsigned int clID){
 
         // compose the final message
         final_msg = msg_idf + msgHeader + std::to_string(int(useHashKey)) + msgOHstring + msg2send + std::string(msgOverhead, ' ') + endMSG;
+        // std::cout << final_msg << std::endl;
 
         // send the message
         if(connetionSlots[clID] && serverRunning){
@@ -1708,7 +1710,12 @@ int socketStream::runReceiver(int connectionID){
         memcpy(tmp_buf, clientRecvbuf, strlen(msg_idf));
         if(strcmp(tmp_buf, msg_idf)==0){
             memcpy(tmp_buf, clientRecvbuf + strlen(msg_idf), strlen(clientRecvbuf) - strlen(msg_idf));
+            // for(int ii=0; ii< strlen(tmp_buf); ii++){
+            //     std::cout << tmp_buf[ii];
+            // }
+            // std::cout << std::endl;
             fullmsg = std::string(tmp_buf);
+            // std::cout << fullmsg << std::endl;
             while(true){
                 // threadMutex.lock();
                 if(mode == SOCKETSTREAM::SOCKETSTREAM_CLIENT){
@@ -1725,7 +1732,7 @@ int socketStream::runReceiver(int connectionID){
                 iResutlReceiver = recv(clntSocket, clientRecvbuf, bufferSize, 0);
                 // threadMutex.unlock();
                 if(iResutlReceiver<0){
-                    std::cerr << "[socketStream] 2Unable to receive data" << std::endl;
+                    std::cerr << "[socketStream] Unable to receive data" << std::endl;
                 }
                 
                 
@@ -1734,9 +1741,13 @@ int socketStream::runReceiver(int connectionID){
                 memset(clientRecvbuf, 0, sizeof(clientRecvbuf));
                 if(fullmsg.substr(fullmsg.length()-strlen(endMSG), strlen(endMSG)).compare(endMSG)==0){
                     // std::cout << "test 2 on receiver\n";
+                    // std::cout << fullmsg << std::endl;
                     validMsg = messageExtractor(fullmsg, &msgValidity);
+                    // std::cout << validMsg << std::endl;
+                    // std::cout << msgValidity << std::endl;
                     if(msgValidity){
                         threadMutex.lock();
+                        clientMsgs[connectionID] = "";
                         clientMsgs[connectionID] = validMsg;
                         if(!isNewMsgReceived[connectionID]){
                             isNewMsgReceived[connectionID] = true;
@@ -1913,30 +1924,32 @@ std::string socketStream::messageExtractor(std::string fullmsg, bool* msgValidit
 }
 
 std::string socketStream::get_latest(bool* newMSG){
+    std::lock_guard<std::mutex> lck (threadMutex);
     std::string l_msg = clientMsgs[0];
     *newMSG = isNewMsgReceived[0];
     if(firstMsgReceived[0]){
         if(isNewMsgReceived[0]){
-            threadMutex.lock();
+            
             isNewMsgReceived[0] = false;
-            threadMutex.unlock();
+            
         }
     }
+    // threadMutex.unlock();
     return l_msg;
 }
 
 
 std::string socketStream::get_latest(std::string cltName, bool* newMSG){
     // std::string l_msg = "";
-    
+    std::lock_guard<std::mutex> lck (threadMutex);
     auto srch_result = std::find(std::begin(clientIDs), std::end(clientIDs), cltName);
     if(srch_result != std::end(clientIDs)){
         int idx= std::distance(clientIDs.begin(),srch_result);
         *newMSG = isNewMsgReceived[idx];
         if(isNewMsgReceived[idx]){ 
-            threadMutex.lock();
+            
             isNewMsgReceived[idx] = false;
-            threadMutex.unlock();
+            
         }
 
         return clientMsgs[idx];

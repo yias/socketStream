@@ -23,12 +23,14 @@ jsonWrapper::jsonWrapper(std::string jsonString){
 
     if (jsonDoc.Parse(jsonString.c_str()).HasParseError()){
         std::cerr << "[jsonWrapper] Parsing rapidjson error. Unable to parse json string" << std::endl; 
+        std::cout << jsonString << std::endl;
     }
 
     if(jsonDoc.IsObject()){
         isobjectok = true;
     }else{
         isobjectok = false;
+        std::cout << "is not an objsect\n";
     }
 
         
