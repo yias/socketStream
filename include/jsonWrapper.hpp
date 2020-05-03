@@ -87,7 +87,7 @@ template<>
 struct jsonWrapper::getValueHelper<rapidJson_types::Int>{
     static rapidJson_types::Int getVal(void *usrPtr, std::string fldName){
         jsonWrapper *tmp = static_cast<jsonWrapper *>(usrPtr);
-        return (int)(tmp->jsonDoc[fldName.c_str()].GetDouble());
+        return (int)(tmp->jsonDoc[fldName.c_str()].GetInt());
     }
 };
 
