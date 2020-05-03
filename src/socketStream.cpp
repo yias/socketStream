@@ -853,17 +853,40 @@ int socketStream::printArray(rapidjson::Value::ConstMemberIterator itr){
     
     std::cout << itr->name.GetString() << " = [";
     for(rapidjson::SizeType j =0 ; j<itr->value.Size(); j++){
-        if(itr->value.IsArray()){
+        if(itr->value[j].IsArray()){
             std::cout << "[";
             for(rapidjson::SizeType k =0 ; k<itr->value[j].Size()-1; k++){
-                std::cout << itr->value[j][k].GetDouble() << ", ";
+                if(itr->value[j][k].IsDouble()){
+                    std::cout << itr->value[j][k].GetDouble() << ", ";
+                }else{
+                    if(itr->value[j][j].IsInt()){
+                        std::cout << itr->value[j][k].GetInt() << ", ";
+                    }else{
+                        if(itr->value[j][j].IsUint()){
+                            std::cout << itr->value[j][k].GetUint() << ", ";
+                        }
+                    }
+                }
             }
-             std::cout << itr->value[j][itr->value[j].Size()-1].GetDouble() << "]";
+            std::cout << itr->value[j][itr->value[j].Size()-1].GetDouble() << "]";
             if(j!=itr->value.Size()-1){
                std::cout << std::endl; 
             }
         }else{
-            std::cout << itr->value[j].GetDouble() << ", ";
+            if(itr->value[j].IsDouble()){
+                std::cout << itr->value[j].GetDouble();
+            }else{
+                if(itr->value[j].IsInt()){
+                    std::cout << itr->value[j].GetInt();
+                }else{
+                     if(itr->value[j].IsUint()){
+                         std::cout << itr->value[j].GetUint();
+                     }
+                }
+            }
+            if(j!=itr->value.Size()-1){
+                std::cout << ", ";
+            }
         }
     }
     std::cout << "]" << std::endl; 
