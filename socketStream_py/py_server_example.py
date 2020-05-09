@@ -20,7 +20,7 @@ def main(args):
     counter=0
     while(True):
         try:
-            if sockHndlr.sockectStream_ok():
+            if sockHndlr.socketStream_ok():
                 tt=sockHndlr.get_latest()
                 # print(tt)
                 test=tt.get("data")

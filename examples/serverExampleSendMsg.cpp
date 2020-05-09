@@ -95,7 +95,8 @@ int main(int argc, char **argv){
     while(true){
 
         if(svrHdlr.socketStream_ok()){
-            svrHdlr.sendMSg2Client("listener");
+            // svrHdlr.sendMSg2Client("listener");
+            svrHdlr.sendMSg2All();
         }
         std::this_thread::sleep_for(std::chrono::microseconds(1000));
         // check if a key is hit on the keyboard

@@ -89,11 +89,18 @@ class socketStream():
             self.firstValueReceived = False
         else:
             print("[socketStream] Client mode")
+            self.ReceiverThread = threading.Thread(target=self.runReceiver, args = ())
+            self.ReceiverThread.daemon = True
+            self.lock = threading.Lock()
+            self.firstValueReceived = False
+            self.isNewMSG = False
             self.serverRunnig = False
 
         self.hc_check=hashlib.md5()
 
         self.msg_data = {}
+
+        self.received_msg = {}
 
         
 
@@ -208,7 +215,7 @@ class socketStream():
 
             ping_times[i]=time.time()-t_time0
             t_time0=time.time()
-            msg_validity, tr_msg = self.msgExtractor(msg_full[len(self.msg_idf):])
+            msg_validity, tr_msg = self.msgExtractor(msg_full[len(self.msg_idf):].encode('utf-8'))
             validity_counter[i]=msg_validity
 
             
@@ -297,6 +304,11 @@ class socketStream():
         # close communications
         if not self.isServer:
             self.sock.sendall(self.ec_id.encode('utf-8'))
+            self.lock.acquire()
+            self.connection_exist = False
+            self.lock.release()
+            self.ReceiverThread.join()
+            # self.connection.close()
         else:
             self.lock.acquire()
             self.serverRunnig = False
@@ -316,8 +328,9 @@ class socketStream():
     def runReceiver(self):
         counter=0
         while(self.connection_exist):
+
             # retrieve the message identifier. once it is received, compose the message
-            data=self.connection.recv(self.BUFFER_SIZE)
+            data=self.sock.recv(self.BUFFER_SIZE)
             
             data_check = data[:self.msg_idf_len]
             
@@ -326,39 +339,58 @@ class socketStream():
                 # receive bytes until the full message is received
                 full_msg=data[self.msg_idf_len:]#.decode("utf-8")
                 while (True):
-                    dataT=self.connection.recv(self.BUFFER_SIZE)
-                    full_msg+=dataT.decode("utf-8")
-                    if full_msg[-len(self.endMSG):]==self.endMSG:
+                    dataT=self.sock.recv(self.BUFFER_SIZE)
+                    full_msg+=dataT#.decode("utf-8")
+                    if full_msg[-len(self.endMSG):].decode('utf-8')==self.endMSG:
                         break
 
                 # extract message
                 msg_validity, tr_msg = self.msgExtractor(full_msg)
                 if msg_validity:
-                    self.msg_data=json.loads(tr_msg)
+                    # print('new msg received')
+                    self.msg_data = json.loads(tr_msg)
+                    self.received_msg = json.loads(tr_msg)
                     if not self.firstValueReceived:
                         self.firstValueReceived = True
+                    if not self.isNewMSG:
+                        self.isNewMSG = True
 
             if  data_check.decode('utf-8')==self.ec_id:
                 # if end-of-communication identifier received, terminate the connection
-                print('[socketStream] Connection terminated by client ', self.client_address)
-                self.connection.close()
+                if self.isServer:
+                    print('[socketStream] Connection terminated by client ', self.client_address)
+                else:
+                    print('[socketStream] Connection terminated by server')
+
+                if self.isServer:
+                    self.connection.close()
+                else:
+                    self.sock.close()
                 self.connection_exist = False
                 self.firstValueReceived = False
                 break
-                
-            if not self.serverRunnig:
-                break
+            
+            if self.isServer:
+                if not self.serverRunnig:
+                    break
 
         if self.connection_exist:
-            self.connection.close()
+            if self.isServer:
+                self.connection.close()
             self.connection_exist = False
             
 
     def get_latest(self):
         self.lock.acquire()
-        trace = self.msg_data
+        if self.isServer:
+            trace = self.msg_data
+        else:
+            trace = self.received_msg
+            isNew = self.isNewMSG
+        if self.isNewMSG:
+            self.isNewMSG = False
         self.lock.release()
-        return trace
+        return trace, isNew
 
     def isClientConnected(self):
         return self.connection_exist
@@ -369,8 +401,11 @@ class socketStream():
     def isServerRunning(self):
         return self.serverRunnig
 
-    def sockectStream_ok(self):
-        return (self.serverRunnig and self.connection_exist and self.firstValueReceived)
+    def socketStream_ok(self):
+        if self.isServer:
+            return (self.serverRunnig and self.connection_exist and self.firstValueReceived)
+        else:
+            return (self.connection_exist and self.firstValueReceived)
 
     def set_data(self, msg):
         self.msg_data = msg
@@ -411,6 +446,9 @@ class socketStream():
         if conValidity:
             print("[socketStream] Connected to server " + self.server_address[0] +" in port " + str(self.server_address[1]))
             self.isComActive = True
+            self.connection_exist = True
+            self.ReceiverThread.start()
+            print('ok')
         else:
             print("[socketStream] Handshake protocol failed! Unable to connect to server.")
             print("[socketStream] Closing connection with the server")
