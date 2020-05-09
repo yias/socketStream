@@ -378,7 +378,10 @@ class socketStream():
             if self.isServer:
                 self.connection.close()
             self.connection_exist = False
-            
+        if self.isServer:
+            print('[socketStream] Stop receiving from client')
+        else:
+            print('[socketStream] Stop receiving from server')
 
     def get_latest(self):
         self.lock.acquire()

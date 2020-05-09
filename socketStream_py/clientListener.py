@@ -26,17 +26,16 @@ def main(args):
     sockClient.make_connection()
 
     if sockClient.isConnected():
-        # print('test main')
+
         while(True):
             try:
-                # print('socketStream ok: ', sockClient.socketStream_ok())
+
                 if sockClient.socketStream_ok():
                     tt, isnew = sockClient.get_latest()
-                    # print(tt)
+
                     if isnew:
                         test = tt.get("data")
                         rt = np.array(test, dtype=np.float32)
-                        # print('I got data')
                         print(rt.shape)
                     # print(rt)
                     sockClient.sendMSG()
