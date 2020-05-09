@@ -39,10 +39,10 @@ def main(args):
                         # print('I got data')
                         print(rt.shape)
                     # print(rt)
-
+                    sockClient.sendMSG()
             except KeyboardInterrupt:
                 break
-            # sockClient.sendMSG()
+           
     
     sockClient.close_communication()
 
