@@ -119,6 +119,7 @@ class socketStream{
 
     std::vector <bool> warningsWatcher;
     bool giveWarning;
+    bool verbose;
 
     
     struct addrinfo *result, *ptr, hints;
@@ -243,6 +244,8 @@ public:
     int closeCommunication();                                                                                                   // close the communication with the server
 
     int setHashKey(bool hKey);                                                                                                  // setting the value of useHashKey
+
+    int setVerbose(bool _verbose);
 
     int setHeaderSize(unsigned int hSize);                                                                                      // setting the header size
 

@@ -108,6 +108,8 @@ socketStream::socketStream(void){
 
     useHashKey = true;
 
+    verbose = true;
+
     minMsgSize = std::strlen(msg_idf) + headerSize + std::strlen(endMSG) + std::to_string(bufferSize).length() +1;
 
     std::cout << "[socketStream] Starting socketStream with default parameters" << std::endl;
@@ -163,6 +165,8 @@ socketStream::socketStream(const char* svrIPAddress){
     msgInitilized = false;
 
     useHashKey = true;
+
+    verbose = true;
 
     minMsgSize = std::strlen(msg_idf) + headerSize + std::strlen(endMSG) + std::to_string(bufferSize).length() + 1;
 
@@ -237,6 +241,8 @@ socketStream::socketStream(const char* svrIPAddress, int srvPosrt, const int soc
     msgInitilized = false;
 
     useHashKey = true;
+
+    verbose = true;
 
     minMsgSize = std::strlen(msg_idf) + headerSize + std::strlen(endMSG) + std::to_string(bufferSize).length()+1;
 
@@ -1496,6 +1502,12 @@ int socketStream::setHashKey(bool hKey){
     return 0;
 }
 
+int socketStream::setVerbose(bool _verbose){
+
+    verbose = _verbose;
+    return 0;
+}
+
 int socketStream::setHeaderSize(unsigned int hSize){
     headerSize=hSize;
     msgHeader = std::string(headerSize, ' ');
@@ -1655,6 +1667,7 @@ int socketStream::wait_connections(){
                 connetionSlots[slotNumber] = true;
                 warningsWatcher[slotNumber] = false;
                 giveWarning = false;
+                verbose = true;
                 // clientIDs[slotNumber] = std::string("sS_c#") + std::to_string(slotNumber);
                 std::cout << "[socketStream] Accepted connection from client: " << clAddStr << " with id: " << clientIDs[slotNumber] << ", slot: " << slotNumber << std::endl; 
                 threadMutex.unlock();          
@@ -1757,15 +1770,17 @@ int socketStream::runReceiver(int connectionID){
                         end = std::chrono::steady_clock::now();
                         if((double)(std::chrono::duration_cast<std::chrono::microseconds>(end-start).count())/1000.0 > 1000){
                             
-                            if(mode == SOCKETSTREAM::SOCKETSTREAM_SERVER){
-                                threadMutex.lock();
-                                std::cout<< "[socketStream] Receiving from client \"" << clientIDs[connectionID] << "\" with frequency " << counter << " Hz" << std::endl;
-                                threadMutex.unlock();
-                            }
-                            if(mode == SOCKETSTREAM::SOCKETSTREAM_CLIENT){
-                                threadMutex.lock();
-                                std::cout<< "[socketStream] Receiving from server with frequency " << counter << " Hz" << std::endl;
-                                threadMutex.unlock();
+                            if(verbose){
+                                if(mode == SOCKETSTREAM::SOCKETSTREAM_SERVER){
+                                    threadMutex.lock();
+                                    std::cout<< "[socketStream] Receiving from client \"" << clientIDs[connectionID] << "\" with frequency " << counter << " Hz" << std::endl;
+                                    threadMutex.unlock();
+                                }
+                                if(mode == SOCKETSTREAM::SOCKETSTREAM_CLIENT){
+                                    threadMutex.lock();
+                                    std::cout<< "[socketStream] Receiving from server with frequency " << counter << " Hz" << std::endl;
+                                    threadMutex.unlock();
+                                }
                             }
                             
                             counter = 0;
