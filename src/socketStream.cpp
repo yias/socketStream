@@ -574,7 +574,7 @@ int socketStream::setBufferSize(unsigned int newBufferSize){
 int socketStream::setNumberOfConnections(unsigned int nbConnections){
 
     if (nbConnections>SOCKETSTREAM::MAX_NB_CONNECTIONS){
-        std::cout << "[socketStream] The number of connections to set exceeds the maximum number of connections (" << SOCKETSTREAM::MAX_NB_CONNECTIONS << ")" << std::endl;
+        std::cout << "[socketStream] The selected number of connections exceeds the maximum number of connections (" << SOCKETSTREAM::MAX_NB_CONNECTIONS << ")" << std::endl;
         std::cout << "[socketStream] Continue with the default number of connections (" << nb_connections << ")" << std::endl;
         return -1;
     }else{
@@ -1657,7 +1657,7 @@ int socketStream::wait_connections(){
             }else{
                 threadMutex.lock();
                 if(connectionThreads[slotNumber].joinable()){
-                    std::cout << "The thread is still running\n";
+                    std::cout << "[socketStream] A thread is still running\n";
                     connectionThreads[slotNumber].join();
                 }
                 clientsAddresses[slotNumber] = clAddStr;
@@ -1683,9 +1683,11 @@ int socketStream::wait_connections(){
             }
         }
         
-        threadMutex.lock();
-        std::cout << "[socketStream] Waiting for new connections ... " << std::endl;
-        threadMutex.unlock();
+        if(verbose){
+            threadMutex.lock();
+            std::cout << "[socketStream] Waiting for new connections ... " << std::endl;
+            threadMutex.unlock();
+        }
     }
 
     serverRunning = false;
@@ -1909,8 +1911,9 @@ int socketStream::runReceiver(int connectionID){
         memset(clientRecvbuf, 0, sizeof(clientRecvbuf));
         memset(tmp_buf, 0, sizeof(tmp_buf));
     }
-
-    std::cout << "[socketStream] Communication slot " << connectionID << " freed" << std::endl;
+    if(verbose){
+        std::cout << "[socketStream] Communication slot " << connectionID << " freed" << std::endl;
+    }
     return 0;
 }
 
@@ -2132,8 +2135,10 @@ bool socketStream::handshake_client(SOCKET conc, int strlength, int slotNb){
         }else{
             clientIDs[slotNb]="None";
         }
-        std::cout << "[socketStream] Average ping time to the client: " << avPing << " ms" << std::endl;
-        std::cout << "[socketStream] message construction time: " << avCompute << " ms" << std::endl;
+        if(verbose){
+            std::cout << "[socketStream] Average ping time to the client: " << avPing << " ms" << std::endl;
+            std::cout << "[socketStream] message construction time: " << avCompute << " ms" << std::endl;
+        }
         threadMutex.unlock();
         return true;
     }
@@ -2294,10 +2299,12 @@ bool socketStream::handshake_server(int strlength){
         }
 
         // print some diagnostics
-        threadMutex.lock();
-        std::cout << "[socketStream] Average ping time to the server: " << avPing << " ms" << std::endl;
-        std::cout << "[socketStream] Average message construction time: " << avCompute << " ms" << std::endl;
-        threadMutex.unlock();
+        if (verbose){
+            threadMutex.lock();
+            std::cout << "[socketStream] Average ping time to the server: " << avPing << " ms" << std::endl;
+            std::cout << "[socketStream] Average message construction time: " << avCompute << " ms" << std::endl;
+            threadMutex.unlock();
+        }
         fullmsg.clear();
         final_msg.clear();
         msgHeader = std::string(headerSize, ' ');
@@ -2330,7 +2337,7 @@ int socketStream::falseConnection(){
     // Resolve the server address and port
     iResult = getaddrinfo(Host_IP, i2s.str().c_str(), &hints, &result);
     if ( iResult != 0 ) {
-        std::cerr << "getaddrinfo failed with error: " << iResult << std::endl;;
+        std::cerr << "[socketStream] getaddrinfo failed with error: " << iResult << std::endl;;
         #ifdef _WIN32
             WSACleanup();
         #endif
@@ -2429,6 +2436,6 @@ socketStream::~socketStream(){
     }
 
     threadMutex.lock();
-    std::cout << "[socketStream] Connections terminated" << std::endl;
+    std::cout << "[socketStream] socketStream out" << std::endl;
     threadMutex.unlock();
 }
