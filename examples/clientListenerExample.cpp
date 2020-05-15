@@ -111,7 +111,7 @@ int main(int argc, char **argv){
         if(socketHdlr.socketStream_ok()){
             msg = socketHdlr.get_latest(&isNew);
             // std::cout << "test\n";
-            std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(10); // 48
+            std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(10)); // 48
             if(isNew){
                 // if the message is new:
                 // parse the json string in a json document
