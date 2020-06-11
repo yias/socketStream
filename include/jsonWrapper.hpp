@@ -22,6 +22,8 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include "rapidjson/filewritestream.h"
+#include "rapidjson/filereadstream.h"
 
 
 
@@ -75,6 +77,8 @@ class jsonWrapper{
         int parseValue(std::string field, std::string value);
         int parseValue(std::string field, std::vector<double> value);
         void printValue(std::string fldName){std::cout<< jsonDoc[fldName.c_str()].GetString() << std::endl; }
+        int fromFile(std::string fName);
+        int saveToFile(std::string fName);
         std::string getAsString();
 
         template<class T>

@@ -109,6 +109,75 @@ std::string jsonWrapper::getAsString(){
     return t_buffer.GetString();
 }
 
+int jsonWrapper::fromFile(std::string fName){
+
+    /**
+     * Function to parse json objects from file
+     * 
+     * Inputs:
+     *      fname:  the name of the file
+     *      d:      a rapidjson document pointer to contain the json object read from the file
+     * 
+     * Outputs:
+     *      0:      Success
+     *     -1:      Unable to open file
+     * 
+     */
+
+
+    FILE* fpr = fopen(fName.c_str(), "r");
+
+    if (fpr == NULL){
+        return -1;
+    }
+    
+
+    char rBuffer[2048];
+
+    rapidjson::FileReadStream is(fpr, rBuffer, sizeof(rBuffer));
+
+    std::string jsonString;
+    
+    jsonDoc.ParseStream(is);
+    
+    return 0;
+
+}
+
+
+int jsonWrapper::saveToFile(std::string fName){
+    /**
+     * Function to save json objects to a file
+     * 
+     * Inputs:
+     *      fname:  the name of the file to save the json object
+     *
+     * 
+     * Outputs:
+     *      0:      Success
+     *     -1:      Unable to open file
+     * 
+     */
+
+    FILE* fp = fopen(fName.c_str(), "w");
+
+    if (fp == NULL){
+        return -1;
+    }
+
+    char buffer[2048];
+    rapidjson::FileWriteStream os(fp, buffer, sizeof(buffer));
+
+    rapidjson::Writer< rapidjson::FileWriteStream > writer(os);
+
+    jsonDoc.Accept(writer);
+
+    fclose(fp);
+
+    return 0;
+}
+
+
 
 jsonWrapper::~jsonWrapper(){
     isobjectok = false;
