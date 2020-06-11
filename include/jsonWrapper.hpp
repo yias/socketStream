@@ -194,6 +194,19 @@ struct jsonWrapper::getValueHelper<rapidJson_types::Mat2DInt>{
     }
 };
 
+template<>
+struct jsonWrapper::getValueHelper<rapidJson_types::VecString>{
+    static rapidJson_types::VecString getVal(void *usrPtr, std::string fldName){
+        jsonWrapper *tmp = static_cast<jsonWrapper *>(usrPtr);
+        const rapidjson::Value& a = tmp->jsonDoc[fldName.c_str()];
+        rapidJson_types::VecString trm;
+        for (auto& v : a.GetArray()){
+            trm.push_back(v.GetString());
+        }
+        return trm;
+    }
+};
+
 
 template<class T>
 T jsonWrapper::getField(std::string fieldName){
