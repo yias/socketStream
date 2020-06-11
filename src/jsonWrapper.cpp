@@ -121,7 +121,7 @@ int jsonWrapper::fromFile(std::string fName){
      * Outputs:
      *      0:      Success
      *     -1:      Unable to open file
-     * 
+     *     -2:      The json string is not properly parsed from rapidJson
      */
 
 
@@ -139,6 +139,13 @@ int jsonWrapper::fromFile(std::string fName){
     std::string jsonString;
     
     jsonDoc.ParseStream(is);
+
+    if(jsonDoc.IsObject()){
+        isobjectok = true;
+    }else{
+        isobjectok = false;
+        return -2;
+    }
     
     return 0;
 
@@ -177,6 +184,21 @@ int jsonWrapper::saveToFile(std::string fName){
     return 0;
 }
 
+
+bool jsonWrapper::hasField(std::string fldName){
+    
+    if(isobjectok){
+        if(jsonDoc.HasMember(fldName.c_str())){
+            return true;
+        }else{
+            return false;
+        }
+    }else{
+        std::cout << "[jsonWrapper] The json Object is not initialized" << std::endl;
+        return false;
+    }
+
+}
 
 
 jsonWrapper::~jsonWrapper(){

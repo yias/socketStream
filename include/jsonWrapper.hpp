@@ -79,6 +79,7 @@ class jsonWrapper{
         void printValue(std::string fldName){std::cout<< jsonDoc[fldName.c_str()].GetString() << std::endl; }
         int fromFile(std::string fName);
         int saveToFile(std::string fName);
+        bool hasField(std::string fldName);
         std::string getAsString();
 
         template<class T>
