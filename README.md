@@ -133,7 +133,7 @@ $ rosrun socketstream_node socketStream_rosnode.py
 ```
 
 
-## minimal code for creating a server
+## Server example
 
 For creating a socketStream server, we need to define if the streaming is to be done locally or over the network, by setting the key-word "localhost" or the network IP of the machine accordingly. Furthermore, we need to define the port to be used in the communication and introduce the option SOCKETSTREAM::SOCKETSTREAM_SERVER when we creating the sockeStream object. 
 
@@ -211,7 +211,10 @@ As we have initialized our message struct we can initialize and activate the soc
 
 ```cpp
 // initialize socketStream
-svrHdlr.initialize_socketStream();
+if(socketHdlr.initialize_socketStream()<0){
+    std::cerr << "Unable to initialize socket" << std::endl;
+    return -4;
+}
 
 // activate the server
 svrHdlr.runServer();
@@ -247,4 +250,72 @@ Once we are done with our process, it is important to properly shutdown the serv
 // kill all the communications and the socket
 svrHdlr.closeCommunication();
 
+```
+
+## Client example
+
+Let's know create a client to listen to the message of the server. The first step is to define the IP address of the server. Optionally, we can define the communication port. However, the communication port should be the same on the server side and the client side.  
+
+```cpp
+// define the IP of the server from which we'll listen the message
+const char *srvIP = "localhost";
+
+// create an sockectStream object with the selected server IP address 
+socketStream socketHdlr(srvIP);
+```
+Once we created the socketStream object, we can initialize the socketStream object and add a name on the client (optionally). After, the socketStream initialization, the node is ready to attempt a connection to the server.
+
+```cpp
+// initialize socketStream
+if(socketHdlr.initialize_socketStream()<0){
+    std::cerr << "Unable to initialize socket" << std::endl;
+    return -1;
+}
+
+// optionally you can define a client's name for letting the server know who the client is
+socketHdlr.set_clientName("node1");
+
+// attemp a connection with the server
+if(socketHdlr.make_connection()<0){
+    std::cerr << "Unable to connect to " << srvIP << std::endl;
+    return -2;
+}
+```
+After a successfull connection to the server, we can define the 2D matrix for hosting the received data. We can, then, create a loop to continuously get the new messages. To retrieve the message fields and values, we will use the jsonWrapper class. 
+```cpp
+// a 2D matrix of doubles to store the received data
+std::vector< std::vector<double> > mat_double;
+
+//  define a boolean variable for checking if the message is new or not
+bool isNew = false;
+
+while(true){
+    
+    // send the message to the server
+    if(socketHdlr.socketStream_ok()){
+
+        // get the latest message
+        msg = socketHdlr.get_latest(&isNew);
+        
+        if(isNew){
+        // if the message is new:
+        // parse the json string in a json document
+        jsonWrapper testObj(msg);
+
+        // get the contains of the field "data"
+        mat_double = testObj.getField<rapidJson_types::Mat2DD>(std::string("data"));
+
+        }
+
+        if(kbhit()){
+            if(getch()=='q')
+                break;
+        }
+    }
+}    
+```
+Once we are done with our process, it is important to properly shutdown the communication with the server.
+```cpp
+// close communication with the server
+socketHdlr.closeCommunication();
 ```
