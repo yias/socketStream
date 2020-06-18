@@ -16,7 +16,7 @@ namespace SOCKETSTREAM{
     const char *DEFAULT_HOST_IP = "localhost"; 
 }
 
-#ifdef __linux__
+#ifdef defined(__linux__) || defined(__APPLE__)
 
 
 
