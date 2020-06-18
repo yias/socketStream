@@ -42,7 +42,9 @@
     #include <unistd.h>
     #include <stdio.h>
     #include <termios.h>
+#ifndef __APPLE__
     #include <stropts.h>
+#endif
     #include <stdio.h>
     #include <sys/select.h>
     #include <sys/ioctl.h>
@@ -265,7 +267,7 @@ public:
     
 };
 
-#ifdef __linux__
+#if defined(__linux__) || defined(__APPLE__)
 int kbhit();
 int getch();
 #endif
