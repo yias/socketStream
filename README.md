@@ -2,7 +2,7 @@
 
 A cros-platform C++ library and Python module for exchanging packets over a TCP/IP communication. The socketSteam class supports both client and server implementations on C++ and python. The packets follow the json structure, making them compatible with other languages too. The C++ library supports multi-client server, whilst the server of the python class services only one client. 
 
-The C++ implementaion of md5 checksum is a RSA Data Security, Inc. MD5 Message-Digest Algorithm, borrowed from zedwood in this [link](http://www.zedwood.com/article/cpp-md5-function). Desides the md5 implementation, the rest of the code is distributed under the GNU GPLv3 license.
+The C++ implementaion of md5 checksum is a RSA Data Security, Inc. MD5 Message-Digest Algorithm, borrowed from zedwood in this [link](http://www.zedwood.com/article/cpp-md5-function). Besides the md5 implementation, the rest of the code is distributed under the GNU GPLv3 license.
 
 The package requires at least C++11 or Python version greater or equal to 2.7.
 
@@ -132,3 +132,119 @@ Then, run command:
 $ rosrun socketstream_node socketStream_rosnode.py
 ```
 
+
+## minimal code for creating a server
+
+For creating a socketStream server, we need to define if the streaming is to be done locally or over the network, by setting the key-word "localhost" or the network IP of the machine accordingly. Furthermore, we need to define the port to be used in the communication and introduce the option SOCKETSTREAM::SOCKETSTREAM_SERVER when we creating the sockeStream object. 
+
+```cpp
+// define the server IP and communication port
+const char *srvIP = "localhost";
+
+int svrPort = 10352;
+
+// create an sockectStream object with the selected server IP address and set it up as a server
+socketStream svrHdlr(srvIP, svrPort, SOCKETSTREAM::SOCKETSTREAM_SERVER);
+
+// initialize socketStream
+svrHdlr.initialize_socketStream();
+```
+
+We can now define what the server will do when it communicates with its clients. For this example, let's say that we want to sent a message to all the clients that are connected.  Let's define, first the message we want to transmit. Our message will contain three fields; a field "name" which will be a string, a field "id" which will be an integer and a field "data" which will be a vector of vector of double-precision numbers.
+
+```cpp
+// decalre a variable as a vector of strings for containing the fields of the message
+std::vector <std::string> test_fields;
+
+// define the name of the fields
+test_fields.push_back("name");
+test_fields.push_back("id");
+test_fields.push_back("data");
+
+// initialize the message by setting the fields' names
+if(svrHdlr.initialize_msgStruct(test_fields)<0){
+    std::cerr << "Unable to inizialize message structure" << std::endl;
+    return -1;
+}
+```
+The message struct should occur before initializing the server (even with one empty field), whilst we can add more fields or modify the values of the fields later in our programm. Additionally, the server and the clients don't need to have the same message structure (fields and values). For this example, let's add the information the fields will contain beforehand.
+
+```cpp
+// define the field and the value of the field
+// for the field "name"
+std::string sfield("name");
+const char *svalue = {"Joanna"};
+
+if(svrHdlr.updateMSG(sfield, svalue)){
+    std::cerr << "Unable to update the message" << std::endl;
+    return -2;
+}
+
+// for the field "id"
+sfield = "id";
+int id = 1001;
+
+if(svrHdlr.updateMSG(sfield, id)){
+    std::cerr << "Unable to update the message" << std::endl;
+    return -2;
+}
+
+// for the field "id"
+sfield = "data";
+
+// define a 2D matrix and update the field "data" of the message
+double t_value1[] = {1.5, 4.67, 50.095 };
+double t_value2[] = {3.2, 15.4, 1502.898};
+
+std::vector< std::vector<double> > t_value(2);
+t_value[0]=std::vector<double>(t_value1, t_value1 +(sizeof(t_value1)/   sizeof(t_value1[0])));
+t_value[1]=std::vector<double>(t_value2, t_value2 +(sizeof(t_value2)/sizeof(t_value2[0])));
+
+
+if(svrHdlr.updateMSG(sfield, t_value)){
+    std::cerr << "Unable to update the message" << std::endl;
+    return -3;
+}
+```
+
+As we have initialized our message struct we can initialize and activate the socketStream server. Once the socketStream server is active, it will wait for connection requests from the clients.
+
+```cpp
+// initialize socketStream
+svrHdlr.initialize_socketStream();
+
+// activate the server
+svrHdlr.runServer();
+```
+
+Let's now create a loop for waiting connections and send our message to all the connected clients.
+
+```cpp
+// run until the key "q" is pressed in the keyboard
+while(true){
+
+    // if the server is running send the message to all the clients
+    if(svrHdlr.socketStream_ok()){
+        svrHdlr.sendMSg2All();
+    }
+    
+    
+    // check if a key is hit on the keyboard
+    // if yes, check if this key is "q"
+    // if yes, break the loob, otherwise continue
+    if(kbhit()){
+        if(getch()=='q')
+            break;
+        }
+    }
+} 
+
+```
+
+Once we are done with our process, it is important to properly shutdown the server.
+
+```cpp
+// kill all the communications and the socket
+svrHdlr.closeCommunication();
+
+```
