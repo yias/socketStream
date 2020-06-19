@@ -1,0 +1,105 @@
+# 	nMakefile of the socketStream package
+# 
+#	Developer:  Iason Batzianoulis
+#	email:      iasonbatz@gmail.com
+#	License:    GNU GPLv3
+
+
+
+# set output directories, 
+# where the executables will be built
+OUTPUT_DIR = .\build
+OUTPUT_OBJ_DIRx64 = $(OUTPUT_DIR)\obj\x64
+OUTPUT_OBJ_DIRx86 = $(OUTPUT_DIR)\obj\x86
+OUT_STATIC64_DIR = .\bin\lib\win32\static\x64
+OUT_STATIC86_DIR = .\bin\lib\win32\static\x86
+OUT_DLL64_DIR = .\bin\lib\win32\dll\x64
+OUT_DLL86_DIR = .\bin\lib\win32\dll\x86
+
+
+# set the compiler and its flags
+CXX = g++
+
+# set include directories
+INCLUDE_DIR= .\include .\rapidjson\include
+INCLUDE_PARAMS= -I $(INCLUDE_DIR: = -I)
+
+# set the source directory
+SRC_DIR = .\src
+EXAMPLES_DIR = .\examples
+
+# set the libraries needed for compiling
+LIBS = -lws2_32
+
+# set objects to be created
+_CLIENT_OBJS = socketStream.obj jsonWrapper.obj md5.obj
+CLIENT_OBJSx64 = $(OUTPUT_OBJ_DIRx64)\$(_CLIENT_OBJS: = $(OUTPUT_OBJ_DIRx64)\)
+CLIENT_OBJSx86 = $(OUTPUT_OBJ_DIRx86)\$(_CLIENT_OBJS: = $(OUTPUT_OBJ_DIRx86)\)
+
+
+examples: createBuildFolder serverExample
+
+createLibDir: createStaticLibDirx64 createDLLDirx64 createStaticLibDirx86 createDLLDirx86
+
+generateLib: createLibDir createObjFolder64 createObjFolder86 generateObjectsx86
+
+serverExample:
+	@echo generating serverexample in $(OUTPUT_DIR)
+	@($(CXX) $(CXXFLAGS) $(EXAMPLES_DIR)\serverExample.cpp $(SRC_DIR)\socketStream.cpp $(SRC_DIR)\jsonWrapper.cpp $(SRC_DIR)\md5.cpp \
+	-o $(OUTPUT_DIR)\serverExample.exe \
+	$(INCLUDE_PARAMS) \
+	$(LIBS))
+
+
+createStaticLibDirx86:
+	@!IF exist $(OUT_STATIC86_DIR) \
+		(echo $(greenC)Output directory for static lib x86 already exists) $(reset) \
+	ELSE \
+		(echo Creating output directory for static lib x86 && mkdir $(OUT_STATIC86_DIR) )
+	
+
+createStaticLibDirx64:
+	@!IF exist $(OUT_STATIC64_DIR) \
+		(echo Output directory for static lib x64 already exists) \
+	ELSE \
+		(echo Creating output directory for static lib x64 && mkdir $(OUT_STATIC64_DIR) )
+
+createDLLDirx64:
+	@!IF exist $(OUT_DLL64_DIR) \
+		(echo Output directory for dll x64 already exists) \
+	ELSE \
+		(echo Creating output directory for dll x64 && mkdir $(OUT_DLL64_DIR) )
+
+createDLLDirx86:
+	@!IF exist $(OUT_DLL86_DIR) \
+		(echo Output directory for dll x86 already exists) \
+	ELSE \
+		(echo Creating output directory for dll x64 && mkdir $(OUT_DLL86_DIR) )
+
+
+createBuildFolder:
+	@!IF exist $(OUTPUT_DIR) \
+		(echo Output directory already exists) \
+	ELSE \
+		(echo Creating output directory for static lib x64 && mkdir $(OUTPUT_DIR) )
+
+createObjFolder64:
+	@!IF exist $(OUTPUT_OBJ_DIRx64) \
+		(echo Output directory already exists) \
+	ELSE \
+		(echo Creating output directory for static lib x64 && mkdir $(OUTPUT_OBJ_DIRx64) )
+
+createObjFolder86:
+	@!IF exist $(OUTPUT_OBJ_DIRx86) \
+		(echo Output directory already exists) \
+	ELSE \
+		(echo Creating output directory for static lib x64 && mkdir $(OUTPUT_OBJ_DIRx86) )
+
+%.obj: 
+	$(SRC_DIR)\($@:obj=cpp) $(CXX) -c -o $@ $< $(INCLUDE_PARAMS) $(CXXFLAGS) -fpic
+
+generateObjectsx64: $(CLIENT_OBJSx64)
+	$(CXX) -c -o $^ $(CXXFLAGS) $(CXX_x64_FLAG) $(LIBS)
+
+generateObjectsx86: @echo $(CLIENT_OBJSx86)
+	$(CLIENT_OBJSx86) $(CXX) -c -o $^ $(CXXFLAGS) $(LIBS)

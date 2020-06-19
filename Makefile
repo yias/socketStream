@@ -11,7 +11,7 @@ greenC := $(shell tput setaf 2)
 yellowC := $(shell tput setaf 3)
 blueC := $(shell tput setaf 4)
 boldT := $(shell tput bold)
-reset:=$(shell tput sgr0)
+reset :=$(shell tput sgr0)
 
 # set output directory, where the executables will be built
 OUTPUT_DIR = ./build
