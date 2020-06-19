@@ -21,7 +21,7 @@ CXX = g++
 CXXFLAGS = -std=c++11 -Wall 
 
 # set include directories
-INCLUDE_DIR = ./include ${CPP_DEPENDENCIES}/rapidjson/include
+INCLUDE_DIR = ./include ./rapidjson/include
 INCLUDE_PARAMS = $(foreach d, $(INCLUDE_DIR), -I $d)
 
 # set the source directory

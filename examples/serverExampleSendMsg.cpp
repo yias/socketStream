@@ -103,14 +103,9 @@ int main(int argc, char **argv){
         // if yes, check if this key is "q"
         // if yes, break the loob, otherwise continue
         if(kbhit()){
-            #ifdef _WIN32
-                if(getch()=='q')
-                    break;
-            #endif
-            #ifdef defined(__linux__) || defined(__APPLE__)
-                if(getch()=='q')
-                    break;
-            #endif
+            if(getch()=='q')
+                break;
+           
         }
     } 
     

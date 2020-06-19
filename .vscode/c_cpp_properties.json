@@ -4,7 +4,7 @@
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/**",
-                "${CPP_DEPENDENCIES}\\rapidjson\\include",
+                "${workspaceFolder}\\rapidjson\\include",
                 "${workspaceFolder}\\include",
                 "${workspaceFolder}\\src"
             ],

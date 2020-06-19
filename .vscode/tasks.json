@@ -13,7 +13,7 @@
                 "${workspaceFolder}//build/jsonWrapperExample.exe",
                 "-O3",
                 "-I",
-                "${env:CPP_DEPENDENCIES}/rapidjson/include",
+                "${workspaceFolder}/rapidjson/include",
                 "-I",
                 "${workspaceFolder}/include"
             ],
@@ -38,7 +38,7 @@
                 "-O3",
                 "-lws2_32",
                 "-I",
-                "${env:CPP_DEPENDENCIES}\\rapidjson\\include",
+                "${workspaceFolder}\\rapidjson\\include",
                 "-I",
                 "${workspaceFolder}\\include"
             ],
@@ -64,7 +64,7 @@
                 "-O3",
                 "-lpthread",
                 "-I",
-                "${CPP_DEPENDENCIES}/rapidjson/include",
+                "${workspaceFolder}/rapidjson/include",
                 "-I",
                 "${workspaceFolder}/include"
             ],
@@ -90,7 +90,7 @@
                 "-O3",
                 "-lpthread",
                 "-I",
-                "${CPP_DEPENDENCIES}/rapidjson/include",
+                "${workspaceFolder}/rapidjson/include",
                 "-I",
                 "${workspaceFolder}/include"
             ],
@@ -116,7 +116,7 @@
                 "-O3",
                 "-lpthread",
                 "-I",
-                "${CPP_DEPENDENCIES}/rapidjson/include",
+                "${workspaceFolder}/rapidjson/include",
                 "-I",
                 "${workspaceFolder}/include"
             ],
@@ -158,7 +158,7 @@
                 "-O3",
                 "-lpthread",
                 "-I",
-                "${CPP_DEPENDENCIES}/rapidjson/include",
+                "${workspaceFolder}/rapidjson/include",
                 "-I",
                 "${workspaceFolder}/include"
             ],
@@ -185,7 +185,7 @@
                 "-O3",
                 "-lpthread",
                 "-I",
-                "${CPP_DEPENDENCIES}/rapidjson/include",
+                "${workspaceFolder}/rapidjson/include",
                 "-I",
                 "${workspaceFolder}/include"
             ],
@@ -211,7 +211,7 @@
                 "-O3",
                 "-lws2_32",
                 "-I",
-                "${env:CPP_DEPENDENCIES}\\rapidjson\\include",
+                "${workspaceFolder}\\rapidjson\\include",
                 "-I",
                 "${workspaceFolder}\\include"
             ],
@@ -237,7 +237,7 @@
                 "-O3",
                 "-lws2_32",
                 "-I",
-                "${env:CPP_DEPENDENCIES}\\rapidjson\\include",
+                "${workspaceFolder}\\rapidjson\\include",
                 "-I",
                 "${workspaceFolder}\\include"
             ],
@@ -255,7 +255,7 @@
             "command": "cl.exe",
             "args": [
                 "-I",
-                "${env:CPP_DEPENDENCIES}\\rapidjson\\include",
+                "${workspaceFolder}\\rapidjson\\include",
                 "-I",
                 "${workspaceFolder}\\include",
                 "/Zi",
@@ -281,7 +281,7 @@
             "command": "cl.exe",
             "args": [
                 "-I",
-                "${env:CPP_DEPENDENCIES}\\rapidjson\\include",
+                "${workspaceFolder}\\rapidjson\\include",
                 "-I",
                 "${workspaceFolder}\\include",
                 "/Zi",
@@ -307,7 +307,7 @@
             "command": "cl.exe",
             "args": [
                 "-I",
-                "${env:CPP_DEPENDENCIES}\\rapidjson\\include",
+                "${workspaceFolder}\\rapidjson\\include",
                 "-I",
                 "${workspaceFolder}\\include",
                 "/Zi",
@@ -333,7 +333,7 @@
             "command": "cl.exe",
             "args": [
                 "-I",
-                "${env:CPP_DEPENDENCIES}\\rapidjson\\include",
+                "${workspaceFolder}\\rapidjson\\include",
                 "-I",
                 "${workspaceFolder}\\include",
                 "/Zi",
@@ -358,7 +358,7 @@
             "command": "cl.exe",
             "args": [
                 "-I",
-                "${env:CPP_DEPENDENCIES}\\rapidjson\\include",
+                "${workspaceFolder}\\rapidjson\\include",
                 "-I",
                 "${workspaceFolder}\\include",
                 "/Zi",
