@@ -141,7 +141,7 @@ int main(int argc, char **argv){
                 if(getch()=='q')
                     break;
             #endif
-            #ifdef __linux__
+            #ifdef defined(__linux__) || defined(__APPLE__)
                 if(getch()=='q')
                     break;
             #endif

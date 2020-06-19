@@ -240,7 +240,7 @@ public:
     
 };
 
-#ifdef __linux__
+#ifdef defined(__linux__) || defined(__APPLE__)
 int kbhit();
 int getch();
 #endif
