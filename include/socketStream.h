@@ -18,6 +18,7 @@
 #ifndef SOCKETSTREAM_H
 #define SOCKETSTREAM_H
 
+#pragma once
 
 #include "md5.h"
 

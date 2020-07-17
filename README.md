@@ -7,6 +7,15 @@ The C++ implementaion of md5 checksum is a RSA Data Security, Inc. MD5 Message-D
 The package requires at least C++11 or Python version greater or equal to 2.7.
 
 ## Set-up
+The header files and source code could be included and compiled together with the custom project. The lpthread library should be linked for compiling the project. 
+
+To install the library on a Linux PC (having cloned rapidjson as the included submodule) run the following commands:
+```bash
+$ make
+$ sudo make install
+```
+If you don't want to have rapidjson as a submodule, follow the following steps to set it as an external dependency and change the path to the include files in the make file.
+
 1) Open a terminal or command prompt (on Windows) and navigate to your workspace. In your workspace folder, create a folder called "dependencies" to contain the cpp dependencies (if it doesn't already exist)
 
 ```bash
@@ -318,4 +327,14 @@ Once we are done with our process, it is important to properly shutdown the comm
 ```cpp
 // close communication with the server
 socketHdlr.closeCommunication();
+```
+
+
+if you get the error:
+```bash
+fatal error: bits/c++config.h: No such file or directory
+```
+then install g++-multilib to your machine: 
+```bash
+$ sudo apt install g++-multilib
 ```

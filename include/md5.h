@@ -32,7 +32,9 @@ documentation and/or software.
  
 #ifndef BZF_MD5_H
 #define BZF_MD5_H
- 
+
+#pragma once
+
 #include <cstring>
 #include <iostream>
  
