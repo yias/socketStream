@@ -33,7 +33,10 @@ CXX_x86_FLAG = -m32
 CXX_x64_FLAG = -m64
 
 # set include directories
-INCLUDE_DIR = ./include ./rapidjson/include
+HEADERS_DIR = ./include
+RAPIDJSON_INCLUDE = ./rapidjson/include
+INCLUDE_DIR = $(HEADERS_DIR)
+INCLUDE_DIR += $(RAPIDJSON_INCLUDE)
 INCLUDE_PARAMS = $(foreach d, $(INCLUDE_DIR), -I $d)
 
 # set the source directory
@@ -65,7 +68,8 @@ $(OUTPUT_OBJ_DIRx64)/%.o: $(SRC_DIR)/%.cpp
 	then tput setaf 4; tput bold; echo " --> OK"; tput sgr0; \
 	fi
 
-generateObjectsx64: $(info $(greenC)$(boldT) --> generating objects x64 $(yellowC)==>$(reset)) $(_OBJSx64)
+generateObjectsx64: $(_OBJSx64)
+	$(info $(greenC)$(boldT) --> generating objects x64 $(yellowC)==>$(reset))
 	$(CXX) -c -o $^ $(CXXFLAGS) $(CXX_x64_FLAG) $(LIBS)
 	@if test $$? -eq 0;\
 	then tput setaf 4; tput bold; echo " --> OK"; tput sgr0; \
@@ -75,9 +79,9 @@ generateObjectsx64: $(info $(greenC)$(boldT) --> generating objects x64 $(yellow
 generateSOx64:
 	$(info $(greenC)$(boldT) --> generating shared object x64 $(yellowC)==>$(reset))
 	@$(CXX) $(CXXFLAGS) $(CXX_x64_FLAG) \
-	-shared -Wl,-soname,$(LINUX_LIB_X64)/libsocketStream.so.1 -o $(LINUX_LIB_X64)/libsocketStream.so.1.0.1 \
+	-shared -o $(LINUX_LIB_X64)/libsocketStream.so.1.0.1 \
 	$(_OBJSx64) \
-	$(INCLUDE_PARAMS) -lc
+	$(INCLUDE_PARAMS) -lc $(LIBS)
 	@if test $$? -eq 0;\
 	then tput setaf 4; tput bold; echo " --> OK"; tput sgr0; \
 	fi
@@ -97,7 +101,8 @@ $(OUTPUT_OBJ_DIRx86)/%.o: $(SRC_DIR)/%.cpp
 	then tput setaf 4; tput bold; echo " --> OK"; tput sgr0; \
 	fi
 
-generateObjectsx86: $(info $(greenC)$(boldT) --> generating objects x86 $(yellowC)==>$(reset)) $(_OBJSx86)
+generateObjectsx86: $(_OBJSx86)
+	$(info $(greenC)$(boldT) --> generating objects x86 $(yellowC)==>$(reset))
 	$(CXX) -c -o $^ $(CXXFLAGS) $(CXX_x86_FLAG) $(LIBS)
 	@if test $$? -eq 0;\
 	then tput setaf 4; tput bold; echo " --> OK"; tput sgr0; \
@@ -295,6 +300,9 @@ install:
 	ln -sf $(CURRENT_DIR)/$(LINUX_LIB_X64)/libsocketStream.so.1.0.1 $(INSTALL_PREFIX)/lib/libsocketStream.so.1
 	ln -sf $(CURRENT_DIR)/$(LINUX_LIB_X64)/libsocketStream.so.1.0.1 $(LINUX_LIB_X64)/libsocketStream.so
 	ln -sf $(CURRENT_DIR)/$(LINUX_LIB_X64)/libsocketStream.so.1.0.1 $(INSTALL_PREFIX)/lib/libsocketStream.so
+	cp $(HEADERS_DIR)/socketStream.h $(INSTALL_PREFIX)/include
+	cp $(HEADERS_DIR)/jsonWrapper.hpp $(INSTALL_PREFIX)/include
+	cp $(HEADERS_DIR)/md5.h $(INSTALL_PREFIX)/include
 
 .PHONY: clean
 
