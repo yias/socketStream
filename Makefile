@@ -28,7 +28,7 @@ INSTALL_PREFIX = /usr/local
 
 # set the compiler and its flags
 CXX = g++
-CXXFLAGS = -std=c++11 -Wall
+CXXFLAGS = -std=c++11 -Wall -DMAKEDLL
 CXX_x86_FLAG = -m32
 CXX_x64_FLAG = -m64
 

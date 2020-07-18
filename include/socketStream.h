@@ -77,6 +77,17 @@
 #include <thread>
 #include <mutex>
 
+#ifdef MAKEDLL
+    #ifdef _WIN32
+        #define EXPORT __declspec(dllexport)
+    #else
+         #define EXPORT
+    #endif   
+#else
+    #define EXPORT
+#endif
+
+
 namespace SOCKETSTREAM{
     
     const unsigned int DEFAULT_BUFLEN = 2048;
@@ -90,7 +101,7 @@ namespace SOCKETSTREAM{
 
 
 
-class socketStream{
+class EXPORT socketStream{
 
     // define socket object
 

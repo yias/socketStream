@@ -12,6 +12,10 @@
 
 #include "socketStream.h"
 
+#ifdef MAKEDLL
+    #include "extern_c_bindings.h"
+#endif
+
 namespace SOCKETSTREAM{
     const char *DEFAULT_HOST_IP = "localhost"; 
 }
@@ -1465,10 +1469,14 @@ int socketStream::closeCommunication(){
             #endif
         }
 
-        
+
         isComActive = false;
-        connetionSlots[0] = false;
-        connectionThreads[0].join();
+        if(connetionSlots.size()>0){
+            connetionSlots[0] = false;
+        }
+        if (connectionThreads.size() > 0){
+            connectionThreads[0].join();
+        }
         for (int i=0; i<(int)clientsSockets.size();i++){
             #ifdef _WIN32
                 closesocket(clientsSockets[i]);
@@ -1480,6 +1488,7 @@ int socketStream::closeCommunication(){
         
 
         // std::cout << "isComActive: " << int(isComActive) << std::endl; 
+
 
 
         #ifdef _WIN32
