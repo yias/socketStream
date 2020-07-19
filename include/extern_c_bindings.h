@@ -52,7 +52,7 @@ extern "C"{
         std::vector<std::string> inFields(nbFields, std::string());
         for (int i=0; i<nbFields; i++){
             inFields[i]=std::string(fields[i]);
-            std::cout << inFields[i] << std::endl;
+            // std::cout << inFields[i] << std::endl;
         }
         return ssOb->initialize_msgStruct(inFields);
     }
@@ -71,7 +71,53 @@ extern "C"{
 
     int EXPORT ss_set_clientName(socketStream *ssOb, char* cID){
         std::string clientID (cID);
+        // std::cout << clientID << std::endl;
         return ssOb->set_clientName(clientID);
+    }
+
+    int EXPORT ss_updateMSG_char(socketStream *ssOb, char* field, char *value){
+        std::string inField(field);
+        std::string inValue(value);
+        std::cout << inValue << std::endl;
+        return ssOb->updateMSG(inField, value);
+    }
+
+    int EXPORT ss_updateMSG_int(socketStream *ssOb, char* field, int value){
+        std::string inField(field);
+        return ssOb->updateMSG(inField, value);
+    }
+
+    int EXPORT ss_updateMSG_double(socketStream *ssOb, char* field, double value){
+        std::string inField(field);
+        return ssOb->updateMSG(inField, value);
+    }
+
+    int EXPORT ss_updateMSG_intArray(socketStream *ssOb, char* field, int *value, int arraylength){
+        std::string inField(field);
+        return ssOb->updateMSG(inField, value, arraylength);
+    }
+
+    int EXPORT ss_updateMSG_doubleArray(socketStream *ssOb, char* field, double *value, int arraylength){
+        std::string inField(field);
+        return ssOb->updateMSG(inField, value, arraylength);
+    }
+
+    int EXPORT ss_updateMSG_matInt(socketStream *ssOb, char* field, int **value, int x_length, int *y_length){
+        std::string inField(field);
+        std::vector< std::vector<int> > inValue(x_length, std::vector<int>());
+        for (int i=0; i<x_length; i++){
+            inValue[i]=std::vector<int>(*value[i], y_length[i]);
+        }
+        return ssOb->updateMSG(inField, inValue);
+    }
+
+    int EXPORT ss_updateMSG_matDouble(socketStream *ssOb, char* field, double **value, int x_length, int *y_length){
+        std::string inField(field);
+        std::vector< std::vector<double> > inValue(x_length, std::vector<double>());
+        for (int i=0; i<x_length; i++){
+            inValue[i]=std::vector<double>(*value[i], y_length[i]);
+        }
+        return ssOb->updateMSG(inField, inValue);
     }
 
     void EXPORT ss_closeCommunication(socketStream* ssObj){

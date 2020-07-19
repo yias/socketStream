@@ -149,7 +149,8 @@ class EXPORT socketStream{
 
     unsigned int bufferSize;                                                        // the buffer size on the clients side
 
-    const char *Host_IP;                                                            // the IP of the server
+    // const char *Host_IP;                                                            // the IP of the server
+    std::string Host_IP;
 
     unsigned int Host_Port;                                                         // the port to be used
 
