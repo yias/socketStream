@@ -12,6 +12,10 @@
 
 #include "socketStream.h"
 
+#ifdef MAKEDLL
+    #include "extern_c_bindings.h"
+#endif
+
 namespace SOCKETSTREAM{
     const char *DEFAULT_HOST_IP = "localhost"; 
 }
@@ -92,7 +96,7 @@ socketStream::socketStream(void){
 
     clientName = randomString(5);
 
-    Host_IP = SOCKETSTREAM::DEFAULT_HOST_IP;
+    Host_IP = std::string(SOCKETSTREAM::DEFAULT_HOST_IP);
 
     Host_Port = SOCKETSTREAM::DEFAULT_PORT;
 
@@ -150,7 +154,7 @@ socketStream::socketStream(const char* svrIPAddress){
 
     clientName = randomString(5);
 
-    Host_IP = svrIPAddress;
+    Host_IP = std::string(svrIPAddress);
 
     Host_Port = SOCKETSTREAM::DEFAULT_PORT;
 
@@ -211,7 +215,8 @@ socketStream::socketStream(const char* svrIPAddress, int srvPosrt, const int soc
 
     clientName = randomString(5);
 
-    Host_IP = svrIPAddress;
+    // Host_IP = svrIPAddress;
+    Host_IP = std::string(svrIPAddress);
 
     Host_Port = (unsigned int)srvPosrt;
 
@@ -270,9 +275,10 @@ int socketStream::initialize_socketStream(){
     i2s << Host_Port;
 
     // Resolve the server address and port
-    iResult = getaddrinfo(Host_IP, i2s.str().c_str(), &hints, &result);
+    iResult = getaddrinfo(Host_IP.c_str(), i2s.str().c_str(), &hints, &result);
     if ( iResult != 0 ) {
-        std::cerr << "[socketStream] Getaddrinfo failed with error: " << iResult << std::endl;
+        std::cerr << "[socketStream] Getaddrinfo failed with error: " << iResult << ": ";
+        std::cout << std::string(gai_strerror(iResult)) << std::endl;
         #ifdef _WIN32
             WSACleanup();
         #endif
@@ -361,7 +367,7 @@ int socketStream::initialize_socketStream(){
 int socketStream::initialize_socketStream(const char* svrIPAddress, int srvPosrt){
     
     // setting the server IP address and port
-    Host_IP = svrIPAddress;
+    Host_IP = std::string(svrIPAddress);
 
     Host_Port = (unsigned int)srvPosrt;
 
@@ -378,9 +384,9 @@ int socketStream::initialize_socketStream(const char* svrIPAddress, int srvPosrt
     i2s << Host_Port;
 
     // Resolve the server address and port
-    iResult = getaddrinfo(Host_IP, i2s.str().c_str(), &hints, &result);
+    iResult = getaddrinfo(Host_IP.c_str(), i2s.str().c_str(), &hints, &result);
     if ( iResult != 0 ) {
-        std::cerr << "getaddrinfo failed with error: " << iResult << std::endl;;
+        std::cerr << "getaddrinfo failed with error:tt1 " << iResult << std::endl;;
         #ifdef _WIN32
             WSACleanup();
         #endif
@@ -524,7 +530,7 @@ int socketStream::make_connection(){
     }
 
     if(clientsSockets.size()<1){
-        clientsAddresses.push_back(std::string(Host_IP));
+        clientsAddresses.push_back(Host_IP);
         firstMsgReceived.push_back(false);
         isNewMsgReceived.push_back(false);
         clientsSockets.push_back(ConnectSocket);
@@ -534,7 +540,7 @@ int socketStream::make_connection(){
         // connectionThreads.back().detach();
         
     }else{
-        clientsAddresses[0] = std::string(Host_IP);
+        clientsAddresses[0] = Host_IP;
         firstMsgReceived[0] = false;
         isNewMsgReceived[0] = false;
         clientsSockets[0] = ConnectSocket;
@@ -1465,10 +1471,14 @@ int socketStream::closeCommunication(){
             #endif
         }
 
-        
+
         isComActive = false;
-        connetionSlots[0] = false;
-        connectionThreads[0].join();
+        if(connetionSlots.size()>0){
+            connetionSlots[0] = false;
+        }
+        if (connectionThreads.size() > 0){
+            connectionThreads[0].join();
+        }
         for (int i=0; i<(int)clientsSockets.size();i++){
             #ifdef _WIN32
                 closesocket(clientsSockets[i]);
@@ -1480,6 +1490,7 @@ int socketStream::closeCommunication(){
         
 
         // std::cout << "isComActive: " << int(isComActive) << std::endl; 
+
 
 
         #ifdef _WIN32
@@ -2335,7 +2346,7 @@ int socketStream::falseConnection(){
     i2s << Host_Port;
 
     // Resolve the server address and port
-    iResult = getaddrinfo(Host_IP, i2s.str().c_str(), &hints, &result);
+    iResult = getaddrinfo(Host_IP.c_str(), i2s.str().c_str(), &hints, &result);
     if ( iResult != 0 ) {
         std::cerr << "[socketStream] getaddrinfo failed with error: " << iResult << std::endl;;
         #ifdef _WIN32

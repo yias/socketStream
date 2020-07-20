@@ -93,6 +93,5 @@
         "cinttypes": "cpp"
     },
     "C_Cpp.errorSquiggles": "Disabled",
-    "python.pythonPath": "C:\\ProgramData\\Anaconda3\\envs\\pyStream\\python.exe",
     "cmake.configureOnOpen": false
 }
