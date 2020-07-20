@@ -27,7 +27,7 @@ int main(int argc, char **argv){
     }
 
     // create an sockectStream object with the selected server IP address 
-    socketStream socketHdlr(srvIP);
+    socketStream socketHdlr(srvIP, 10352);
 
     // set the size of the buffer
     // socketHdlr.setBufferSize(64);
@@ -137,14 +137,8 @@ int main(int argc, char **argv){
 
 
         if(kbhit()){
-            #ifdef _WIN32
-                if(getch()=='q')
+            if(getch()=='q')
                     break;
-            #endif
-            #ifdef defined(__linux__) || defined(__APPLE__)
-                if(getch()=='q')
-                    break;
-            #endif
         }
         // end = std::chrono::steady_clock::now();
         std::this_thread::sleep_for(timespan);

@@ -12,11 +12,14 @@
 
 #include "socketStream.h"
 
+char *returnedMsgStr;
 
 extern "C"{
     EXPORT socketStream* create_socketStream(const char* svrIPAddress, int srvPosrt, int socketStreamMode){
         // std::string hIP (svrIPAddress);
         // std::cout << hIP << std::endl;
+        /* Initial memory allocation */
+        returnedMsgStr = (char *) malloc(15);
         return new socketStream(svrIPAddress, srvPosrt, socketStreamMode);
     }
 
@@ -52,7 +55,6 @@ extern "C"{
         std::vector<std::string> inFields(nbFields, std::string());
         for (int i=0; i<nbFields; i++){
             inFields[i]=std::string(fields[i]);
-            // std::cout << inFields[i] << std::endl;
         }
         return ssOb->initialize_msgStruct(inFields);
     }
@@ -71,14 +73,11 @@ extern "C"{
 
     int EXPORT ss_set_clientName(socketStream *ssOb, char* cID){
         std::string clientID (cID);
-        // std::cout << clientID << std::endl;
         return ssOb->set_clientName(clientID);
     }
 
-    int EXPORT ss_updateMSG_char(socketStream *ssOb, char* field, char *value){
+    int EXPORT ss_updateMSG_char(socketStream *ssOb, char* field, const char *value){
         std::string inField(field);
-        std::string inValue(value);
-        std::cout << inValue << std::endl;
         return ssOb->updateMSG(inField, value);
     }
 
@@ -102,26 +101,97 @@ extern "C"{
         return ssOb->updateMSG(inField, value, arraylength);
     }
 
-    int EXPORT ss_updateMSG_matInt(socketStream *ssOb, char* field, int **value, int x_length, int *y_length){
+    int EXPORT ss_updateMSG_matInt(socketStream *ssOb, char* field, int *value, int x_length, int y_length){
         std::string inField(field);
-        std::vector< std::vector<int> > inValue(x_length, std::vector<int>());
+        std::vector< std::vector<int> > inValue(x_length, std::vector<int>(y_length));
         for (int i=0; i<x_length; i++){
-            inValue[i]=std::vector<int>(*value[i], y_length[i]);
+            inValue[i]=std::vector<int>(value + i*y_length, value + (i+1)*y_length);
         }
         return ssOb->updateMSG(inField, inValue);
     }
 
-    int EXPORT ss_updateMSG_matDouble(socketStream *ssOb, char* field, double **value, int x_length, int *y_length){
+    int EXPORT ss_updateMSG_matDouble(socketStream *ssOb, char* field, double *value, int x_length, int y_length){
         std::string inField(field);
-        std::vector< std::vector<double> > inValue(x_length, std::vector<double>());
+        std::vector< std::vector<double> > inValue(x_length, std::vector<double>(y_length));
         for (int i=0; i<x_length; i++){
-            inValue[i]=std::vector<double>(*value[i], y_length[i]);
+            inValue[i]=std::vector<double>(value + i*y_length, value + (i+1)*y_length);
         }
         return ssOb->updateMSG(inField, inValue);
+    }
+
+    int EXPORT ss_sendMsg(socketStream *ssOb){
+        return ssOb->sendMSg();
+    }
+
+    int EXPORT ss_sendMSg2Client_int(socketStream *ssOb, int clID){
+        return ssOb->sendMSg2Client(clID);
+    }
+
+    int EXPORT ss_sendMSg2Client_str(socketStream *ssOb, const char *clID){
+        std::string clID_str(clID);
+        return ssOb->sendMSg2Client(clID_str);
+    }
+
+    int EXPORT ss_sendMSg2All(socketStream *ssOb){
+        return ssOb->sendMSg2All();
     }
 
     void EXPORT ss_closeCommunication(socketStream* ssObj){
         ssObj->closeCommunication();
         delete ssObj;
+        free(returnedMsgStr);
     }
+
+    int EXPORT ss_setHashKey(socketStream* ssObj, bool hKey){
+        return ssObj->setHashKey(hKey);
+    }
+
+    int EXPORT ss_setVerbose(socketStream* ssObj, bool _verbose){
+        return ssObj->setVerbose(_verbose);
+    }
+
+    int EXPORT ss_setHeaderSize(socketStream* ssObj, int hSize){
+        if (hSize<0){
+            std::cout << "[socketStream] The size of the header should be greater than zero" << std::endl;
+            return -1;
+        }else{
+            return ssObj->setHeaderSize((unsigned int)hSize);
+        }
+    }
+
+    char* EXPORT ss_getFullmsg(socketStream* ssObj){
+        std::string tt = ssObj->getFullmsg();
+        returnedMsgStr = (char *) realloc(returnedMsgStr, sizeof(char) * tt.length() ); 
+        if( returnedMsgStr == NULL) exit(1);
+        strcpy(returnedMsgStr , tt.c_str());
+        // strcat(returnedMsgStr, "\n");
+        return returnedMsgStr;
+    }
+
+    int EXPORT ss_runServer(socketStream* ssObj){
+        return ssObj->runServer();
+    }
+
+    const char* EXPORT ss_get_latest(socketStream* ssObj, bool *newMSG){
+        std::string tt = ssObj->get_latest(newMSG);
+        // std::cout << strlen(returnedMsgStr) << ", " << tt.length() << std::endl;
+        returnedMsgStr = (char *) realloc(returnedMsgStr, sizeof(char) * tt.length() ); // + (size_t)1 
+        if( returnedMsgStr == NULL) exit(1);
+        strcpy(returnedMsgStr , tt.c_str());
+        return returnedMsgStr;
+    }
+
+    const char* EXPORT ss_get_latest_fromClient(socketStream* ssObj, const char* cltName, bool *newMSG){
+        std::string cName(cltName);
+        std::string tt = ssObj->get_latest(cName, newMSG);
+        returnedMsgStr = (char *) realloc(returnedMsgStr, sizeof(char) * tt.length() ); // + (size_t)1 
+        if (returnedMsgStr == NULL) exit(1);
+        strcpy(returnedMsgStr , tt.c_str());
+        return returnedMsgStr;
+    }
+
+    bool EXPORT ss_socketStream_ok(socketStream* ssObj){
+        return ssObj->socketStream_ok();
+    }
+
 }

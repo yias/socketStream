@@ -651,9 +651,13 @@ int socketStream::updateMSG(std::string field, const char *value){
 
     if(msgInitilized){
         if(dDoc.HasMember(field.c_str())){
-            dDoc[field.c_str()].SetString(value, strlen(value));
+            rapidjson::Value a;
+            a.SetString(value, std::strlen(value), this->dDoc.GetAllocator());
+            // dDoc[field.c_str()].SetString(value, strlen(value));
+            dDoc[field.c_str()] = a;
         }else{
             std::cerr << "[socketStream] Not valid field name" << std::endl;
+            return -2;
         }
     }else{
         std::cerr << "[socketStream] The message struct is NOT initialized" << std::endl;
@@ -992,7 +996,6 @@ int socketStream::printMSGcontents(){
 int socketStream::printMSGcontentsTypes(){
 
     // print the types of the message contains
-
     if(msgInitilized){
         static const char* kTypeNames[] = { "Null", "False", "True", "Object", "Array", "String", "Number" };
         std::cout<< "[socketStream] Message contens types:" << std::endl;
@@ -1034,15 +1037,15 @@ int socketStream::sendMSg(){
      * 
      */
     
-
+    
     if(msgInitilized){
-
+        
         // clear the buffers
         str_buffer.Clear();
         final_msg.clear();
         msg2send.clear();
         msgHeader = std::string(headerSize, ' ');
-
+        
         // rapidjson::Writer<rapidjson::StringBuffer> writer(str_buffer);
 
         // get the json object in a string format
@@ -1063,7 +1066,7 @@ int socketStream::sendMSg(){
             std::string md5_key = md5(msg2send.c_str());
             msg2send += md5_key;
         }
-        
+
         // compute the overhead of the message
         msgOverhead = (int((msg2send.length()+minMsgSize)/bufferSize)+1)*bufferSize - (msg2send.length()+minMsgSize);
 

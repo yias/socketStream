@@ -80,12 +80,7 @@ generateSOx64:
 	$(info $(greenC)$(boldT) --> generating shared object x64 $(yellowC)==>$(reset))
 	@$(CXX) $(CXXFLAGS) $(CXX_x64_FLAG) \
 	-shared -o $(LINUX_LIB_X64)/libsocketStream.so.1.0.1 \
-	$(_OBJSx64) \
-<<<<<<< HEAD
-	$(INCLUDE_PARAMS) $(LIBS) -lc
-=======
-	$(INCLUDE_PARAMS) -lc $(LIBS)
->>>>>>> 7cf76fae53c40aaf75ddbdc96dd49af1d9c41130
+	$(_OBJSx64) $(INCLUDE_PARAMS) $(LIBS) -lc
 	@if test $$? -eq 0;\
 	then tput setaf 4; tput bold; echo " --> OK"; tput sgr0; \
 	fi
