@@ -77,7 +77,7 @@ generateSOx64:
 	@$(CXX) $(CXXFLAGS) $(CXX_x64_FLAG) \
 	-shared -Wl,-soname,$(LINUX_LIB_X64)/libsocketStream.so.1 -o $(LINUX_LIB_X64)/libsocketStream.so.1.0.1 \
 	$(_OBJSx64) \
-	$(INCLUDE_PARAMS) -lc
+	$(INCLUDE_PARAMS) $(LIBS) -lc
 	@if test $$? -eq 0;\
 	then tput setaf 4; tput bold; echo " --> OK"; tput sgr0; \
 	fi
