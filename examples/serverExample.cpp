@@ -55,7 +55,8 @@ int main(int argc, char **argv){
 
         if(svrHdlr.socketStream_ok()){
             // if the socketStream server is active, receive a message from the client with the name "py_example"
-            msg = svrHdlr.get_latest("sendWtime", &isNew);
+            // msg = svrHdlr.get_latest("sendWtime", &isNew);
+            msg = svrHdlr.get_latest(&isNew);
             if(isNew){
                 // if the message is new:
                 // parse the json string in a json document
@@ -73,7 +74,7 @@ int main(int argc, char **argv){
                 // }
 
                 // // the message in a raw (string) format
-                // std::cout << msg << std::endl;
+                std::cout << msg << std::endl;
             }
         }
 

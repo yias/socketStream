@@ -7,13 +7,13 @@
     This scripts is an example on how to use the socketStream server for listening to inputs from a client
 """
 
-import socketStream
 import argparse
 import numpy as np
+from socketStream_py import socketStream
 
 
 def main(args):
-    sockClient = socketStream.socketStream(IPaddress = args.host, port = args.port, bufferSize = args.buffersize, isServer = False)
+    sockClient = socketStream.socketStream(svrIP = args.host, svrPort = args.port, socketStreamMode = 0)
 
     sockClient.set_clientName("py_example")
 
@@ -23,12 +23,15 @@ def main(args):
 
     sockClient.updateMSG("data", [[2.4,5.6,783.01],[34,55.6,1.2]])
 
-    sockClient.make_connection()
+    everything_ok = False
+    if sockClient.initialize_socketStream() == 0:
+        if sockClient.make_connection() == 0:
+            everything_ok = True
 
-    if sockClient.isConnected():
-        sockClient.sendMSG()
+    if everything_ok:
+        sockClient.sendMsg()
     
-    sockClient.close_communication()
+    sockClient.closeCommunication()
 
 
 

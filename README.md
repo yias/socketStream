@@ -14,55 +14,16 @@ To install the library on a Linux PC (having cloned rapidjson as the included su
 $ make
 $ sudo make install
 ```
-If you don't want to have rapidjson as a submodule, follow the following steps to set it as an external dependency and change the path to the include files in the make file.
+Optionally, you can run the command "sudo ldconfig" for updating the list of shared library. 
 
-1) Open a terminal or command prompt (on Windows) and navigate to your workspace. In your workspace folder, create a folder called "dependencies" to contain the cpp dependencies (if it doesn't already exist)
-
+To install the Python module, run the following command from the main folder of the package.
 ```bash
-$ mkdir dependencies
+$ python socketStream_py/setup.py install
 ```
 
-2) go inside the folder dependencies and clone the rapidjson library from their [github repo](https://github.com/Tencent/rapidjson/)
+If you don't want to have rapidjson as a submodule, follow the steps in the end of the readme file.
 
-```bash
-$ cd dependencies
-$ git clone https://github.com/Tencent/rapidjson.git
-```
 
-3) create an environment variable to contain the path of the dependencies directory
-
--- On Linux
-
-Open the .bashrc file in your hone directory
-
-```bash
-$ cd
-$ sudo gedit .bashrc
-```
-
-add the following line at the end of the file
-
-export CPP_DEPENDENCIES="PATH/TO/DEPENDENCIES/DIRECTORY/dependencies"
-
-*the "PATH/TO/DEPENDENCIES/DIRECTORY" corresponds to the path where of the folder "dependencies" that is created on the 1st step. If you don't know the path, navigate to the folder "dependencies" in a terminal (or command prompt on Windows) and type "pwd", it will print the path of this directory 
-
-close the .bashrc file and relaunch the terminal. If you want to be sure that the variable is set properly, type the following command in the terminal (or command prompt on Windows)
-
-```bash
-$ echo $CPP_DEPENDENCIES
-```
-
-and it should print the path on the folder "dependencies"
-
--- On Windows
-
-![](docs/pics/windows_env_variables_directions.png)
-
-4) clone the socketStream package in workspace directory
-
-```bash
-$ git clone https://github.com/yias/socket_jsonCpp.git
-```
 
 ## Building and running the examples
 As the prokect has been developed on VSCode, the file "tasks.json" inside the folder ".vscode" contains the compiler's commands to build the examples in the "examples" folder. If you have VSCode installed on your system, open a terminal on Linux or a command promt on Windows (preferably a [PowerShell](https://github.com/PowerShell/PowerShell)), navigate to the project's folder and rum the command:
@@ -337,4 +298,56 @@ fatal error: bits/c++config.h: No such file or directory
 then install g++-multilib to your machine: 
 ```bash
 $ sudo apt install g++-multilib
+```
+
+## rapidjson as an external dependency
+
+to set it as an external dependency and change the path to the include files in the make file.
+
+1) Open a terminal or command prompt (on Windows) and navigate to your workspace. In your workspace folder, create a folder called "dependencies" to contain the cpp dependencies (if it doesn't already exist)
+
+```bash
+$ mkdir dependencies
+```
+
+2) go inside the folder dependencies and clone the rapidjson library from their [github repo](https://github.com/Tencent/rapidjson/)
+
+```bash
+$ cd dependencies
+$ git clone https://github.com/Tencent/rapidjson.git
+```
+
+3) create an environment variable to contain the path of the dependencies directory
+
+-- On Linux
+
+Open the .bashrc file in your hone directory
+
+```bash
+$ cd
+$ sudo gedit .bashrc
+```
+
+add the following line at the end of the file
+
+export CPP_DEPENDENCIES="PATH/TO/DEPENDENCIES/DIRECTORY/dependencies"
+
+*the "PATH/TO/DEPENDENCIES/DIRECTORY" corresponds to the path where of the folder "dependencies" that is created on the 1st step. If you don't know the path, navigate to the folder "dependencies" in a terminal (or command prompt on Windows) and type "pwd", it will print the path of this directory 
+
+close the .bashrc file and relaunch the terminal. If you want to be sure that the variable is set properly, type the following command in the terminal (or command prompt on Windows)
+
+```bash
+$ echo $CPP_DEPENDENCIES
+```
+
+and it should print the path on the folder "dependencies"
+
+-- On Windows
+
+![](docs/pics/windows_env_variables_directions.png)
+
+4) clone the socketStream package in workspace directory
+
+```bash
+$ git clone https://github.com/yias/socket_jsonCpp.git
 ```

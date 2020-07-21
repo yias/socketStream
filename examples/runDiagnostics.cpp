@@ -15,7 +15,7 @@
 #include <random>
 #include <codecvt>
 
-#ifdef defined(__linux__) || defined(__APPLE__)
+#ifdef __linux__ || __APPLE__
 #include <sys/stat.h>
 #include <sys/types.h>
 #endif
@@ -29,7 +29,7 @@ std::vector< std::vector<double> > random2Dmatrix(unsigned int rows, unsigned in
 // function to run the diagnostics
 int cTimings(int samples_window, int nb_channels, std::string sfield, socketStream& socketHdlr, std::ofstream& wfile); 
 
-#ifdef defined(__linux__) || defined(__APPLE__)
+#ifdef __linux__ || __APPLE__
     int dirExists(std::string tpath);
 #endif
 

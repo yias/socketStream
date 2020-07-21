@@ -7,13 +7,16 @@
     This scripts is an example on how to use the socketStream client for listening messages from a server
 """
 
-import socketStream
 import argparse
 import numpy as np
+from socketStream_py import socketStream
+import time
 
 
 def main(args):
-    sockClient = socketStream.socketStream(IPaddress = args.host, port = args.port, bufferSize = args.buffersize, isServer = False)
+    sockClient = socketStream.socketStream(svrIP = args.host, svrPort = args.port, socketStreamMode = 0)
+
+    # sockClient.setBufferSize(args.buffersize)
 
     sockClient.set_clientName("py_listener_example")
 
@@ -21,29 +24,33 @@ def main(args):
 
     sockClient.updateMSG("name","Mary")
 
-    sockClient.updateMSG("data", [[2.4,5.6,783.01],[34,55.6,1.2]])
+    sockClient.updateMSG("data", np.array([[2.4,5.6,783.01],[34,55.6,1.2]]))
 
-    sockClient.make_connection()
+    everything_ok = False
+    if sockClient.initialize_socketStream() == 0:
+        if sockClient.make_connection() == 0:
+            everything_ok = True
 
-    if sockClient.isConnected():
+    if everything_ok:
 
         while(True):
             try:
 
                 if sockClient.socketStream_ok():
-                    tt, isnew = sockClient.get_latest()
-
-                    if isnew:
-                        test = tt.get("data")
-                        rt = np.array(test, dtype=np.float32)
+                    msg = sockClient.get_latest()
+                    print(msg)
+                    if msg is not None:
+                        msg_data = msg["data"]
+                        rt = np.array(msg_data, dtype=np.float32)
                         print(rt.shape)
-                    # print(rt)
-                    sockClient.sendMSG()
+                        # print(rt)
+                    sockClient.sendMsg()
+                    time.sleep(0.5)
             except KeyboardInterrupt:
                 break
            
     
-    sockClient.close_communication()
+    sockClient.closeCommunication()
 
 
 

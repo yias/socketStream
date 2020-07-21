@@ -16,10 +16,10 @@ char *returnedMsgStr;
 
 extern "C"{
     EXPORT socketStream* create_socketStream(const char* svrIPAddress, int srvPosrt, int socketStreamMode){
-        // std::string hIP (svrIPAddress);
-        // std::cout << hIP << std::endl;
+        
         /* Initial memory allocation */
         returnedMsgStr = (char *) malloc(15);
+
         return new socketStream(svrIPAddress, srvPosrt, socketStreamMode);
     }
 
@@ -164,7 +164,6 @@ extern "C"{
         returnedMsgStr = (char *) realloc(returnedMsgStr, sizeof(char) * tt.length() ); 
         if( returnedMsgStr == NULL) exit(1);
         strcpy(returnedMsgStr , tt.c_str());
-        // strcat(returnedMsgStr, "\n");
         return returnedMsgStr;
     }
 
@@ -173,10 +172,14 @@ extern "C"{
     }
 
     const char* EXPORT ss_get_latest(socketStream* ssObj, bool *newMSG){
+        
         std::string tt = ssObj->get_latest(newMSG);
-        // std::cout << strlen(returnedMsgStr) << ", " << tt.length() << std::endl;
+        if (tt.length()==0){
+            tt = " ";
+        }
+        
         returnedMsgStr = (char *) realloc(returnedMsgStr, sizeof(char) * tt.length() ); // + (size_t)1 
-        if( returnedMsgStr == NULL) exit(1);
+        
         strcpy(returnedMsgStr , tt.c_str());
         return returnedMsgStr;
     }
@@ -184,8 +187,11 @@ extern "C"{
     const char* EXPORT ss_get_latest_fromClient(socketStream* ssObj, const char* cltName, bool *newMSG){
         std::string cName(cltName);
         std::string tt = ssObj->get_latest(cName, newMSG);
+        if (tt.length()==0){
+            tt = " ";
+        }
         returnedMsgStr = (char *) realloc(returnedMsgStr, sizeof(char) * tt.length() ); // + (size_t)1 
-        if (returnedMsgStr == NULL) exit(1);
+        // if (returnedMsgStr == NULL) exit(1);
         strcpy(returnedMsgStr , tt.c_str());
         return returnedMsgStr;
     }

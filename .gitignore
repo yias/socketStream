@@ -3,6 +3,8 @@ logfiles/
 data/
 build/
 pyTCP/__pycache__/
+socketStream_py.egg-info/socketStream_py.egg-info
+socketStream_py.egg-info
 
 # ignore all the *.obj files
 *.obj

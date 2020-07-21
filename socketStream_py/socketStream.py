@@ -6,491 +6,237 @@
 	Maintaner: Iason Batzianoulis
 	email: iasonbatz@gmail.com
 	Description: 
-	This scripts defines a class that handles a TCP/IP server for listening to inputs from a client
+	Python interface of socketStream
+     a class that handles 
 
     License:    GNU GPLv3
 """
 
-# import standard modules 
-import numpy as np
-import argparse
-import hashlib
-import random
-import string
-
-# import modules for socket programming (TCP/IP connection)
-import socket
 import sys
+import ctypes
+import numpy as np
 import json
-
-# import modules for theading programming
-import threading
 import time
 
-class socketStream():
-    def __init__ (self, IPaddress = 'localhost', port = 10352, bufferSize = 128, isServer= True):
-        # Create a TCP/IP socket
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-        # Bind the socket to the port
-        self.server_address = (IPaddress, port)
-
-        print('[socketStream] Starting up on %s port %s' % self.server_address)
-
-        self.isServer = isServer
-
-        # define buffer size
-        self.BUFFER_SIZE = bufferSize
-
-        # define a header size of the message
-        self.HEADERSIZE = 8
-
-        # define message identifier
-        self.msg_idf = "!&?5"
-
-        # end-of-message identifier
-        self.endMSG = "!3tt"
-
-        # end-connection identifier
-        self.ec_id = "\ne@c"
-
-        # clients name
-        self.clientName = ''
-
-        # the number of digits of the buffersize
-        self.bfrDigits = len(str(self.BUFFER_SIZE))
-
-        # the lenght of the message identifier
-        self.msg_idf_len = len(self.msg_idf)
-
-        # minimum size of the packet
-        self.minMsgSize = len(self.msg_idf) + self.HEADERSIZE + len(self.endMSG) + self.bfrDigits+1
-
-        # the use or no of checksum
-        self.useHashKey = True
-
-        self.connection_exist = False
-
-        self.isComActive = False
-
-        if self.isServer:
-            print("[socketStream] Server mode")
-            self.sock.bind(self.server_address)
-            # listen for new connections
-            self.sock.settimeout(2)
-            self.sock.listen(1)
-            self.serverRunnig = True
-            self.serverThread = threading.Thread(target = self.wait_connections, args = ())
-            self.serverThread.daemon = True
-            self.serverThread.start()
-            self.ReceiverThread = threading.Thread(target=self.runReceiver, args = ())
-            self.ReceiverThread.daemon = True
-            self.lock = threading.Lock()
-            self.firstValueReceived = False
-        else:
-            print("[socketStream] Client mode")
-            self.ReceiverThread = threading.Thread(target=self.runReceiver, args = ())
-            self.ReceiverThread.daemon = True
-            self.lock = threading.Lock()
-            self.firstValueReceived = False
-            self.isNewMSG = False
-            self.serverRunnig = False
-
-        self.hc_check=hashlib.md5()
-
-        self.msg_data = {}
-
-        self.received_msg = {}
-
-        
-
-    def msgExtractor(self, msg):
-        msgSize=int(msg[:self.HEADERSIZE])
-        msgOverhead = int(msg[self.HEADERSIZE+1:self.HEADERSIZE+1+self.bfrDigits])
-        tmp_msg=msg[self.HEADERSIZE+1+self.bfrDigits:self.HEADERSIZE+1+self.bfrDigits+msgSize]
-        if(int(msg[self.HEADERSIZE])==1):
-            hashcode=msg[self.HEADERSIZE+1+self.bfrDigits+msgSize:-msgOverhead-len(self.endMSG)]
-            checksum=hashlib.md5()
-            checksum.update(tmp_msg)
-            if checksum.hexdigest()==hashcode:
-                return True, tmp_msg
-            else:
-                return False, ''
-        else:
-            return True, tmp_msg
-
-    def randomString(self, strlength=10):
-        letters = string.ascii_lowercase
-        return ''.join(random.choice(letters) for i in range(strlength))
-
-    def handShake_client(self,conn, strlength):
-    
-        ping_times=np.empty([10,1], dtype=np.float64)
-        compute_times=np.empty([10,1], dtype=np.float64)
-        validity_counter=np.empty([10,1], dtype=bool)
-        t_time0=0.0
-
-        # receive and send random msgs to the client 10 times
-        for i in range(10):
-            msg_full=''
-            while (True):
-                dataT=conn.recv(self.BUFFER_SIZE)
-                msg_full+=dataT.decode("utf-8")
-                if msg_full[-4:]==self.endMSG:
-                    break
-
-            if t_time0!=0.0:
-                ping_times[i-1]=time.time()-t_time0
-            t_time=time.time()
-            msg_validity, tr_msg = self.msgExtractor(msg_full[len(self.msg_idf):])
-            validity_counter[i]=msg_validity
-
-            dcdr=hashlib.md5()
-            test_msg=self.randomString(strlength)
-            dcdr.update(test_msg.encode('utf-8'))
-            chSum=dcdr.hexdigest()
-            msg_len=('{:<'+str(self.HEADERSIZE)+'}').format(str(len(test_msg)))
-
-            # compute the overhead of the message
-            ranString = test_msg + chSum
-            msgOverhead = (int((len(ranString)+self.minMsgSize)/self.BUFFER_SIZE)+1)*self.BUFFER_SIZE - (len(ranString)+self.minMsgSize)
-            overheadStr = " " * msgOverhead
-            msgOverheadSize = ('{:<'+str(self.bfrDigits)+'}').format(str(msgOverhead))
-            compute_times[i]=time.time()-t_time
-            msg2send = self.msg_idf+msg_len+str(int(self.useHashKey))+msgOverheadSize+(test_msg)+chSum+overheadStr+self.endMSG
-            conn.sendall(msg2send.encode('utf-8'))
-            t_time0=time.time()
-
-        msg_full=''
-        if((1*(validity_counter)).mean()>0.9):
-            while (True):
-                dataT=conn.recv(self.BUFFER_SIZE)
-                msg_full+=dataT.decode('utf-8')
-                if msg_full[-4:]==self.endMSG:
-                    break
-
-            msg_validity, tr_msg = self.msgExtractor(msg_full[len(self.msg_idf):])
-            self.clientName = tr_msg
-            print('[socketStream] Compute times: %s %s %s s' %(compute_times.mean(), u'\u00b1', compute_times.std()))
-            print('[socketStream] Ping times:  %s %s %s s' %(ping_times[:9].mean(), u'\u00b1', ping_times[:9].std()))
-            return True
-        else:
-            print('[socketStream] Communication is not valid')
-            return False
-
-    def handShake_server(self, strlength):
-        
-        ping_times=np.empty([10,1], dtype=np.float64)
-        compute_times=np.empty([10,1], dtype=np.float64)
-        validity_counter=np.empty([10,1], dtype=bool)
-        t_time0=0.0
-
-        # receive and send random msgs to the client 10 times
-        for i in range(10):
-            dcdr=hashlib.md5()
-            test_msg=self.randomString(strlength)
-            dcdr.update(test_msg.encode('utf-8'))
-            chSum=dcdr.hexdigest()
-            msg_len=('{:<'+str(self.HEADERSIZE)+'}').format(str(len(test_msg)))
-
-            # compute the overhead of the message
-            ranString = test_msg + chSum
-
-            msgOverhead = (int((len(ranString)+self.minMsgSize)/self.BUFFER_SIZE)+1)*self.BUFFER_SIZE - (len(ranString)+self.minMsgSize)
-            overheadStr = " " * msgOverhead
-            compute_times[i]=time.time()-t_time0
-            msgOverheadSize = ('{:<'+str(self.bfrDigits)+'}').format(str(msgOverhead))
-
-            msg2send = self.msg_idf+msg_len+str(int(self.useHashKey))+msgOverheadSize+(test_msg)+chSum+overheadStr+self.endMSG
-
-            self.sock.sendall(msg2send.encode('utf-8'))
-            t_time0=time.time()
-            
-            msg_full=''
-            while (True):
-                dataT=self.sock.recv(self.BUFFER_SIZE)
-                msg_full+=dataT.decode("utf-8")
-                if msg_full[-4:]==self.endMSG:
-                    break
-
-            ping_times[i]=time.time()-t_time0
-            t_time0=time.time()
-            msg_validity, tr_msg = self.msgExtractor(msg_full[len(self.msg_idf):].encode('utf-8'))
-            validity_counter[i]=msg_validity
-
-            
-
-        if((1*(validity_counter)).mean()>0.9):
-            dcdr=hashlib.md5()
-            test_msg=self.clientName
-            dcdr.update(test_msg.encode('utf-8'))
-            chSum=dcdr.hexdigest()
-            msg_len=('{:<'+str(self.HEADERSIZE)+'}').format(str(len(test_msg)))
-            # compute the overhead of the message
-            ranString = test_msg + chSum
-
-            msgOverhead = (int((len(ranString)+self.minMsgSize)/self.BUFFER_SIZE)+1)*self.BUFFER_SIZE - (len(ranString)+self.minMsgSize)
-            msgOverheadSize = ('{:<'+str(self.bfrDigits)+'}').format(str(msgOverhead))
-            overheadStr = " " * msgOverhead
-            compute_times[i]=time.time()-t_time0
-            msg2send = self.msg_idf+msg_len+str(int(self.useHashKey))+msgOverheadSize+(test_msg)+chSum+overheadStr+self.endMSG
-            # print(msg2send)
-            self.sock.sendall(msg2send.encode('utf-8'))
-
-            print('[socketStream] Compute times: %s %s %s s' %(compute_times.mean(), u'\u00b1', compute_times.std()))
-            print('[socketStream] Ping times:  %s %s %s s' %(ping_times.mean(), u'\u00b1', ping_times.std()))
-            return True
-        else:
-            print('[socketStream] Communication is not valid')
-            return False
-
-    def run(self):
-        print('[socketStream] Waiting for a connections ... ')
-        counter = 0
-        while(not self.connection_exist):
-            # print(counter)
-            counter +=1
-            try:
-                # check if any connection inquire exists and accept it
-
-                self.connection, self.client_address = self.sock.accept()
-                self.connection_exist = True
-                print('[socketStream] Connection from ', self.client_address)
-
-                counter = 0
-                while(True):
-                # retrieve the message identifier. once it is received, compose the message
-                    data=self.connection.recv(self.BUFFER_SIZE)
-                    data_check = data[:self.msg_idf_len]
-                    counter+=1
-                    print("messages received",counter)
-                    if data_check.decode('utf-8')==self.msg_idf:
-                        # receive bytes until the full message is received
-                        full_msg=data[self.msg_idf_len:].decode("utf-8")
-                        while (True):
-                            dataT=self.connection.recv(self.BUFFER_SIZE)
-                            full_msg+=dataT.decode("utf-8") 
-                            if full_msg[-4:]==self.endMSG:
-                                break
-
-                        # extract message
-                        msg_validity, tr_msg = self.msgExtractor(full_msg)
-                        if msg_validity:
-                            self.msg_data=json.loads(tr_msg)
-                            # print(self.msg_data.get("name"))
-
-                    if  data_check.decode('utf-8')==self.ec_id:
-                        # if end-of-communication identifier received, terminate the connection
-                        print('[socketStream] Connection terminated by client ', self.client_address)
-                        self.connection.close()
-                        self.connection_exist = False
-                        break
-
-            # except socket.timeout as e:
-            # 	print("socket timeout. retry")
-            # 	pass
-            except KeyboardInterrupt:
-                # if Ctrl+C is pressed in the keyboard, close the connections (if any) and exit
-                if self.connection_exist:
-                    self.connection.close()
-                    self.connection_exist = False
-                break
-            finally:
-                pass
-                # print('Waiting for new clients ....')
-        print("exit")
-        
-    def close_communication(self):
-        # close communications
-        if not self.isServer:
-            self.sock.sendall(self.ec_id.encode('utf-8'))
-            self.lock.acquire()
-            self.connection_exist = False
-            self.lock.release()
-            self.ReceiverThread.join()
-            # self.connection.close()
-        else:
-            self.lock.acquire()
-            self.serverRunnig = False
-            self.lock.release()
-            self.serverThread.join()
-            
-
-        if self.connection_exist:
-            self.lock.acquire()
-            self.connection.close()
-            self.connection_exist = False
-            self.lock.release()
-
-        self.sock.close()
-        print('[socketStream] All connections killed')
-
-    def runReceiver(self):
-        counter=0
-        while(self.connection_exist):
-
-            # retrieve the message identifier. once it is received, compose the message
-            data=self.sock.recv(self.BUFFER_SIZE)
-            
-            data_check = data[:self.msg_idf_len]
-            
-            if data_check.decode('utf-8')==self.msg_idf:
-                counter+=1
-                # receive bytes until the full message is received
-                full_msg=data[self.msg_idf_len:]#.decode("utf-8")
-                while (True):
-                    dataT=self.sock.recv(self.BUFFER_SIZE)
-                    full_msg+=dataT#.decode("utf-8")
-                    if full_msg[-len(self.endMSG):].decode('utf-8')==self.endMSG:
-                        break
-
-                # extract message
-                msg_validity, tr_msg = self.msgExtractor(full_msg)
-                if msg_validity:
-                    # print('new msg received')
-                    self.msg_data = json.loads(tr_msg)
-                    self.received_msg = json.loads(tr_msg)
-                    if not self.firstValueReceived:
-                        self.firstValueReceived = True
-                    if not self.isNewMSG:
-                        self.isNewMSG = True
-
-            if  data_check.decode('utf-8')==self.ec_id:
-                # if end-of-communication identifier received, terminate the connection
-                if self.isServer:
-                    print('[socketStream] Connection terminated by client ', self.client_address)
-                else:
-                    print('[socketStream] Connection terminated by server')
-
-                if self.isServer:
-                    self.connection.close()
-                else:
-                    self.sock.close()
-                self.connection_exist = False
-                self.firstValueReceived = False
-                break
-            
-            if self.isServer:
-                if not self.serverRunnig:
-                    break
-
-        if self.connection_exist:
-            if self.isServer:
-                self.connection.close()
-            self.connection_exist = False
-        if self.isServer:
-            print('[socketStream] Stop receiving from client')
-        else:
-            print('[socketStream] Stop receiving from server')
-
-    def get_latest(self):
-        self.lock.acquire()
-        if self.isServer:
-            trace = self.msg_data
-        else:
-            trace = self.received_msg
-            isNew = self.isNewMSG
-        if self.isNewMSG:
-            self.isNewMSG = False
-        self.lock.release()
-        return trace, isNew
-
-    def isClientConnected(self):
-        return self.connection_exist
-
-    def isFirstMsgReceived(self):
-        return self.firstValueReceived
-
-    def isServerRunning(self):
-        return self.serverRunnig
-
-    def socketStream_ok(self):
-        if self.isServer:
-            return (self.serverRunnig and self.connection_exist and self.firstValueReceived)
-        else:
-            return (self.connection_exist and self.firstValueReceived)
-
-    def set_data(self, msg):
-        self.msg_data = msg
-
-    def start_receiveing(self):
-        self.ReceiverThread.start()
-
-    def wait_connections(self):
-        print('[socketStream] Waiting for connections ... ')
-        while(self.serverRunnig):
-            try:
-                # check if any connection inquire exists and accept it
-                self.connection, self.client_address = self.sock.accept()
-                conn_validity = self.handShake_client(self.connection, 10)
-                if conn_validity:
-                    print("[socketStream] Connection from " + self.client_address[0] + " with ID: " + self.clientName)
-                    testThrd = threading.Thread(target=self.runReceiver, args = ())
-                    testThrd.daemon = True
-                    self.connection_exist = True
-                    testThrd.start()
-                    testThrd.join()
-                else:
-                    print("[socketStream] Handshake protocol failed! Connection from " + self.client_address[0] + " with ID: " + self.clientName + "is rejected.")
-            except socket.timeout:
-                pass
-
-
-    def isConnected(self):
-        return self.isComActive
-
-    def set_clientName(self, cID):
-        self.clientName = cID
+
+if sys.platform == 'linux':
+    lib = ctypes.cdll.LoadLibrary('libsocketStream.so')
+else:
+    lib = ctypes.cdll.LoadLibrary('..\\bin\\win32\\dll\\x64\\libsocketStream.dll')
+
+
+class socketStream(object):
+    def __init__(self, svrIP="localhost", svrPort=10352, socketStreamMode=0):
+        lib.create_socketStream.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_int]
+        lib.create_socketStream.restype = ctypes.c_void_p
+
+        lib.ss_initialize.argtypes = [ctypes.c_void_p]
+        lib.ss_initialize.restype = ctypes.c_int
+
+        lib.ss_make_connection.argtypes = [ctypes.c_void_p]
+        lib.ss_make_connection.restype = ctypes.c_int
+
+        lib.ss_setBufferSize.argtypes = [ctypes.c_void_p, ctypes.c_int]
+        lib.ss_setBufferSize.restype = ctypes.c_int
+
+        lib.ss_closeCommunication.argtypes = [ctypes.c_void_p]
+        lib.ss_closeCommunication.restype = ctypes.c_void_p
+
+        lib.ss_initialize_msgStruct.argtypes = [ctypes.c_void_p, ctypes.POINTER(ctypes.c_char_p), ctypes.c_int]
+        lib.ss_initialize_msgStruct.restype = ctypes.c_int
+
+        lib.ss_printMSGcontents.argtypes = [ctypes.c_void_p]
+        lib.ss_printMSGcontents.restype = ctypes.c_int
+
+        lib.ss_printMSGcontentsTypes.argtypes = [ctypes.c_void_p]
+        lib.ss_printMSGcontentsTypes.restype = ctypes.c_int
+
+        lib.ss_printMSGString.argtypes = [ctypes.c_void_p]
+        lib.ss_printMSGString.restype = ctypes.c_int
+
+        lib.ss_set_clientName.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
+        lib.ss_set_clientName.restype = ctypes.c_int
+
+        lib.ss_updateMSG_char.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_char_p]
+        lib.ss_updateMSG_char.restype = ctypes.c_int
+
+        lib.ss_updateMSG_int.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_int]
+        lib.ss_updateMSG_int.restype = ctypes.c_int
+
+        lib.ss_updateMSG_double.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_double]
+        lib.ss_updateMSG_double.restype = ctypes.c_int
+
+        lib.ss_updateMSG_intArray.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.POINTER(ctypes.c_int), ctypes.c_int]
+        lib.ss_updateMSG_intArray.restype = ctypes.c_int
+
+        lib.ss_updateMSG_doubleArray.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.POINTER(ctypes.c_double), ctypes.c_int]
+        lib.ss_updateMSG_doubleArray.restype = ctypes.c_int
+
+        lib.ss_updateMSG_matInt.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.POINTER(ctypes.c_int), ctypes.c_int, ctypes.c_int]
+        lib.ss_updateMSG_matInt.restype = ctypes.c_int
+
+        lib.ss_updateMSG_matDouble.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.POINTER(ctypes.c_double), ctypes.c_int, ctypes.c_int]
+        lib.ss_updateMSG_matDouble.restype = ctypes.c_int
+
+        lib.ss_sendMsg.argtypes = [ctypes.c_void_p]
+        lib.ss_sendMsg.restype = ctypes.c_int
+
+        lib.ss_sendMSg2Client_int.argtypes = [ctypes.c_void_p, ctypes.c_int]
+        lib.ss_sendMSg2Client_int.restype = ctypes.c_int
+
+        lib.ss_sendMSg2Client_str.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
+        lib.ss_sendMSg2Client_str.restype = ctypes.c_int
+
+        lib.ss_sendMSg2All.argtypes = [ctypes.c_void_p]
+        lib.ss_sendMSg2All.restype = ctypes.c_int
+
+        lib.ss_make_connection.argtypes = [ctypes.c_void_p]
+        lib.ss_make_connection.restype = ctypes.c_int
+
+        lib.ss_setHashKey.argtypes = [ctypes.c_void_p, ctypes.c_bool]
+        lib.ss_setHashKey.restype = ctypes.c_int
+
+        lib.ss_setVerbose.argtypes = [ctypes.c_void_p, ctypes.c_bool]
+        lib.ss_setVerbose.restype = ctypes.c_int
+
+        lib.ss_setHeaderSize.argtypes = [ctypes.c_void_p, ctypes.c_int]
+        lib.ss_setHeaderSize.restype = ctypes.c_int
+
+        lib.ss_runServer.argtypes = [ctypes.c_void_p]
+        lib.ss_runServer.restype = ctypes.c_int
+
+        lib.ss_socketStream_ok.argtypes = [ctypes.c_void_p]
+        lib.ss_socketStream_ok.restype = ctypes.c_bool
+
+        lib.ss_getFullmsg.argtypes = [ctypes.c_void_p]
+        lib.ss_getFullmsg.restype = ctypes.c_char_p
+
+        lib.ss_get_latest.argtypes = [ctypes.c_void_p, ctypes.POINTER(ctypes.c_bool)]
+        lib.ss_get_latest.restype = ctypes.c_char_p
+
+        lib.ss_get_latest_fromClient.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.POINTER(ctypes.c_bool)]
+        lib.ss_get_latest_fromClient.restype = ctypes.c_char_p
+
+        self.obj = lib.create_socketStream(svrIP.encode('utf-8'), svrPort, socketStreamMode)
+
+    def initialize_socketStream(self):
+        return lib.ss_initialize(self.obj)
 
     def make_connection(self):
-        print("[socketStream] Attempting to connect to server with address " + self.server_address[0] +" in the port %s" , str(self.server_address[1]))
-        self.sock.connect(self.server_address)
-        conValidity = self.handShake_server(10)
-        if conValidity:
-            print("[socketStream] Connected to server " + self.server_address[0] +" in port " + str(self.server_address[1]))
-            self.isComActive = True
-            self.connection_exist = True
-            self.ReceiverThread.start()
-            print('ok')
-        else:
-            print("[socketStream] Handshake protocol failed! Unable to connect to server.")
-            print("[socketStream] Closing connection with the server")
-            self.sock.close()
+        tt = lib.ss_make_connection(self.obj)
+        time.sleep(0.001)
+        return tt
 
-
+    def setBufferSize(self, buffersize):
+        return lib.ss_setBufferSize(self.obj, buffersize)
+    
     def initialize_msgStruct(self, fields):
-        result={fields[i]:[] for i in range(len(fields))}
-        frt=json.dumps(result)
-        self.msg_data = json.loads(frt)
-        print("[socketStream] The message struct initialized successfully")
+        nbFields = len(fields)
+        fields_bytes = []
+        for i in range(nbFields):
+            fields_bytes.append(bytes(fields[i], 'utf-8'))
+        arr = (ctypes.c_char_p * (nbFields))()
+        arr[:] = fields_bytes
+        return lib.ss_initialize_msgStruct(self.obj, arr, nbFields)
 
+    def printMSGcontents(self):
+        return lib.ss_printMSGcontents(self.obj)
 
+    def printMSGcontentsTypes(self):
+        return lib.ss_printMSGcontentsTypes(self.obj)
+
+    def printMSGString(self):
+        return lib.ss_printMSGString(self.obj)
+
+    def set_clientName(self, clientName):
+        return lib.ss_set_clientName(self.obj, clientName.encode('utf-8'))
 
     def updateMSG(self, field, value):
-        if field in list(self.msg_data):
-            self.msg_data[field] = value
-        else:
-            print("[socketStream] Not valid field name")
+        if type(value) == str:
+            return lib.ss_updateMSG_char(self.obj, field.encode('utf-8'), value.encode('utf-8'))
+        if type(value) == int:
+            return lib.ss_updateMSG_int(self.obj, field.encode('utf-8'), value)
+        if type(value) == float:
+            return lib.ss_updateMSG_double(self.obj, field.encode('utf-8'), value)
+        if type(value) == np.ndarray:
+            if len(value.shape) == 1:
+                if value.dtype == np.int64 or value.dtype == np.int32 or value.dtype == np.int16 or value.dtype == np.int8:
+                    value = value.astype(np.int)
+                    return lib.ss_updateMSG_intArray(self.obj, field.encode('utf-8'), value.ctypes.data_as(ctypes.POINTER(ctypes.c_int)), value.shape[0])
+                else:
+                    if value.dtype == np.double or value.dtype == np.float:
+                        value = value.astype(np.double)
+                        return lib.ss_updateMSG_doubleArray(self.obj, field.encode('utf-8'), value.ctypes.data_as(ctypes.POINTER(ctypes.c_double)), value.shape[0])
+                    else:
+                        print('[socketStream_py] Unknown data type for array')
+                        return -4
+            else:
+                if len(value.shape) == 2:
+                    rows, columns = value.shape
+                    if value.dtype == np.int:
+                        value = value.astype(np.int32)
+                        value = value.reshape((1, np.prod(value.shape)))
+                        return lib.ss_updateMSG_matInt(self.obj, field.encode('utf-8'), value.ctypes.data_as(ctypes.POINTER(ctypes.c_int)), rows, columns)
+                    else:
+                        if value.dtype == np.double or value.dtype == np.float:
+                            value = value.astype(np.double)
+                            value = value.reshape((1, np.prod(value.shape)))
+                            return lib.ss_updateMSG_matDouble(self.obj, field.encode('utf-8'), value.ctypes.data_as(ctypes.POINTER(ctypes.c_double)), rows, columns)
+                        else:
+                            print('[socketStream_py] Unknown data type for array')
+                        return -4
+                else:
+                    print('[socketStream_py] socketStream does not currently support more than 2D matrices.')
+                    return -5
 
-    def sendMSG(self, msgData=None):
-        if msgData is None:
-            tmp_msg = json.dumps(self.msg_data)
+    def sendMsg(self):
+        return lib.ss_sendMsg(self.obj)
+    
+    def sendMSg2Client(self, clID):
+        if type(clID) == str:
+            return lib.ss_sendMSg2Client_str(self.obj, clID)
+        if type(clID) == int:
+            return lib.ss_sendMSg2Client_int(self.obj, clID)
+        return -3
+    
+    def sendMSg2All(self):
+        return lib.ss_sendMSg2All(self.obj)
+
+    def closeCommunication(self):
+        lib.ss_closeCommunication(self.obj)
+
+    def setHashKey(self, value):
+        value = bool(value)
+        return lib.ss_setHashKey(self.obj, value)
+
+    def setVerbose(self, value):
+        return lib.ss_setVerbose(self.obj, value)
+    
+    def setHeaderSize(self, hSize):
+        return lib.ss_setHeaderSize(self.obj, hSize)
+
+    def runServer(self):
+        return lib.ss_runServer(self.obj)
+
+    def socketStream_ok(self):
+        return lib.ss_socketStream_ok(self.obj)
+
+    def getFullmsg(self):
+        tt = lib.ss_getFullmsg(self.obj)
+        return ctypes.c_char_p(tt).value.decode('utf-8')
+
+    def get_latest(self, cltName=None):
+        time.sleep(0.1)
+        cflag = ctypes.c_bool()
+        if cltName is None:
+            tt = lib.ss_get_latest(self.obj, ctypes.byref(cflag))
         else:
-            tmp_msg = msgData
+            tt = lib.ss_get_latest_fromClient(self.obj, cltName,  ctypes.byref(cflag))
+        isNew = cflag.value
+        msg = ctypes.c_char_p(tt).value.decode('utf-8')
+        if isNew:
+            jsonMSG = json.loads(msg)
+            return jsonMSG
+        else:
+            return None
         
-        msg_len=('{:<'+str(self.HEADERSIZE)+'}').format(str(len(tmp_msg)))
-
-        # compute the overhead of the message
-        if self.useHashKey:
-            dcdr=hashlib.md5()
-            dcdr.update(tmp_msg.encode('utf-8'))
-            chSum=dcdr.hexdigest()
-            ranString = tmp_msg + chSum
-
-        msgOverhead = (int((len(ranString)+self.minMsgSize)/self.BUFFER_SIZE)+1)*self.BUFFER_SIZE - (len(ranString)+self.minMsgSize)
-        msgOverheadSize = ('{:<'+str(self.bfrDigits)+'}').format(str(msgOverhead))
-        overheadStr = " " * msgOverhead
-        msg2send = self.msg_idf+msg_len+str(int(self.useHashKey))+msgOverheadSize+ranString+overheadStr+self.endMSG
-        self.sock.sendall(msg2send.encode('utf-8'))
-
-  
