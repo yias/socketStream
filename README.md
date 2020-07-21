@@ -1,6 +1,6 @@
 ![](docs/pics/socketStream_logo.png)
 
-A cros-platform C++ library and Python module for exchanging packets over a TCP/IP communication. The socketSteam class supports both client and server implementations on C++ and python. The packets follow the json structure, making them compatible with other languages too. The C++ library supports multi-client server, whilst the server of the python class services only one client. 
+A cros-platform C++ library and Python module for exchanging packets over a TCP/IP communication. The socketSteam class supports both client and server implementations on C++ and python. The packets follow the json structure, making them compatible with other languages too. 
 
 The C++ implementaion of md5 checksum is a RSA Data Security, Inc. MD5 Message-Digest Algorithm, borrowed from zedwood in this [link](http://www.zedwood.com/article/cpp-md5-function). Besides the md5 implementation, the rest of the code is distributed under the GNU GPLv3 license.
 
@@ -15,6 +15,11 @@ $ make
 $ sudo make install
 ```
 Optionally, you can run the command "sudo ldconfig" for updating the list of shared library. 
+
+To create a shared library (create a dll) on Windows using nmake run the following command from a command prompt inside the main directory of the package:
+```cmd
+> nmake -f nMakeFile.mk
+```
 
 To install the Python module, run the following command from the main folder of the package.
 ```bash

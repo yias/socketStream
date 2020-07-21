@@ -159,7 +159,7 @@ extern "C"{
         }
     }
 
-    char* EXPORT ss_getFullmsg(socketStream* ssObj){
+    EXPORT char* ss_getFullmsg(socketStream* ssObj){
         std::string tt = ssObj->getFullmsg();
         returnedMsgStr = (char *) realloc(returnedMsgStr, sizeof(char) * tt.length() ); 
         if( returnedMsgStr == NULL) exit(1);
@@ -171,7 +171,7 @@ extern "C"{
         return ssObj->runServer();
     }
 
-    const char* EXPORT ss_get_latest(socketStream* ssObj, bool *newMSG){
+    EXPORT const char* ss_get_latest(socketStream* ssObj, bool *newMSG){
         
         std::string tt = ssObj->get_latest(newMSG);
         if (tt.length()==0){
@@ -184,7 +184,7 @@ extern "C"{
         return returnedMsgStr;
     }
 
-    const char* EXPORT ss_get_latest_fromClient(socketStream* ssObj, const char* cltName, bool *newMSG){
+    EXPORT const char* ss_get_latest_fromClient(socketStream* ssObj, const char* cltName, bool *newMSG){
         std::string cName(cltName);
         std::string tt = ssObj->get_latest(cName, newMSG);
         if (tt.length()==0){
