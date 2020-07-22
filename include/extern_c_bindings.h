@@ -178,7 +178,7 @@ extern "C"{
             tt = " ";
         }
         
-        returnedMsgStr = (char *) realloc(returnedMsgStr, sizeof(char) * tt.length() ); // + (size_t)1 
+        returnedMsgStr = (char *) realloc(returnedMsgStr, sizeof(char) * ( tt.length() + 1) ); // + (size_t)1 
         
         strcpy(returnedMsgStr , tt.c_str());
         return returnedMsgStr;
@@ -190,7 +190,7 @@ extern "C"{
         if (tt.length()==0){
             tt = " ";
         }
-        returnedMsgStr = (char *) realloc(returnedMsgStr, sizeof(char) * tt.length() ); // + (size_t)1 
+        returnedMsgStr = (char *) realloc(returnedMsgStr, sizeof(char) * (tt.length() + 1) ); // + (size_t)1 
         // if (returnedMsgStr == NULL) exit(1);
         strcpy(returnedMsgStr , tt.c_str());
         return returnedMsgStr;

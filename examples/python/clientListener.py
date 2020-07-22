@@ -60,7 +60,7 @@ def main(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='TCP server for receiving inputs from a client with socketStream')
     parser.add_argument('--host', type=str, help= 'the IP of the server', default='localhost')
-    parser.add_argument('--port', type=int, help= 'the port on which the server is listening', default=10352)
+    parser.add_argument('--port', type=int, help= 'the port on which the server is listening', default=10353)
     parser.add_argument('--buffersize', type=int, help= 'the size of the buffer for pakets receiving', default=16)
     args=parser.parse_args()
     main(args)

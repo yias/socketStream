@@ -11,6 +11,7 @@ import argparse
 import numpy as np
 import sys
 from socketStream_py import socketStream
+import time
 
 
 def main(args):
@@ -28,7 +29,7 @@ def main(args):
     if sockHndlr.initialize_socketStream() == 0:
         if sockHndlr.runServer() == 0:
             everything_ok = True
-    
+    doit = True
     if everything_ok:
         # counter=0
         while(True):
@@ -40,8 +41,14 @@ def main(args):
                         msgData=tt['data']
                         rt=np.array(msgData, dtype=np.float32)
                         print(rt.shape)
-                sockHndlr.sendMSg2All()
-
+                    sockHndlr.sendMSg2All()
+                    if doit:
+                        sockHndlr.updateMSG("dataInt", np.array([720, 3, 14, 1445, 1345, 11234, 2, 432, 134, -33, 45]))
+                        doit = False
+                    else:
+                        sockHndlr.updateMSG("dataInt", np.array([720, 3, 1280]))
+                        doit = True
+                time.sleep(0.5)
             except KeyboardInterrupt:
                 break
 
@@ -51,7 +58,7 @@ def main(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='TCP server for receiving inputs from a client with socketStream')
     parser.add_argument('--host', type=str, help= 'the IP of the server', default='localhost')
-    parser.add_argument('--port', type=int, help= 'the port on which the server is listening', default=10352)
+    parser.add_argument('--port', type=int, help= 'the port on which the server is listening', default=10353)
     parser.add_argument('--buffersize', type=int, help= 'the size of the buffer for pakets receiving', default=16)
     args=parser.parse_args()
     main(args)
