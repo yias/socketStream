@@ -5,6 +5,7 @@ build/
 pyTCP/__pycache__/
 socketStream_py.egg-info/socketStream_py.egg-info
 socketStream_py.egg-info
+dist/
 
 # ignore all the *.obj files
 *.obj
