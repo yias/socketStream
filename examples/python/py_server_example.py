@@ -16,11 +16,13 @@ from socketStream_py import socketStream
 def main(args):
     sockHndlr = socketStream.socketStream(svrIP = args.host, svrPort = args.port, socketStreamMode = 1)
     
-    sockHndlr.initialize_msgStruct(["name","data"])
+    sockHndlr.initialize_msgStruct(["name", "data", "dataInt"])
 
     sockHndlr.updateMSG("name","Mary")
 
     sockHndlr.updateMSG("data", np.array([[2.4,5.6,783.01],[34,55.6,1.2]]))
+
+    sockHndlr.updateMSG("dataInt", np.array([720, 1280, 3]))
 
     everything_ok = False
     if sockHndlr.initialize_socketStream() == 0:

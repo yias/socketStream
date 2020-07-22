@@ -20,11 +20,13 @@ def main(args):
 
     sockClient.set_clientName("py_listener_example")
 
-    sockClient.initialize_msgStruct(["name","data"])
+    sockClient.initialize_msgStruct(["name","data", "dataInt"])
 
     sockClient.updateMSG("name","Mary")
 
     sockClient.updateMSG("data", np.array([[2.4,5.6,783.01],[34,55.6,1.2]]))
+
+    sockClient.updateMSG("dataInt", np.array([720, 1280, 3]))
 
     everything_ok = False
     if sockClient.initialize_socketStream() == 0:

@@ -161,10 +161,11 @@ class socketStream(object):
         if type(value) == np.ndarray:
             if len(value.shape) == 1:
                 if value.dtype == np.int64 or value.dtype == np.int32 or value.dtype == np.int16 or value.dtype == np.int8:
-                    value = value.astype(np.int)
+                    value = value.astype(np.int32)
+                    # print(value)
                     return lib.ss_updateMSG_intArray(self.obj, field.encode('utf-8'), value.ctypes.data_as(ctypes.POINTER(ctypes.c_int)), value.shape[0])
                 else:
-                    if value.dtype == np.double or value.dtype == np.float:
+                    if value.dtype == np.double or value.dtype == np.float or value.dtype == np.float32:
                         value = value.astype(np.double)
                         return lib.ss_updateMSG_doubleArray(self.obj, field.encode('utf-8'), value.ctypes.data_as(ctypes.POINTER(ctypes.c_double)), value.shape[0])
                     else:
@@ -173,12 +174,12 @@ class socketStream(object):
             else:
                 if len(value.shape) == 2:
                     rows, columns = value.shape
-                    if value.dtype == np.int:
+                    if value.dtype == np.int64 or value.dtype == np.int32 or value.dtype == np.int16 or value.dtype == np.int8:
                         value = value.astype(np.int32)
                         value = value.reshape((1, np.prod(value.shape)))
                         return lib.ss_updateMSG_matInt(self.obj, field.encode('utf-8'), value.ctypes.data_as(ctypes.POINTER(ctypes.c_int)), rows, columns)
                     else:
-                        if value.dtype == np.double or value.dtype == np.float:
+                        if value.dtype == np.double or value.dtype == np.float or value.dtype == np.float32:
                             value = value.astype(np.double)
                             value = value.reshape((1, np.prod(value.shape)))
                             return lib.ss_updateMSG_matDouble(self.obj, field.encode('utf-8'), value.ctypes.data_as(ctypes.POINTER(ctypes.c_double)), rows, columns)
