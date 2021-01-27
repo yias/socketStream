@@ -234,6 +234,14 @@ class socketStream(object):
         else:
             tt = lib.ss_get_latest_fromClient(self.obj, cltName,  ctypes.byref(cflag))
         isNew = cflag.value
+
+        try:
+            msg = ctypes.c_char_p(tt).value.decode('utf-8')
+
+        except UnicodeDecodeError:
+            print(tt)
+            isNew = False
+
         msg = ctypes.c_char_p(tt).value.decode('utf-8')
         if isNew:
             jsonMSG = json.loads(msg)
